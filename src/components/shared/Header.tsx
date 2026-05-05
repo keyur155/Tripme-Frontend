@@ -112,15 +112,15 @@ const Header = ({ searchExpanded: externalSearchExpanded,
   const [scrolled, setScrolled] = useState(false);
   const [hideMobileHeader, setHideMobileHeader] = useState(false);
 
-
-
-
   const categories = [
   { id: 'homes', icon: '🏠', label: 'Homes', path: '/' },
   { id: 'services',icon: '🔔', label: 'Services', path: '/services' },
   { id: 'stories',  icon: '📖', label: 'Stories', path: '/stories' },
 ];
 
+  const isStoriesPage = pathname?.startsWith('/stories');
+  const isSearchPage = pathname?.startsWith('/search');
+  const isRoomsPage = pathname?.startsWith('/rooms');
 
   // Set active category based on current route
   useEffect(() => {
@@ -162,7 +162,6 @@ const Header = ({ searchExpanded: externalSearchExpanded,
     };
   }, [hostMenuOpen]);
 
-
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -171,7 +170,6 @@ const Header = ({ searchExpanded: externalSearchExpanded,
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
 
   // handle logout
   const handleLogout = async () => {
@@ -183,7 +181,6 @@ const Header = ({ searchExpanded: externalSearchExpanded,
       console.error('Logout error:', error);
     }
   };
-
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -203,9 +200,6 @@ const Header = ({ searchExpanded: externalSearchExpanded,
     };
   }, [searchExpanded]);
 
-
-
-
   if (isLoading) {
     return null;
   }
@@ -214,26 +208,30 @@ const Header = ({ searchExpanded: externalSearchExpanded,
     return null;
   }
 
-  const shouldShowFullHeader = hideSearch ? true : ((!scrolled || searchExpanded) && (pathname !== '/stories' || searchExpanded) && (pathname !== '/search' || searchExpanded) &&
-    (pathname !== '/rooms' || searchExpanded)
-
-  );
+  const shouldShowFullHeader = hideSearch
+    ? true
+    : ((!scrolled || searchExpanded)
+      && (!isStoriesPage || searchExpanded)
+      && (!isSearchPage || searchExpanded)
+      && (!isRoomsPage || searchExpanded));
 
   return (
     <>
-      <header className={`w-full z-[100] fixed top-0 left-0 right-0
-                       transition-all duration-300"
-                       ${hideHeader ? "hidden" : ""}
-                        ${scrolled && !searchExpanded
-          ? 'bg-white border-b border-gray-200 shadow-lg'
-          : 'bg-white border-b border-gray-100'}
-                       `}
-
+      <header
+        className={`w-full z-[100] fixed top-0 left-0 right-0 transition-all duration-300 ${
+          hideHeader ? 'hidden' : ''
+        } ${
+          scrolled && !searchExpanded
+            ? 'bg-white border-b border-gray-200 shadow-lg'
+            : 'bg-white border-b border-gray-100'
+        }`}
       >
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
           {/* Main Nav Bar container */}
           <div className={`hidden lg:flex item-center justify-between relative transition-all duration-500 ease-in-out ${shouldShowFullHeader ? 'h-20' : 'h-24 my-1'}`}>
+
             <Link href="/" className={`flex items-center group relative z-10 ${!shouldShowFullHeader ? 'pt-1' : ''
               }`}>
               <div className="relative">
@@ -864,12 +862,12 @@ const Header = ({ searchExpanded: externalSearchExpanded,
 
           </div>)}
 
-          {/* mobile search form */}
+          {/* mobile search form - hidden when search sheet is open */}
           <div
   className={cn(
     "md:hidden px-4  mt-5 transition-transform duration-300",
     scrolled ? "scale-[0.96]" : "scale-100",
-    hideSearch && "hidden"
+    (hideSearch || searchExpanded) && "hidden"
   )}
 >
             <button

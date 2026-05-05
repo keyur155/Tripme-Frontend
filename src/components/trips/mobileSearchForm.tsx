@@ -41,40 +41,77 @@ function CategoryTabs({ onClose, activeCategory, setActiveCategory }: {
   );
 }
 
-function Calendar({ onNext, dateRange, setDateRange }) {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDates, setSelectedDates] = useState({ start: null, end: null });
+type SheetDateRange = {
+  startDate: Date | null;
+  endDate: Date | null;
+  key: string;
+};
 
-  const daysInMonth = (date) =>
+function Calendar({
+  onNext,
+  dateRange,
+  setDateRange,
+}: {
+  onNext: () => void;
+  dateRange: SheetDateRange;
+  setDateRange: React.Dispatch<React.SetStateAction<SheetDateRange>>;
+}) {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDates, setSelectedDates] = useState<{ start: Date | null; end: Date | null }>({
+    start: null,
+    end: null,
+  });
+
+  useEffect(() => {
+    setSelectedDates({
+      start: dateRange?.startDate ?? null,
+      end: dateRange?.endDate ?? null,
+    });
+  }, [dateRange?.startDate, dateRange?.endDate]);
+
+  const daysInMonth = (date: Date) =>
     new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-  const firstDayOfMonth = (date) =>
+  const firstDayOfMonth = (date: Date) =>
     new Date(date.getFullYear(), date.getMonth(), 1).getDay();
 
   const days = Array.from({ length: daysInMonth(currentDate) }, (_, i) => i + 1);
   const emptyDays = Array.from({ length: firstDayOfMonth(currentDate) }, () => null);
 
-  const handleDateClick = (day) => {
+  const handleDateClick = (day: number) => {
     const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
 
+    let nextStart: Date | null = null;
+    let nextEnd: Date | null = null;
+
     if (!selectedDates.start || (selectedDates.start && selectedDates.end)) {
-      setSelectedDates({ start: newDate, end: null });
+      nextStart = newDate;
+      nextEnd = null;
     } else {
       if (newDate < selectedDates.start) {
-        setSelectedDates({ start: newDate, end: selectedDates.start });
+        nextStart = newDate;
+        nextEnd = selectedDates.start;
       } else {
-        setSelectedDates({ start: selectedDates.start, end: newDate });
+        nextStart = selectedDates.start;
+        nextEnd = newDate;
       }
+    }
+
+    setSelectedDates({ start: nextStart, end: nextEnd });
+    setDateRange({ startDate: nextStart, endDate: nextEnd, key: 'selection' });
+
+    if (nextStart && nextEnd) {
+      onNext();
     }
   };
 
-  const isDateInRange = (day) => {
+  const isDateInRange = (day: number) => {
     if (!selectedDates.start) return false;
     const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     if (!selectedDates.end) return date.getTime() === selectedDates.start.getTime();
     return date >= selectedDates.start && date <= selectedDates.end;
   };
 
-  const isStartOrEnd = (day) => {
+  const isStartOrEnd = (day: number) => {
     const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     return (
       (selectedDates.start && date.getTime() === selectedDates.start.getTime()) ||
@@ -760,35 +797,24 @@ useEffect(() => {
 }, [activeCategory]);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end z-[60]">
-      <div
-        className="absolute inset-0 pointer-events-none"
-        // onClick={onClose}
+    <div className="fixed inset-0 bg-white z-[60] flex flex-col">
+      {/* Full screen white background - no overlay, no rounded corners at top */}
+      
+      {/* Category Tabs at the very top like Airbnb */}
+      <CategoryTabs 
+        onClose={onClose} 
+        activeCategory={activeCategory}
+        setActiveCategory={setActiveCategory}
       />
-      {/* Sheet */}
+      
+      {/* Sheet Content */}
       <div
         ref={sheetRef}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        className="w-full bg-white rounded-t-3xl flex flex-col overflow-hidden"
-        style={{ height: '100dvh' }}
+        className="flex-1 flex flex-col overflow-hidden bg-gray-50"
       >
-        {/* Drag handle */}
-        <div className="flex justify-center pt-3 pb-2">
-          <div className="w-12 h-1 bg-gray-300 rounded-full" />
-        </div>
-
-        {/* Category Tabs */}
-        {/* <div className="relative">
-          <CategoryTabs onClose={onClose} />
-        </div> */}
-
-        <CategoryTabs 
-        onClose={onClose} 
-        activeCategory={activeCategory}
-        setActiveCategory={setActiveCategory}
-      />
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto">
@@ -797,67 +823,52 @@ useEffect(() => {
              {activeCategory === 'homes' && (
               <>
 
-            {/* WHERE - Always Visible but Collapses */}
-            <div
-              className={`border border-gray-300 rounded-2xl p-4 cursor-pointer transition-all ${
-                activeStep === "where" ? "bg-white" : "bg-gray-50 hover:bg-gray-100"
-              }`}
-              onClick={() => activeStep !== "where" && setActiveStep("where")}
-            >
-              {activeStep === "where" ? (
-                <div className="space-y-4">
-                  <h2 className="text-2xl font-bold text-gray-800">Where?</h2>
-                  {/* <div className="relative">
-                    <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-                    <input
-                      type="text"
+            {/* WHERE - Collapsible like Airbnb */}
+            {activeStep === "where" || !selectedCity ? (
+              <div className="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
+                <div className="p-6">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Where?</h2>
+                  
+                  {/* Search Input */}
+                  <div className="flex items-center bg-gray-100 rounded-xl px-4 py-3 mb-4">
+                    <Search className="text-gray-400 mr-3" size={20} />
+                    <AsyncSelect
+                      cacheOptions
+                      loadOptions={debouncedLoadOptions}
+                      defaultOptions
+                      value={null}
+                      inputValue={whereSearch}
+                      onInputChange={(value) => setWhereSearch(value)}
+                      onChange={(option) => {
+                        const opt = option as {
+                          value: string;
+                          label: string;
+                          coordinates?: [number, number];
+                          type?: string;
+                          placeId?: string;
+                        };
+                        setSelectedCity({
+                          value: opt.value,
+                          label: opt.label,
+                          coordinates: opt.coordinates,
+                          type: opt.type,
+                        });
+                        setWhereSearch("");
+                        setActiveStep("when");
+                      }}
                       placeholder="Search destinations"
-                      value={whereSearch}
-                      onChange={(e) => setWhereSearch(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-gray-800 text-gray-800"
+                      styles={{
+                        ...customSelectStyles,
+                        menuPortal: (base: any) => ({ ...base, zIndex: 60 })
+                      }}
+                      className="flex-1"
+                      components={{ DropdownIndicator: () => null }}
                     />
-                  </div> */}
-                  <div className="relative">
-  
- <div className="flex items-center  bg-gray-100 rounded-xl px-2 py-2">
-  <Search className="text-[#4285F4] " size={20}    />
-  <AsyncSelect
-    cacheOptions
-    loadOptions={debouncedLoadOptions}
-    defaultOptions
-    value={null}
-    inputValue={whereSearch}
-    onInputChange={(value) => setWhereSearch(value)}
-    onChange={(option) => {
-      const opt = option as {
-        value: string;
-        label: string;
-        coordinates?: [number, number];
-        type?: string;
-        placeId?: string;
-      };
+                  </div>
 
-      setSelectedCity({
-        value: opt.value,
-        label: opt.label,
-        coordinates: opt.coordinates,
-        type: opt.type,
-      });
-
-      setWhereSearch("");
-      setActiveStep("when");
-    }}
-    placeholder="Search destinations"
-      styles={{
-                    ...customSelectStyles,
-                    menuPortal: (base: any) => ({ ...base, zIndex: 60 })
-                  }}
-    className="w-full pl-2"
-    components={{ DropdownIndicator: () => null }}
-  />
-  </div>
-                 </div>
-                  <div className="space-y-2">
+                  {/* Suggested Destinations */}
+                  <p className="text-sm text-gray-500 font-medium mb-3">Suggested destinations</p>
+                  <div className="space-y-1">
                     {destinations.map((dest, idx) => (
                       <button
                         key={idx}
@@ -870,148 +881,151 @@ useEffect(() => {
                             setActiveStep("when");
                           }
                         }}
-                        className="w-full text-left px-4 py-1 hover:bg-gray-100 rounded-lg transition"
+                        className="w-full text-left px-3 py-3 hover:bg-gray-50 rounded-xl transition flex items-center gap-4"
                       >
-                        <div className="flex items-start gap-3">
-                          <span className="text-xl mt-1">{dest.icon}</span>
-                          <div>
-                            <div className="text-gray-800 text-sm font-semibold">{dest.name}</div>
-                            <div className="text-xs text-gray-500">{dest.desc}</div>
-                          </div>
+                        <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-2xl">
+                          {dest.icon}
+                        </div>
+                        <div>
+                          <div className="text-gray-900 font-semibold">{dest.name}</div>
+                          <div className="text-sm text-gray-500">{dest.desc}</div>
                         </div>
                       </button>
                     ))}
                   </div>
                 </div>
-              ) : (
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600 font-medium">Where</span>
-                  <span className="text-gray-800 font-semibold">{selectedCity?.label || "Add location"}</span>
-                </div>
-              )}
-            </div>
-
-            {/* WHEN - Collapses when not active */}
-            {selectedCity && (
-              <div
-                className={`border border-gray-300 rounded-2xl p-4 cursor-pointer transition-all ${
-                  activeStep === "when" ? "bg-white" : "bg-gray-50 hover:bg-gray-100"
-                }`}
-                onClick={() => activeStep !== "when" && setActiveStep("when")}
+              </div>
+            ) : (
+              /* Collapsed Where - shows selected location */
+              <div 
+                className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => setActiveStep("where")}
               >
-                {activeStep === "when" ? (
-                  <Calendar 
-                    onNext={() => setActiveStep("who")} 
-                    dateRange={dateRange}
-                    setDateRange={setDateRange}
-                  />
-                ) : (
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 font-medium">When</span>
-                    <span className="text-gray-800 font-semibold">
-                      {dateRange.startDate && dateRange.endDate 
-                        ? `${dateRange.startDate.toLocaleDateString()} - ${dateRange.endDate.toLocaleDateString()}`
-                        : "Add dates"
-                      }
-                    </span>
-                  </div>
-                )}
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 font-medium">Where</span>
+                  <span className="text-gray-900 font-semibold">{selectedCity?.label}</span>
+                </div>
               </div>
             )}
 
-            {/* WHO - Collapses when not active */}
-            {selectedCity && (
-              <div
-                className={`border border-gray-300 rounded-2xl p-4 cursor-pointer transition-all ${
-                  activeStep === "who" ? "bg-white" : "bg-gray-50 hover:bg-gray-100"
-                }`}
-                onClick={() => activeStep !== "who" && setActiveStep("who")}
+            {/* When Section - Airbnb Style */}
+            {activeStep === "when" ? (
+              <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-6">
+                <Calendar 
+                  onNext={() => setActiveStep("who")} 
+                  dateRange={dateRange}
+                  setDateRange={setDateRange}
+                />
+              </div>
+            ) : (
+              <div 
+                className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => setActiveStep("when")}
               >
-                {activeStep === "who" ? (
-                  <div className="space-y-4">
-                    <h3 className="text-2xl font-bold text-gray-800">Who?</h3>
+                <div className="flex justify-between items-center">
+                  <span className="text-[#4285F4] font-semibold">When</span>
+                  <span className="text-gray-900 font-semibold">
+                    {dateRange.startDate && dateRange.endDate 
+                      ? `${dateRange.startDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} - ${dateRange.endDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}`
+                      : 'Add dates'}
+                  </span>
+                </div>
+              </div>
+            )}
 
-                    {/* Adults */}
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="text-gray-800 text-sm font-semibold">Adults</div>
-                        <div className="text-xs text-gray-500">Ages 13 or above</div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => updateGuestCount('adults', false)}
-                          className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:border-gray-600"
-                        >
-                          −
-                        </button>
-                        <span className="text-gray-800 font-semibold w-4 text-center">
-                          {guestCounts.adults}
-                        </span>
-                        <button
-                          onClick={() => updateGuestCount('adults', true)}
-                          className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:border-gray-600"
-                        >
-                          +
-                        </button>
-                      </div>
+            {/* Who Section - Single instance */}
+            {activeStep === "who" ? (
+              <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-6">
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-bold text-gray-900">Who's coming?</h3>
+
+                  {/* Adults */}
+                  <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                    <div>
+                      <div className="text-gray-900 font-semibold">Adults</div>
+                      <div className="text-sm text-gray-500">Ages 13 or above</div>
                     </div>
-
-                    {/* Children */}
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="text-gray-800 font-semibold">Children</div>
-                        <div className="text-sm text-gray-500">Ages 2-12</div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => updateGuestCount('children', false)}
-                          className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:border-gray-600"
-                        >
-                          −
-                        </button>
-                        <span className="text-gray-800 font-semibold w-4 text-center">
-                          {guestCounts.children}
-                        </span>
-                        <button
-                          onClick={() => updateGuestCount('children', true)}
-                          className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:border-gray-600"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Infants */}
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="text-gray-800 font-semibold">Infants</div>
-                        <div className="text-sm text-gray-500">Under 2</div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => updateGuestCount('infants', false)}
-                          className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:border-gray-600"
-                        >
-                          −
-                        </button>
-                        <span className="text-gray-800 font-semibold w-4 text-center">
-                          {guestCounts.infants}
-                        </span>
-                        <button
-                          onClick={() => updateGuestCount('infants', true)}
-                          className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:border-gray-600"
-                        >
-                          +
-                        </button>
-                      </div>
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={() => updateGuestCount('adults', false)}
+                        className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:border-gray-600 text-gray-600"
+                      >
+                        −
+                      </button>
+                      <span className="text-gray-900 font-semibold w-6 text-center">
+                        {guestCounts.adults}
+                      </span>
+                      <button
+                        onClick={() => updateGuestCount('adults', true)}
+                        className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:border-gray-600 text-gray-600"
+                      >
+                        +
+                      </button>
                     </div>
                   </div>
-                ) : (
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 font-medium">Who</span>
-                    <span className="text-gray-800 font-semibold">{getGuestDisplayText()}</span>
+
+                  {/* Children */}
+                  <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                    <div>
+                      <div className="text-gray-900 font-semibold">Children</div>
+                      <div className="text-sm text-gray-500">Ages 2-12</div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={() => updateGuestCount('children', false)}
+                        className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:border-gray-600 text-gray-600"
+                      >
+                        −
+                      </button>
+                      <span className="text-gray-900 font-semibold w-6 text-center">
+                        {guestCounts.children}
+                      </span>
+                      <button
+                        onClick={() => updateGuestCount('children', true)}
+                        className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:border-gray-600 text-gray-600"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
-                )}
+
+                  {/* Infants */}
+                  <div className="flex justify-between items-center py-3">
+                    <div>
+                      <div className="text-gray-900 font-semibold">Infants</div>
+                      <div className="text-sm text-gray-500">Under 2</div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={() => updateGuestCount('infants', false)}
+                        className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:border-gray-600 text-gray-600"
+                      >
+                        −
+                      </button>
+                      <span className="text-gray-900 font-semibold w-6 text-center">
+                        {guestCounts.infants}
+                      </span>
+                      <button
+                        onClick={() => updateGuestCount('infants', true)}
+                        className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:border-gray-600 text-gray-600"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div 
+                className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => setActiveStep("who")}
+              >
+                <div className="flex justify-between items-center">
+                  <span className="text-[#4285F4] font-semibold">Who</span>
+                  <span className="text-gray-900 font-semibold">
+                    {totalGuests > 0 ? getGuestDisplayText() : 'Add guests'}
+                  </span>
+                </div>
               </div>
             )}
             </>
@@ -1439,8 +1453,8 @@ useEffect(() => {
           
         </div>
 
-        {/* Footer */}
-        <div className="border-t border-gray-200 p-4 flex justify-between items-center">
+        {/* Footer - Airbnb Style */}
+        <div className="border-t border-gray-200 p-4 flex justify-between items-center bg-white">
           <button 
             onClick={() => {
               setSelectedCity(null);
@@ -1448,32 +1462,30 @@ useEffect(() => {
               setGuestCounts({ adults: 2, children: 0, infants: 0 });
               setActiveStep("where");
             }}
-            className="text-red-600 font-semibold hover:text-red-700"
+            className="text-gray-900 font-semibold underline hover:text-gray-700"
           >
             Clear all
           </button>
           <button
-            // onClick={() => {
-            //   if (activeStep === "where") setActiveStep("when");
-            //   else if (activeStep === "when") setActiveStep("who");
-            //   else handleSearch();
-            // }}
             onClick={() => {
-    if (activeStep === "where") {
-      if (whereSearch.trim()) {
-        setSelectedCity({
-          value: whereSearch.trim(),
-          label: whereSearch.trim()
-        });
-      }
-      setActiveStep("when");
-    } else if (activeStep === "when") {
-      setActiveStep("who");
-    } else handleSearch();
-  }}
-            className="bg-[#4285F4] hover:bg-[#3367D6] text-white px-6 py-3 rounded-xl font-semibold transition"
+              if (activeStep === "where") {
+                if (whereSearch.trim()) {
+                  setSelectedCity({
+                    value: whereSearch.trim(),
+                    label: whereSearch.trim()
+                  });
+                }
+                setActiveStep("when");
+              } else if (activeStep === "when") {
+                setActiveStep("who");
+              } else {
+                handleSearch();
+              }
+            }}
+            className="bg-[#4285F4] hover:bg-[#3367D6] text-white px-6 py-3 rounded-xl font-semibold transition flex items-center gap-2"
           >
-            {activeStep === "who" ? "Search" : "Next"}
+            <Search size={18} />
+            Search
           </button>
         </div>
       </div>

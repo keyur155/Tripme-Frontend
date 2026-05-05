@@ -340,7 +340,7 @@ export default function PropertyAvailabilityCalendar({
   const renderDays = () => {
   const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   return (
-    <div className="grid grid-cols-7 gap-1">
+    <div className="grid grid-cols-7 gap-1 text-xs md:text-sm sm:text-sm p-2 gap-2">
       {days.map(d => <div key={d}>{d}</div>)}
     </div>
   );
@@ -642,13 +642,13 @@ ${isCurrentMonth && !isPastDate && !isCheckIn && !isCheckOut && !isInRange
       md:shadow-lg
       md:border md:border-gray-200
       bg-transparent
-      p-2 md:p-6">
-      <div className="flex items-center gap-3 mb-6">
+      p-5 md:p-6">
+      <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 rounded-xl flex items-center justify-center">
-          <CalendarIcon className="w-5 h-5 text-[#4285f4] " />
+          <CalendarIcon className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4] " />
         </div>
         <div>
-          <h3 className="text-xl font-bold text-gray-900">Availability Calendar</h3>
+          <h3 className="text-xl sm:text-2xl md:text-2xl  font-bold text-gray-900">Availability Calendar</h3>
           <p className="text-sm text-gray-600">Check available dates and prices</p>
         </div>
       </div>

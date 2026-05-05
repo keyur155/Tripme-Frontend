@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
   MapPin,
@@ -19,8 +19,13 @@ import {
   Copy,
   Clock,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Headphones,
+  Sparkles,
+  Wrench,
+  Compass
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import PricesPopup from "@/components/shared/PricesPopup";
@@ -29,6 +34,34 @@ import Button from '@/shared/components/ui/Button';
 import { useScrollDirection } from "@/hooks/userScrollDirection";
 import StayCard from '@/components/trips/StayCard';
 import { apiClient } from '@/infrastructure/api/clients/api-client';
+
+const formatPrice = (amount: number, currency: string = 'INR') =>
+  new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency
+  }).format(amount);
+
+type Destination = {
+  _id: string;
+  name: string;
+  image: string;
+  description?: string;
+  staysLabel?: string;
+  searchCity?: string;
+  displayOrder: number;
+  isActive: boolean;
+};
+
+type ServiceSummary = {
+  id: string;
+  title: string;
+  image: string;
+  location?: string;
+  price?: { amount: number; currency: string };
+  duration?: { value?: number; unit?: string };
+  serviceType?: string;
+};
+
 export default function Home() {
   const router = useRouter();
   const { isAuthenticated, user, isLoading, refreshUser } = useAuth();
@@ -68,11 +101,129 @@ export default function Home() {
     isActive: boolean;
   }>>([])
   const [destLoading, setDestLoading] = useState(true);
+  const [serviceCategories, setServiceCategories] = useState<Array<{ name: string; services: ServiceSummary[] }>>([]);
+  const [serviceCategoriesLoading, setServiceCategoriesLoading] = useState(true);
 
 
   const getPropertyId = (property: any): string | null => {
     const id = property?.id || property?._id;
     return id ? String(id) : null;
+  };
+
+  const getServiceCategoryIcon = (category: string): LucideIcon => {
+    const normalized = category.toLowerCase();
+    if (normalized.includes('adventure') || normalized.includes('trek')) return Mountain;
+    if (normalized.includes('wellness') || normalized.includes('spa')) return Sparkles;
+    if (normalized.includes('tour') || normalized.includes('guide')) return Compass;
+    if (normalized.includes('water') || normalized.includes('cruise')) return Waves;
+    if (normalized.includes('transport') || normalized.includes('travel')) return Plane;
+    if (normalized.includes('event') || normalized.includes('planning')) return Calendar;
+    if (normalized.includes('food') || normalized.includes('cater')) return Tag;
+    if (normalized.includes('stay') || normalized.includes('venue')) return Building2;
+    if (normalized.includes('outdoor') || normalized.includes('nature')) return TreePine;
+    if (normalized.includes('workshop') || normalized.includes('service')) return Wrench;
+    return Sparkles;
+  };
+
+  const categoryGradientPalette = [
+    'from-blue-600/90 via-indigo-700/80 to-purple-800/80',
+    'from-emerald-500/90 via-emerald-600/80 to-teal-800/80',
+    'from-orange-500/90 via-rose-500/80 to-pink-700/80',
+    'from-slate-700/90 via-slate-800/80 to-black/70',
+    'from-amber-500/90 via-orange-600/80 to-red-700/80',
+    'from-cyan-500/90 via-sky-600/80 to-blue-800/80'
+  ];
+
+  const iconAccentPalette = [
+    'bg-white/10 text-white',
+    'bg-white/15 text-white',
+    'bg-white/12 text-white',
+    'bg-white/10 text-white',
+    'bg-white/14 text-white',
+    'bg-white/12 text-white'
+  ];
+
+  const ServiceCategoryCard = ({
+    category,
+    services,
+    accentIndex,
+    variant
+  }: {
+    category: string;
+    services: ServiceSummary[];
+    accentIndex: number;
+    variant: 'mobile' | 'desktop';
+  }) => {
+    const representative = services[0];
+    const imageSrc = representative?.image || '/placeholder-service.jpg';
+    const Icon = getServiceCategoryIcon(category);
+    const gradient = categoryGradientPalette[accentIndex % categoryGradientPalette.length];
+    const iconAccent = iconAccentPalette[accentIndex % iconAccentPalette.length];
+    const countLabel = `${services.length} ${services.length === 1 ? 'service' : 'services'}`;
+    const locationLabel = representative?.location || 'Across India';
+    const priceValues = services
+      .map(service => service.price?.amount)
+      .filter((amount): amount is number => typeof amount === 'number' && amount > 0);
+    const minPrice = priceValues.length ? Math.min(...priceValues) : null;
+    const priceCurrency = services.find(service => service.price?.currency)?.price?.currency || 'INR';
+    const displayCategory = category.replace(/-/g, ' ');
+
+    const cardHeight = variant === 'desktop' ? 'h-[360px]' : 'h-[240px]';
+    const titleSize = variant === 'desktop' ? 'text-2xl' : 'text-sm';
+    const descriptionSize = variant === 'desktop' ? 'text-sm' : 'text-xs';
+
+    const handleNavigation = () => {
+      const queryValue = encodeURIComponent(displayCategory.toLowerCase().replace(/\s+/g, '-'));
+      router.push(`/services?serviceType=${queryValue}`);
+    };
+
+    const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        handleNavigation();
+      }
+    };
+
+    return (
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={handleNavigation}
+        onKeyDown={handleKeyPress}
+        className={`group relative ${cardHeight} w-full overflow-hidden rounded-3xl bg-gray-900 text-left shadow-lg transition-all duration-300 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-400/50 hover:-translate-y-2 hover:shadow-2xl font-[var(--font-jost)]`}
+      >
+        <img
+          src={imageSrc}
+          alt={`${displayCategory} services`}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
+
+        <div className="absolute top-5 left-5 right-5 flex items-center justify-between">
+          <div className={`flex h-11 w-11 items-center justify-center rounded-xl backdrop-blur ${iconAccent}`}>
+            <Icon className="h-5 w-5" />
+          </div>
+          <span className="inline-flex items-center justify-center rounded-full bg-white/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white shadow-sm">
+            {countLabel}
+          </span>
+        </div>
+
+        <div className="absolute bottom-5 left-5 right-5 space-y-3">
+          <h3 className={`${titleSize} font-semibold text-white drop-shadow-md capitalize`}>{displayCategory}</h3>
+          <p className={`${descriptionSize} text-white/85 leading-relaxed line-clamp-2`}>{locationLabel}</p>
+          <div className="flex items-center gap-3">
+            {minPrice ? (
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white backdrop-blur">
+                Starting {formatPrice(minPrice, priceCurrency)}
+              </span>
+            ) : null}
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/25 text-white backdrop-blur transition-colors group-hover:bg-white/40">
+              <ArrowRight className="h-5 w-5" />
+            </span>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const dedupeRecentSearches = (items: any[] = []): any[] => {
@@ -519,6 +670,7 @@ export default function Home() {
     fetchActiveCoupons();
     fetchWeekendProperties();
     fetchPopularDestinations();
+    // fetchServiceCategories();
     loadRecentSearches();
   }, []);
 
@@ -600,6 +752,89 @@ export default function Home() {
       console.error('Error fetching popular destinations:', error);
     } finally {
       setDestLoading(false);
+    }
+  };
+
+  const fetchServiceCategories = async () => {
+    try {
+      setServiceCategoriesLoading(true);
+
+      const aggregateServices = async () => {
+        try {
+          const featured = await apiClient.getFeaturedServices();
+          if (featured.success && Array.isArray(featured.data)) {
+            return featured.data;
+          }
+        } catch (error) {
+          console.warn('Falling back to generic services fetch:', error);
+        }
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services?limit=36`);
+        if (!response.ok) {
+          console.error('Failed to fetch services for categories:', response.status);
+          return [];
+        }
+        const data = await response.json();
+        return data.data?.services || data.data?.listings || [];
+      };
+
+      const services = await aggregateServices();
+      if (!Array.isArray(services) || services.length === 0) {
+        setServiceCategories([]);
+        return;
+      }
+
+      const categoriesMap: Record<string, { displayName: string; services: ServiceSummary[] }> = {};
+
+      services.forEach((service: any) => {
+        const rawCategory = (service.serviceType || 'Curated Experiences').trim();
+        const normalizedKey = rawCategory.toLowerCase();
+        const displayName = rawCategory
+          .replace(/[-_]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .replace(/\b\w/g, (char: string) => char.toUpperCase());
+
+        if (!categoriesMap[normalizedKey]) {
+          categoriesMap[normalizedKey] = { displayName, services: [] };
+        }
+
+        const summary: ServiceSummary = {
+          id: String(service._id || service.id || crypto.randomUUID?.() || Math.random().toString(36).slice(2)),
+          title: service.title || 'Untitled Experience',
+          image:
+            service.media?.[0]?.url ||
+            service.images?.[0] ||
+            service.coverImage ||
+            '/placeholder-service.jpg',
+          location: [service.location?.city, service.location?.state].filter(Boolean).join(', '),
+          price: service.pricing?.basePrice
+            ? {
+                amount: Number(service.pricing.basePrice) || 0,
+                currency: service.pricing.currency || 'INR'
+              }
+            : undefined,
+          duration: service.duration
+            ? { value: service.duration.value, unit: service.duration.unit }
+            : undefined,
+          serviceType: service.serviceType
+        };
+
+        categoriesMap[normalizedKey].services.push(summary);
+      });
+
+      const formattedCategories = Object.values(categoriesMap)
+        .map(({ displayName, services }) => ({ name: displayName, services }))
+        .filter(category => category.services.length > 0)
+        .sort((a, b) => b.services.length - a.services.length)
+        .slice(0, 8);
+
+      setServiceCategories(formattedCategories);
+    } catch (error) {
+      console.error('Error fetching service categories:', error);
+      setServiceCategories([]);
+    } finally {
+      setServiceCategoriesLoading(false);
     }
   };
 
@@ -779,14 +1014,6 @@ export default function Home() {
     setWishlists(prev => [...prev, wishlist.data]);
     setShowWishlistModal(false);
   };
-
-  const formatPrice = (amount: number, currency: string = 'INR') => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: currency
-    }).format(amount);
-  };
-
   const getCTAConfig = () => {
     if (typeof window === 'undefined') {
       return { label: 'Explore stays', action: '/search' };
@@ -846,6 +1073,81 @@ export default function Home() {
     </button>
   </div>
 );
+
+  const aboutHighlights: { icon: LucideIcon; title: string; description: string }[] = [
+    {
+      icon: Shield,
+      title: "Best Price Guarantee",
+      description: "Lock in unbeatable rates on curated stays you won’t find elsewhere."
+    },
+    {
+      icon: Calendar,
+      title: "Easy & Quick Booking",
+      description: "Plan, reserve, and confirm your trip in just a few intuitive steps."
+    },
+    {
+      icon: Headphones,
+      title: "Customer Care 24/7",
+      description: "Travel with confidence knowing our support experts are always on standby."
+    }
+  ];
+
+  const aboutImageSrc = "/newHomeImage.png";
+
+  const DestinationCard = ({ dest, variant }: { dest: Destination; variant: "mobile" | "desktop" }) => {
+    const cardHeight = variant === "desktop" ? "h-[320px] sm:h-[360px]" : "h-[220px] sm:h-[240px]";
+    const titleSize = variant === "desktop" ? "text-xl" : "text-md";
+    const descriptionSize = variant === "desktop" ? "text-sm" : "text-xs";
+    const buttonSize = variant === "desktop" ? "text-sm px-5 py-2" : "text-xs px-4 py-1.5";
+
+    const handleNavigation = () => {
+      const targetCity = dest.searchCity || dest.name;
+      router.push(`/search?city=${encodeURIComponent(targetCity)}`);
+    };
+
+    const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        handleNavigation();
+      }
+    };
+
+    return (
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={handleNavigation}
+        onKeyDown={handleKeyPress}
+        className={`group relative ${cardHeight} w-full overflow-hidden rounded-xl bg-gray-900 text-left shadow-lg transition-all duration-300 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-400/50 hover:-translate-y-2 hover:shadow-2xl font-[var(--font-jost)]`}
+      >
+        <img
+          src={dest.image || "/placeholder.jpg"}
+          alt={dest.name}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/80" />
+
+        <div className="absolute top-5 left-5 right-5 flex items-center justify-between">
+          <span className="inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-gray-900 shadow-sm font-[var(--font-jost)]">
+            {dest.staysLabel || "Curated stays"}
+          </span>
+        </div>
+
+        <div className="absolute bottom-5 left-5 right-5 space-y-3">
+          <h3 className={`${titleSize} font-semibold text-white drop-shadow-md font-[var(--font-jost)]`}>{dest.name}</h3>
+          <p className={`${descriptionSize} text-white/85 leading-relaxed line-clamp-2 font-[var(--font-jost)]`}> {dest.description || `Discover unforgettable getaways in ${dest.name}.`} </p>
+          <div className="flex items-center gap-3">
+            <span className={`inline-flex items-center justify-center rounded-full bg-white/90 text-gray-900 font-semibold shadow ${buttonSize} transition-colors group-hover:bg-blue-600 group-hover:text-white font-[var(--font-jost)]`}>
+              Discover
+            </span>
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/25 text-white backdrop-blur transition-colors group-hover:bg-white/40">
+              <ArrowRight className="h-5 w-5" />
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -975,6 +1277,8 @@ export default function Home() {
             </section>
           </div>
         )}
+
+       
 
           <section className="md:hidden py-1 bg-white ">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1113,67 +1417,77 @@ export default function Home() {
             </section>
           )} */}
 
-            <section className="md:hidden py-1 bg-gray-50">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <section className="md:hidden bg-white py-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Popular Destinations</h2>
+                  <p className="text-xs text-gray-500 mt-1">These popular destinations have a lot to offer</p>
+                </div>
+                <button
+                  onClick={() => router.push('/search')}
+                  className="hidden sm:inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-600 transition-colors hover:bg-blue-100"
+                >
+                  View all destinations
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
 
-    {/* Heading */}
-    <div className="mb-12">
-      <h2 className="text-lg md:4xl font-bold text-gray-900">
-        Top-Recommended Destinations
-      </h2>
-    </div>
-
-    {destLoading ? (
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div
-            key={i}
-            className="h-80 bg-gray-200 rounded-[2rem] animate-pulse"
-          />
-        ))}
-      </div>
-    ) : (
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-        {popularDestinations.slice(0, 6).map((dest, index) => (
-          
-          <div
-            key={index}
-            onClick={() =>
-              router.push(`/search?city=${encodeURIComponent(dest.name)}`)
-            }
-            className="group bg-white rounded-[1rem] md:rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
-          >
-            
-            {/* IMAGE CONTAINER */}
-            <div className="relative  h-[80px] sm:h-[190px] md:h-[220px] w-full overflow-hidden">
-              
-              {/* Image */}
-              <img
-                src={dest.image || "/placeholder.jpg"}
-                alt={dest.name}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-
-              {/* Optional subtle dark overlay */}
-              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all duration-300" />
-
-              {/* Wave overlay (THIS FIXES WHITE GAP ISSUE) */}
-              <div className="absolute bottom-0 left-0 w-full h-9 bg-white wave-bottom" />
+              {destLoading ? (
+                <div className="grid grid-cols-2 gap-4 sm:gap-6">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="h-[220px] rounded-3xl bg-gray-200 animate-pulse" />
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4 sm:gap-6">
+                  {popularDestinations.slice(0, 6).map((dest) => (
+                    <DestinationCard key={dest._id} dest={dest} variant="mobile" />
+                  ))}
+                </div>
+              )}
             </div>
+          </section>
 
-            {/* TITLE */}
-            <div className="py-4 text-center">
-              <span className="text-xs font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300">
-                {dest.name}
-              </span>
-            </div>
+          {/* {(serviceCategoriesLoading || serviceCategories.length > 0) && (
+            <section className="md:hidden bg-white py-12">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">Services by Category</h2>
+                    <p className="text-xs text-gray-500 mt-1">Discover curated experiences tailored to every travel style.</p>
+                  </div>
+                  <button
+                    onClick={() => router.push('/services')}
+                    className="hidden sm:inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-600 transition-colors hover:bg-blue-100"
+                  >
+                    View all
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
 
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-           </section>
+                {serviceCategoriesLoading ? (
+                  <div className="grid grid-cols-2 gap-4 sm:gap-6">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="h-[220px] rounded-3xl bg-gray-200 animate-pulse" />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-4 sm:gap-6">
+                    {serviceCategories.slice(0, 6).map((category, index) => (
+                      <ServiceCategoryCard
+                        key={category.name}
+                        category={category.name}
+                        services={category.services}
+                        accentIndex={index}
+                        variant="mobile"
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+          )} */}
 
 
           {/* ================= MOBILE WEEKEND OFFERS ================= */}
@@ -1267,7 +1581,42 @@ export default function Home() {
               })}
             </div>
           </section>
+          
 
+           <section className="md:hidden px-4 py-12">
+          <div className="bg-[#f5f7ff] rounded-xl p-6 shadow-sm space-y-8">
+            <div className="space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-500">About TripMe</p>
+              <h2 className="text-xl font-bold text-gray-900">Why Choose TripMe</h2>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                From serene mountain hideaways to lively coastal escapes, we curate experiences that feel as effortless as they are unforgettable.
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {aboutHighlights.map(({ icon: Icon, title, description }) => (
+                <div key={title} className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm">
+                    <Icon className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-base font-semibold text-gray-900">{title}</h3>
+                    <p className="text-sm text-gray-500 leading-relaxed">{description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="relative overflow-hidden rounded-[2rem] h-52">
+              <img
+                src={aboutImageSrc}
+                alt="Travelers enjoying a campfire"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/10 via-transparent to-transparent" />
+            </div>
+          </div>
+        </section>
           
           <section className="mb-100 md:hidden" >
 
@@ -1401,6 +1750,8 @@ export default function Home() {
               </div>
             </div>
           </section>
+
+         
 
           {recentSearches.length > 0 && (
             <section className="py-5 bg-white">
@@ -1724,69 +2075,120 @@ export default function Home() {
             </div>
           </section>
 
+
+           <section className="py-24 bg-[#f5f7ff]">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 xl:gap-20 items-center">
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <p className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-500">About TripMe</p>
+                    <h2 className="text-4xl font-bold text-gray-900">Why Travelers Trust Us</h2>
+                    <p className="text-lg text-gray-600 leading-relaxed max-w-xl">
+                      We are travel enthusiasts committed to finding authentic stays, tailored experiences, and effortless journeys for every kind of explorer.
+                    </p>
+                  </div>
+
+                  <div className="space-y-5">
+                    {aboutHighlights.map(({ icon: Icon, title, description }) => (
+                      <div key={title} className="flex items-start gap-4 p-5 bg-white rounded-2xl shadow-sm">
+                        <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-blue-50">
+                          <Icon className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <div className="space-y-1">
+                          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+                          <p className="text-sm text-gray-500 leading-relaxed">{description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="relative h-full">
+                  <div className="relative overflow-hidden rounded-[3rem] shadow-xl">
+                    <img
+                      src={aboutImageSrc}
+                      alt="Campfire experience under the night sky"
+                      className="w-full h-full object-cover max-h-[540px]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/10 via-transparent to-transparent" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* Top-Recommended Destinations Section */}
+          <section className="hidden md:block bg-white py-20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-4xl font-bold text-gray-900">Popular Destinations</h2>
+                  <p className="text-base text-gray-500 mt-2">These sought-after cities combine unforgettable stays with local experiences.</p>
+                </div>
+                <button
+                  onClick={() => router.push('/search')}
+                  className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-5 py-3 text-sm font-semibold text-blue-600 transition-colors hover:bg-blue-100"
+                >
+                  View all destinations
+                  <ArrowRight className="h-5 w-5" />
+                </button>
+              </div>
 
-            <section className="py-5 bg-gray-50">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-    {/* Heading */}
-    <div className="mb-12">
-      <h2 className="text-4xl font-bold text-gray-900">
-        Top-Recommended Destinations
-      </h2>
-    </div>
-
-    {destLoading ? (
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div
-            key={i}
-            className="h-80 bg-gray-200 rounded-[2rem] animate-pulse"
-          />
-        ))}
-      </div>
-    ) : (
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-        {popularDestinations.slice(0, 6).map((dest, index) => (
-          
-          <div
-            key={index}
-            onClick={() =>
-              router.push(`/search?city=${encodeURIComponent(dest.name)}`)
-            }
-            className="group bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer"
-          >
-            
-            {/* IMAGE CONTAINER */}
-            <div className="relative h-[220px] w-full overflow-hidden">
-              
-              {/* Image */}
-              <img
-                src={dest.image || "/placeholder.jpg"}
-                alt={dest.name}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-
-              {/* Optional subtle dark overlay */}
-              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all duration-300" />
-
-              {/* Wave overlay (THIS FIXES WHITE GAP ISSUE) */}
-              <div className="absolute bottom-0 left-0 w-full h-9 bg-white wave-bottom" />
+              {destLoading ? (
+                <div className="grid grid-cols-4 gap-8">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="h-[360px] rounded-[1.75rem] bg-gray-200 animate-pulse" />
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                  {popularDestinations.slice(0, 8).map((dest) => (
+                    <DestinationCard key={dest._id} dest={dest} variant="desktop" />
+                  ))}
+                </div>
+              )}
             </div>
+          </section>
 
-            {/* TITLE */}
-            <div className="py-4 text-center">
-              <span className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300">
-                {dest.name}
-              </span>
-            </div>
+          {/* {(serviceCategoriesLoading || serviceCategories.length > 0) && (
+            <section className="hidden md:block bg-white py-20">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-4xl font-bold text-gray-900">Popular Services</h2>
+                    <p className="text-base text-gray-500 mt-2">Handpicked experiences across adventure, wellness, culture, and more.</p>
+                  </div>
+                  <button
+                    onClick={() => router.push('/services')}
+                    className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-5 py-3 text-sm font-semibold text-blue-600 transition-colors hover:bg-blue-100"
+                  >
+                    Explore all services
+                    <ArrowRight className="h-5 w-5" />
+                  </button>
+                </div>
 
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-           </section>
+                {serviceCategoriesLoading ? (
+                  <div className="grid grid-cols-4 gap-8">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="h-[360px] rounded-3xl bg-gray-200 animate-pulse" />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {serviceCategories.slice(0, 8).map((category, index) => (
+                      <ServiceCategoryCard
+                        key={category.name}
+                        category={category.name}
+                        services={category.services}
+                        accentIndex={index}
+                        variant="desktop"
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+          )} */}
 
           {/* Weekend Offers Section */}
           <section className="py-5 bg-gray-50">

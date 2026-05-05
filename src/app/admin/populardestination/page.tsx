@@ -417,7 +417,8 @@ export default function PopularDestinationPage() {
     const fetchDestinations = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await fetch("/api/admin/popular-destinations", {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
+            const res = await fetch(`${apiUrl}/admin/popular-destinations`, {
                 headers: getAuthHeaders(),
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -437,9 +438,10 @@ export default function PopularDestinationPage() {
     const handleSave = async (form: FormData) => {
         setSaving(true);
         const isEdit = !!editTarget;
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
         const url = isEdit
-            ? `/api/admin/popular-destinations/${editTarget!._id}`
-            : "/api/admin/popular-destinations";
+            ? `${apiUrl}/admin/popular-destinations/${editTarget!._id}`
+            : `${apiUrl}/admin/popular-destinations`;
         const method = isEdit ? "PUT" : "POST";
         try {
             const res = await fetch(url, {
@@ -466,7 +468,9 @@ export default function PopularDestinationPage() {
         if (!confirm("Delete this destination?")) return;
         setDeletingId(id);
         try {
-            const res = await fetch(`/api/admin/popular-destinations/${id}`, {
+
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
+            const res = await fetch(`${apiUrl}admin/popular-destinations/${id}`, {
                 method: "DELETE",
                 headers: getAuthHeaders(),
             });
@@ -482,7 +486,8 @@ export default function PopularDestinationPage() {
 
     const handleToggle = async (dest: Destination) => {
         try {
-            const res = await fetch(`/api/admin/popular-destinations/${dest._id}`, {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
+            const res = await fetch(`${apiUrl}/popular-destinations/${dest._id}`, {
                 method: "PUT",
                 headers: getAuthHeaders(),
                 body: JSON.stringify({ ...dest, isActive: !dest.isActive }),

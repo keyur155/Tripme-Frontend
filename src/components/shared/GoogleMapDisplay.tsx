@@ -374,7 +374,7 @@ const GoogleMapDisplay: React.FC<GoogleMapDisplayProps> = ({
               </defs>
               <g filter="url(#shadow)">
                 <rect x="3" y="3" width="74" height="26" rx="13" fill="${bgColor}" stroke="${strokeColor}" stroke-width="2"/>
-                <text x="40" y="20" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="${textColor}">${priceText}</text>
+                <text x="40" y="20" text-anchor="middle" font-family=" jost, system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="${textColor}">${priceText}</text>
                 <polygon points="36,29 40,35 44,29" fill="${bgColor}"/>
                 <polygon points="35,29 40,36 45,29" fill="${strokeColor}"/>
               </g>

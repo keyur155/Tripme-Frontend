@@ -8,6 +8,7 @@ import { User as UserType } from "@/shared/types";
 import { securePricingAPI } from "@/infrastructure/api/securePricing-api";
 import { formatCurrency } from "@/shared/constants/pricing.constants";
 import PricingBreakdown from "@/components/booking/PricingBreakdown";
+import LoginModal from "@/components/booking/LoginModal";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import Button from "@/components/ui/Button";
@@ -395,7 +396,7 @@ export default function BookingPage() {
   const searchParams = useSearchParams();
   const { id } = params;
   const { user, isAuthenticated, isLoading } = useAuth();
-  const { bookingData: contextBookingData, updateLocalBookingData: updateContextBookingData, clearBookingData } = useBooking();
+  const { bookingData: contextBookingData, updateBookingData: updateContextBookingData, clearBookingData } = useBooking();
   const [property, setProperty] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -487,6 +488,7 @@ export default function BookingPage() {
     };
   });
   const [showContactSheet, setShowContactSheet] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingError, setBookingError] = useState('');
@@ -512,6 +514,36 @@ export default function BookingPage() {
       // checkOutDateTime: bookingData.checkOutDateTime, // DEBUG: Check if checkInTime is passed
     });
   }, [bookingData]);
+
+  // Restore pending booking state from localStorage after login
+  useEffect(() => {
+    if (isAuthenticated && !contextBookingData) {
+      const pendingBooking = localStorage.getItem('pendingBooking');
+      if (pendingBooking) {
+        try {
+          const savedState = JSON.parse(pendingBooking);
+          if (savedState.propertyId === id) {
+            // Restore booking data to context
+            updateContextBookingData({
+              propertyId: savedState.propertyId,
+              startDate: new Date(savedState.startDate),
+              endDate: new Date(savedState.endDate),
+              guests: savedState.guests,
+              hourlyExtension: savedState.hourlyExtension,
+              checkInTime: savedState.checkInTime,
+              specialRequests: savedState.specialRequests
+            });
+            // Clear the saved state
+            localStorage.removeItem('pendingBooking');
+            console.log('✅ Restored pending booking state after login');
+          }
+        } catch (error) {
+          console.error('Error restoring pending booking:', error);
+          localStorage.removeItem('pendingBooking');
+        }
+      }
+    }
+  }, [isAuthenticated, contextBookingData, id, updateContextBookingData]);
 
   // Redirect to property page if no booking data (but not if we're redirecting after payment)
   useEffect(() => {
@@ -563,23 +595,6 @@ export default function BookingPage() {
     subtotal: 0
   });
 
-
-  // Redirect unauthenticated users to login
-  useEffect(() => {
-    // Don't redirect while still loading authentication
-    if (isLoading) {
-      return;
-    }
-
-    // If not authenticated and not loading, redirect to login
-    if (!isAuthenticated) {
-      router.push(`/auth/login?redirect=/book/${id}`);
-      return;
-    } else {
-      // Clear any auth errors when user becomes authenticated
-      setBookingError('');
-    }
-  }, [isAuthenticated, isLoading, router, id]);
 
   // Clear auth error when user becomes authenticated
   useEffect(() => {
@@ -2253,7 +2268,24 @@ export default function BookingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Left Column - Property Info */}
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-4 md:p-8 mt-14 md:mt-5">
+              {/* Login/Signup Section for Unauthenticated Users */}
+              {!isAuthenticated && (
+                <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 md:p-8 mb-6 mt-14 md:mt-5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <h2 className="text-xl font-bold text-gray-900 mb-1">Log in or sign up</h2>
+                    </div>
+                    <Button
+                      onClick={() => setShowLoginModal(true)}
+                      className="  bg-[#4285F4] hover:bg-[#3367D6] text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
+                    >
+                      Continue
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              <div className={`bg-white rounded-3xl shadow-xl border border-gray-100 p-4 md:p-8 ${isAuthenticated ? 'mt-14 md:mt-5' : ''}`}>
                 {/* Property Header */}
                 <div className="mb-8">
                  
@@ -3208,6 +3240,16 @@ export default function BookingPage() {
         </div>
       )}
 
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={() => {
+          setShowLoginModal(false);
+          // User is now authenticated, they can proceed with booking
+        }}
+      />
 
       {/* Payment Modal */}
       <PaymentModal
