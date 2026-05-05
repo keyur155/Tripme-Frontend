@@ -1,0 +1,41 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Digital Ocean Droplet
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: root
+          key: ${{ secrets.DO_SSH_KEY }}
+          script: |
+            set -e
+
+            echo "--- Pulling latest code ---"
+            cd /var/www/tripme/Tripme-Frontend
+            git pull origin main
+
+            echo "--- Installing dependencies ---"
+            npm ci
+
+            echo "--- Building Next.js app ---"
+            npm run build
+
+            echo "--- Restarting server ---"
+            if pm2 list | grep -q "tripme-frontend"; then
+              pm2 reload tripme-frontend --update-env
+            else
+              pm2 start npm --name tripme-frontend -- start
+            fi
+            pm2 save
+
+            echo "--- Deploy complete ---"
