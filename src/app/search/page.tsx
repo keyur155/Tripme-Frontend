@@ -1464,6 +1464,8 @@ function SearchPageContent() {
   }, [mapBounds, initialLoadComplete]);
 
   useEffect(() => {
+    if (!user) return;
+
     const loadWishlists = async () => {
       const res = await apiClient.getMyWishlists();
       setWishlists(res.data);
@@ -1478,7 +1480,7 @@ function SearchPageContent() {
     };
 
     loadWishlists();
-  }, []);
+  }, [user]);
 
   const fetchPropertiesWithBounds = async (bounds: string) => {
     try {
