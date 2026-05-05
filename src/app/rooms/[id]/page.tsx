@@ -1196,11 +1196,6 @@ const FloatingInsightBadge = ({ badge }) => {
       return false;
     }
 
-    if (!isAuthenticated) {
-      router.push('/auth/login');
-      return false;
-    }
-
     const startDate = new Date(dateRange.startDate);
     const endDate = dateRange.endDate && !isNaN(dateRange.endDate.getTime()) ? new Date(dateRange.endDate) : null;
     const today = new Date();
@@ -1795,11 +1790,7 @@ const FloatingInsightBadge = ({ badge }) => {
 
   const handleBooking = async () => {
     console.log("WHn called", checkInTimeStr);
-    if (!isAuthenticated) {
-      router.push('/auth/login');
-      return;
-    }
-
+    
     // Check if dates are selected
     if (!dateRange.startDate || !dateRange.endDate) {
       setAvailabilityError('Please select check-in and check-out dates');
@@ -1952,7 +1943,7 @@ const FloatingInsightBadge = ({ badge }) => {
       />
 
       {/* Main Content */}
-      <main className={` ${hideHeader ? "pt-0 " : "pt-40"} font-['Inter',system-ui,-apple-system,sans-serif] overflow-hidden`}>
+      <main className={` ${hideHeader ? "pt-0 " : "pt-40"}  overflow-hidden`}>
         {/* Sticky Section Tab Navigation */}
         {showStickyNav && (
           <div
@@ -2065,64 +2056,62 @@ const FloatingInsightBadge = ({ badge }) => {
 
 
                   {/* AIRBNB RATING STRIP */}
-                 <div
-  onClick={() => setIsOpen(true)}
-  className="cursor-pointer bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-4 sm:p-6 mt-5 flex items-center justify-between gap-4"
->
+                  <div
+                    onClick={() => setIsOpen(true)}
+                    className="cursor-pointer bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-4 sm:p-6 mt-5 flex items-center justify-between gap-3 sm:gap-8"
+                  >
+                    {/* LEFT SECTION */}
+                    <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                      <span className="text-green-500 text-lg sm:text-2xl">
+                        {heroBadge.icon}
+                      </span>
+                      <div className="text-left">
+                        <p className="text-sm sm:text-2xl font-bold text-gray-900 leading-tight">
+                          {heroBadge.label}
+                        </p>
+                      </div>
+                      <span className="hidden sm:inline text-green-500 text-2xl">
+                        {heroBadge.icon}
+                      </span>
+                    </div>
 
-  {/* LEFT SECTION */}
-  <div className="flex items-center gap-3 flex-[1.5]">
-    
-    {/* Icon */}
-    <span className="text-yellow-500 text-xl sm:text-2xl">
-      {heroBadge.icon}
-    </span>
+                    {/* DESCRIPTION */}
+                    <div className="hidden md:block flex-1 min-w-[180px]">
+                      <p className="text-sm text-gray-600 leading-snug">
+                        {heroBadge.description || "One of the most loved properties by guests"}
+                      </p>
+                    </div>
 
-    {/* Title */}
-    <p className="text-base sm:text-2xl font-semibold text-gray-900 leading-tight">
-      {heroBadge.label}
-    </p>
-  </div>
+                    {/* STATS */}
+                    <div className="flex items-center gap-5 sm:gap-8 flex-shrink-0">
+                      <div className="flex flex-col items-start text-xs sm:text-sm">
+                        <p className="text-xs sm:text-xl font-semibold text-gray-900">
+                          {property.rating ? Number(property.rating).toFixed(1) : "New"}
+                        </p>
+                        <div className="flex gap-[1px] mt-1">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star
+                              key={s}
+                              className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${
+                                s <= Math.round(property.rating || 0)
+                                  ? "fill-black text-black"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
 
-  {/* DESCRIPTION */}
-  <div className="hidden md:block flex-1">
-    <p className="text-sm text-gray-600 leading-snug">
-      {heroBadge.description || "One of the most loved properties by guests"}
-    </p>
-  </div>
+                      <div className="hidden sm:block w-px h-10 bg-gray-200" />
 
-  {/* RATING */}
-  <div className="flex flex-col items-center flex-1">
-    <p className="text-lg sm:text-xl font-semibold text-gray-900">
-      {property.rating ? Number(property.rating).toFixed(1) : "New"}
-    </p>
-
-    <div className="flex gap-[2px] mt-1">
-      {[1, 2, 3, 4, 5].map((s) => (
-        <Star
-          key={s}
-          className={`w-3 h-3 ${
-            s <= Math.round(property.rating || 0)
-              ? "fill-black text-black"
-              : "text-gray-300"
-          }`}
-        />
-      ))}
-    </div>
-  </div>
-
-  {/* DIVIDER */}
-  <div className="hidden sm:block w-px h-8 bg-gray-200" />
-
-  {/* REVIEWS */}
-  <div className="flex flex-col items-center flex-1">
-    <p className="text-lg sm:text-xl font-semibold text-gray-900">
-      {property.reviewCount || 0}
-    </p>
-    <p className="text-xs text-gray-500">Reviews</p>
-  </div>
-
-</div>
+                      <div className="flex flex-col items-start text-xs sm:text-sm">
+                        <p className="text-base sm:text-xl font-semibold text-gray-900">
+                          {property.reviewCount || 0}
+                        </p>
+                        <p className="text-[10px] sm:text-xs text-gray-500">Reviews</p>
+                      </div>
+                    </div>
+                  </div>
 
                 </div>
 
@@ -2188,12 +2177,12 @@ const FloatingInsightBadge = ({ badge }) => {
 
                 {/* HEADER */}
 
-                <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10  rounded-lg sm:rounded-xl flex items-center justify-center">
-                    <Home className="w-5 h-5 sm:w-5 sm:h-5 text-[#4285f4]"  />
+                <div className="flex items-center gap-3 sm:gap-3 mb-4 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-10 sm:h-10  rounded-lg sm:rounded-xl flex items-center justify-center">
+                    <Home className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]"  />
                   </div>
 
-                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+                  <h2 className="text-xl sm:text-2xl md:text-2xl font-bold text-gray-900 tracking-tight">
                     About this place
                   </h2>
                 </div>
@@ -2244,11 +2233,11 @@ const FloatingInsightBadge = ({ badge }) => {
 
               <div ref={amenitiesRef} className="bg-white rounded-2xl shadow-md  p-5 md:p-8">
                 {/* HEADER */}
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center shrink-0">
-                    <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-[#4285f4]" />
+                <div className="flex items-center gap-3 sm:gap-3 mb-4 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-10 sm:h-10 flex items-center justify-center shrink-0">
+                    <CheckCircle className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
                   </div>
-                  <h2 className="text-xl md:text-3xl font-semibold text-gray-900">
+                  <h2 className="text-xl md:text-2xl sm:text-2xl font-semibold text-gray-900">
                     What this place offers
                   </h2>
                 </div>
@@ -2283,8 +2272,8 @@ const FloatingInsightBadge = ({ badge }) => {
 
               {/* MOBILE BOTTOM SHEET */}
               {showAllAmenities && isMobile && (
-                <div className="fixed inset-0 z-50 bg-black/40">
-                  <div className="absolute bottom-0 w-full bg-white rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto animate-slideUp">
+                <div className="fixed inset-0 z-[80] bg-black/40">
+                  <div className="absolute bottom-0 w-full bg-white rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto animate-slideUp shadow-2xl">
                     {/* HEADER */}
                     <div className="flex items-center justify-between mb-5">
                       <h3 className="text-lg font-semibold">
@@ -2316,7 +2305,7 @@ const FloatingInsightBadge = ({ badge }) => {
 
 
               {/* Availability Calendar Section */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 ">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 ">
                 <PropertyAvailabilityCalendar
                   propertyId={id as string}
                   checkInDate={dateRange.startDate}
@@ -3498,30 +3487,32 @@ const FloatingInsightBadge = ({ badge }) => {
 
 
 
-            <MobileBookingBar
-              ownerProperty={isOwnProperty}
-              property={property}
-              dateRange={dateRange}
-              nights={nights}
-              pricing={pricing}
-              availabilityChecked={availabilityChecked}
-              availabilityLoading={availabilityLoading}
-              availabilityError={availabilityError}
-              selectionStep={selectionStep}
-              formatPrice={formatPrice}
-              formatDate={formatDate}
-              setShowDatePicker={setShowDatePicker}
-              setSelectionStep={setSelectionStep}
-              checkAvailability={checkAvailability}
-              handleBooking={handleCompleteBooking}
-              setShowTimePrompt={setShowTimePrompt}
-              setTimeConfirmed={setTimeConfirmed}
-              checkInTimeStr={checkInTimeStr}
-              setCheckInTimeStr={setCheckInTimeStr}
-              timeOptions={generateTimeOptions()}
-              formatTimeHour={formatTimeHour}
-              isHourlyProperty={!!(property?.hourlyBooking?.enabled)}
-            />
+            {!(showAllAmenities && isMobile) && (
+              <MobileBookingBar
+                ownerProperty={isOwnProperty}
+                property={property}
+                dateRange={dateRange}
+                nights={nights}
+                pricing={pricing}
+                availabilityChecked={availabilityChecked}
+                availabilityLoading={availabilityLoading}
+                availabilityError={availabilityError}
+                selectionStep={selectionStep}
+                formatPrice={formatPrice}
+                formatDate={formatDate}
+                setShowDatePicker={setShowDatePicker}
+                setSelectionStep={setSelectionStep}
+                checkAvailability={checkAvailability}
+                handleBooking={handleCompleteBooking}
+                setShowTimePrompt={setShowTimePrompt}
+                setTimeConfirmed={setTimeConfirmed}
+                checkInTimeStr={checkInTimeStr}
+                setCheckInTimeStr={setCheckInTimeStr}
+                timeOptions={generateTimeOptions()}
+                formatTimeHour={formatTimeHour}
+                isHourlyProperty={!!(property?.hourlyBooking?.enabled)}
+              />
+            )}
 
             <FloatingInsightBadge badge={property?.badges?.insights?.[0]} />
 
@@ -3623,13 +3614,13 @@ const FloatingInsightBadge = ({ badge }) => {
 
     {/* Modal */}
     <div className="
-      relative bg-white shadow-2xl animate-fadeIn
+      absolute bg-white shadow-2xl animate-fadeIn
 
       /* 📱 MOBILE (full screen) */
       w-full h-full rounded-none
 
       /* 💻 DESKTOP */
-      md:w-[95%] md:max-w-3xl md:h-[90vh] md:rounded-3xl
+      md:w-[75%] md:max-w-3xl md:h-[70vh] md:rounded-3xl
       md:flex md:flex-col
     ">
 
@@ -3642,7 +3633,7 @@ const FloatingInsightBadge = ({ badge }) => {
       </button>
 
       {/* 🔥 SCROLLABLE CONTENT */}
-      <div className="h-full overflow-y-auto p-5 sm:p-10">
+      <div className="h-full overflow-y-auto scrollbar-hide p-5 sm:p-10">
        
        
 

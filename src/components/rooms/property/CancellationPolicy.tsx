@@ -57,9 +57,9 @@ export default function CancellationPolicy({ policy = 'moderate' }: Cancellation
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-5 sm:p-8">
       {/* Header */}
-      <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center`}>
-          <Shield className="w-5 h-5 sm:w-5 sm:h-5 text-[#4285f4]" />
+      <div className="flex items-center gap-3 sm:gap-3 mb-4 sm:mb-6">
+        <div className={`w-10 h-10 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center`}>
+          <Shield className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
         </div>
         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
           Cancellation policy

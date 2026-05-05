@@ -411,14 +411,14 @@ new PriceMarker({ lat: currentCoords.lat, lng: currentCoords.lng }).setMap(map);
 
   return (
     <div className="w-full">
-      <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-4 md:p-6">
+      <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-gray-100 p-4 md:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 flex items-center justify-center shrink-0">
-              <MapPin className="w-8 h-8 text-[#4285f4]" />
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 flex items-center justify-center shrink-0">
+              <MapPin className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900">Property Location</h3>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Property Location</h2>
               <p className="text-sm text-gray-500">Get directions or view on map</p>
             </div>
           </div>

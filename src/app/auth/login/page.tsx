@@ -22,7 +22,8 @@ export default function LoginPage() {
   
   // Get redirect URL from search params
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/';
+  const returnUrl = searchParams.get('returnUrl');
+  const redirectTo = returnUrl || searchParams.get('redirect') || '/';
   const reason = searchParams.get('reason');
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
@@ -284,7 +285,7 @@ export default function LoginPage() {
             Don&apos;t have an account?{' '}
             <Link 
               href="/auth/signup" 
-              className="text-purple-600 hover:text-purple-700 font-semibold hover:underline"
+              className="bg-[#4285F4] font-semibold hover:underline"
             >
               Sign up
             </Link>

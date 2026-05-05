@@ -127,15 +127,15 @@ const loadReviews = async () => {
 )}
 
       {/* Reviews Section */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-5 sm:p-8">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-5 sm:p-8">
         
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9  rounded-xl flex items-center justify-center">
-              <Star className="w-5 h-5 text-[#4285f4]" />
+            <div className="w-10 h-10  rounded-xl flex items-center justify-center">
+              <Star className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
             </div>
-            <h2 className="text-xl sm:text-3xl font-bold text-gray-900">
+            <h2 className="text-xl sm:text-2xl md:2xl font-bold text-gray-900 tracking-tight">
               Reviews
             </h2>
           </div>

@@ -97,7 +97,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${jost.variable} ${playfair.variable} ${poppins.variable} ${montserrat.variable} antialiased`}
+        className={`${jost.className} ${jost.variable} ${inter.variable} ${playfair.variable} ${poppins.variable} ${montserrat.variable} antialiased font-sans`}
       >
         <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
           <ErrorBoundary>
