@@ -1053,34 +1053,30 @@ const FloatingInsightBadge = ({ badge }) => {
 
 
   useEffect(() => {
+    if (!isAuthenticated) return;
+
     const loadWishlists = async () => {
       const res = await apiClient.getMyWishlists();
-      console.log('Wishlists:', res.data);
       setWishlists(res.data);
 
       const favSet = new Set<string>();
       res.data.forEach((wl: any) => {
         wl.items.forEach((item: any) => {
-          console.log('Item:', item);
-          // Fix this line:
-          favSet.add(item.itemId._id.toString()); // Change from .id to ._id
+          favSet.add(item.itemId._id.toString());
         });
       });
 
       setFavorites(favSet);
 
-      // Check if current property is in favorites and update isFavorite
       if (property && favSet.has(property._id)) {
         setIsFavorite(true);
       } else {
         setIsFavorite(false);
       }
-
-      console.log('Favorites:', favSet);
     };
 
     loadWishlists();
-  }, [user, property?._id]); // Add dependencies
+  }, [isAuthenticated, property?._id]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

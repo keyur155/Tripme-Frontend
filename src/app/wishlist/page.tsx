@@ -3,20 +3,23 @@ import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import { useEffect, useState, useRef } from "react";
 import { apiClient } from "@/infrastructure/api/clients/api-client";
+import { useAuth } from "@/core/store/auth-context";
 import StayCard from "@/components/trips/StayCard";
 
 export default function WishlistPage() {
-
+    const { isAuthenticated } = useAuth();
     const [wishlists, setWishlists] = useState<any[]>([]);
     const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
     useEffect(() => {
+  if (!isAuthenticated) return;
+
   const loadWishlists = async () => {
     const res = await apiClient.getMyWishlists();
     setWishlists(res.data);
   };
   loadWishlists();
-}, []);
+}, [isAuthenticated]);
 
 
 const findWishlistItem = (stayId: string) => {

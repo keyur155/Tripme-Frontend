@@ -971,6 +971,8 @@ export default function Home() {
 
 
   useEffect(() => {
+    if (!isAuthenticated) return;
+
     const loadWishlists = async () => {
       try {
         const res = await apiClient.getMyWishlists();
@@ -994,7 +996,7 @@ export default function Home() {
     };
 
     loadWishlists();
-  }, []);
+  }, [isAuthenticated]);
 
 
 
