@@ -31,11 +31,7 @@ jobs:
             npm run build
 
             echo "--- Restarting server ---"
-            if pm2 list | grep -q "tripme-frontend"; then
-              pm2 reload tripme-frontend --update-env
-            else
-              pm2 start npm --name tripme-frontend -- start
-            fi
+            pm2 reload frontend --update-env
             pm2 save
 
             echo "--- Deploy complete ---"
