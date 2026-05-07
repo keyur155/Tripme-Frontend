@@ -2,7 +2,7 @@
 
 This document outlines the scalable file structure and organization for the TripMe application.
 
-## 📁 Directory Structure -- test
+## 📁 Directory Structure -- Test workflow
 
 ```
 src/
