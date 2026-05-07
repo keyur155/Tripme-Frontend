@@ -258,6 +258,11 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/shipping-policy" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                    <span className="group-hover:translate-x-1 transition-transform duration-200">Shipping Policy</span>
+                  </Link>
+                </li>
+                <li>
                   <Link href="/refund-cancellation" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">Refund Policy</span>
                   </Link>
@@ -396,6 +401,15 @@ export default function Footer() {
               <span className="mx-2">•</span>
               <span>&copy; {currentYear} TripMe. All rights reserved.</span>
             </p>
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-gray-400">
+              <Link href="/refund-cancellation" className="hover:text-purple-600 transition-colors duration-200">Refund & Cancellation</Link>
+              <span>·</span>
+              <Link href="/shipping-policy" className="hover:text-purple-600 transition-colors duration-200">Shipping Policy</Link>
+              <span>·</span>
+              <Link href="/privacy-policy" className="hover:text-purple-600 transition-colors duration-200">Privacy Policy</Link>
+              <span>·</span>
+              <Link href="/terms" className="hover:text-purple-600 transition-colors duration-200">Terms of Service</Link>
+            </div>
             <div className="mt-2 flex items-center justify-center space-x-1 text-xs text-gray-400">
               <span>🇮🇳</span>
               <span>Proudly serving travelers across Bharat</span>
