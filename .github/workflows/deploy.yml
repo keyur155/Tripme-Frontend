@@ -49,7 +49,7 @@ jobs:
             cd /var/www/tripme/Tripme-Frontend-Beta
             git pull origin beta
             echo "--- Installing dependencies ---"
-            npm ci
+            npm install
             echo "--- Building Next.js app ---"
             npm run build
             echo "--- Restarting beta server ---"
