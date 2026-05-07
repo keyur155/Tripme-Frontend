@@ -2058,23 +2058,27 @@ const FloatingInsightBadge = ({ badge }) => {
                   >
                     {/* LEFT SECTION */}
                     <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                      <span className="text-green-500 text-lg sm:text-2xl">
-                        {heroBadge.icon}
-                      </span>
+                      {heroBadge && (
+                        <span className="text-green-500 text-lg sm:text-2xl">
+                          {heroBadge.icon}
+                        </span>
+                      )}
                       <div className="text-left">
                         <p className="text-sm sm:text-2xl font-bold text-gray-900 leading-tight">
-                          {heroBadge.label}
+                          {heroBadge?.label}
                         </p>
                       </div>
-                      <span className="hidden sm:inline text-green-500 text-2xl">
-                        {heroBadge.icon}
-                      </span>
+                      {heroBadge && (
+                        <span className="hidden sm:inline text-green-500 text-2xl">
+                          {heroBadge.icon}
+                        </span>
+                      )}
                     </div>
 
                     {/* DESCRIPTION */}
                     <div className="hidden md:block flex-1 min-w-[180px]">
                       <p className="text-sm text-gray-600 leading-snug">
-                        {heroBadge.description || "One of the most loved properties by guests"}
+                        {heroBadge?.description || "One of the most loved properties by guests"}
                       </p>
                     </div>
 
