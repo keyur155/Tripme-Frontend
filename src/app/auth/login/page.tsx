@@ -22,7 +22,9 @@ export default function LoginPage() {
   
   // Get redirect URL from search params
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/';
+  const returnUrl = searchParams.get('returnUrl');
+  const redirectTo = returnUrl || searchParams.get('redirect') || '/';
+  const reason = searchParams.get('reason');
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
@@ -51,7 +53,7 @@ export default function LoginPage() {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
-
+     
   const handleGoogleError = (error: string) => {
     setGoogleError(error);
   };
@@ -119,35 +121,41 @@ export default function LoginPage() {
     } catch (error: unknown) {
       console.error('Login error:', error);
       
-      const errorObj = error as { status?: number; message?: string; details?: { errors?: Array<{ field?: string; message: string }> } };
+      const errorObj = error as { 
+        status?: number; 
+        message?: string; 
+        errors?: Array<{ field?: string; message: string }>;
+        details?: { errors?: Array<{ field?: string; message: string }> };
+        response?: { errors?: Array<{ field?: string; message: string }> };
+      };
       
+      const backendErrors = errorObj.errors 
+        || errorObj.details?.errors 
+        || errorObj.response?.errors 
+        || [];
+
       if (errorObj.status === 401) {
         setErrors({ general: 'Invalid email or password.' });
-      } else if (errorObj.status === 400) {
-        // Handle validation errors
-        if (errorObj.message === 'Validation error' && errorObj.details) {
-          const fieldErrors: Record<string, string> = {};
-          
-          if (errorObj.details.errors) {
-            errorObj.details.errors.forEach((err: { field?: string; message: string }) => {
-              if (err.field) {
-                fieldErrors[err.field] = err.message;
-              }
-            });
+      } else if (backendErrors.length > 0) {
+        const fieldErrors: Record<string, string> = {};
+
+        backendErrors.forEach((err) => {
+          if (err.field) {
+            fieldErrors[err.field] = err.message;
           }
-          
-          if (Object.keys(fieldErrors).length === 0) {
-            setErrors({ general: 'Please check your input and try again.' });
-          } else {
-            setErrors(fieldErrors);
-          }
+        });
+
+        if (Object.keys(fieldErrors).length === 0) {
+          setErrors({ general: backendErrors[0]?.message || 'Please check your input and try again.' });
         } else {
-          setErrors({ general: errorObj.message || 'Please check your input and try again.' });
+          setErrors(fieldErrors);
         }
+      } else if (errorObj.status === 400) {
+        setErrors({ general: errorObj.message || 'Please check your input and try again.' });
       } else if (errorObj.status === 0) {
         setErrors({ general: 'Network error. Please check your connection.' });
       } else {
-        setErrors({ general: 'Login failed. Please try again.' });
+        setErrors({ general: errorObj.message || 'Login failed. Please try again.' });
       }
     } finally {
       setLoading(false);
@@ -155,15 +163,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="h-screen flex bg-white">
+    <div className="min-h-screen flex bg-white">
       {/* Left Side - Carousel */}
-      <div className="hidden lg:block lg:w-1/2 h-screen">
+      <div className="hidden lg:block lg:w-1/2 min-h-screen sticky top-0">
         <Carousel images={carouselImages} />
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 overflow-y-auto">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 border-0">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
+        <div className="w-full max-w-md mx-auto bg-white rounded-2xl sm:shadow-lg p-6 sm:p-8 border-0">
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
@@ -183,6 +191,13 @@ export default function LoginPage() {
           onSubmit={handleSubmit}
           className="relative"
         >
+          {/* Session expired banner */}
+          {reason === 'session_expired' && !errors.general && (
+            <div className="mb-4 p-3 bg-amber-50 border border-amber-300 rounded-lg">
+              <p className="text-sm text-amber-700 font-medium">⏱ Your session has expired. Please sign in again.</p>
+            </div>
+          )}
+
           {/* General error */}
           {errors.general && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -231,7 +246,7 @@ export default function LoginPage() {
           />
 
           {/* Remember me and forgot password */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <Checkbox
               checked={formData.rememberMe}
               onChange={(e) => handleInputChange('rememberMe', e.target.checked)}
@@ -270,7 +285,7 @@ export default function LoginPage() {
             Don&apos;t have an account?{' '}
             <Link 
               href="/auth/signup" 
-              className="text-purple-600 hover:text-purple-700 font-semibold hover:underline"
+              className="bg-[#4285F4] font-semibold hover:underline"
             >
               Sign up
             </Link>

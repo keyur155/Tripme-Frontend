@@ -1,11 +1,26 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Home, Briefcase, User, Heart, Settings } from 'lucide-react';
+import { Home, Briefcase, User, Heart, Settings ,XIcon, Instagram, Facebook  ,Twitter ,Youtube, Search} from 'lucide-react';
+import { useScrollDirection } from '@/hooks/userScrollDirection';
+import { useUI } from "@/core/store/uiContext";
+import { usePathname } from 'next/navigation';
+import { apiClient } from '@/infrastructure/api/clients/api-client';
+import { useAuth } from '@/core/store/auth-context';
 
 export default function Footer() {
   const [currentYear, setCurrentYear] = useState('');
   const [hideMobileNav, setHideMobileNav] = useState(false);
+  const scrollDirection = useScrollDirection();
+  const { hideBottomNav } = useUI();
+  const { isAuthenticated } = useAuth();
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
+   const [email, setEmail] = useState('');
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [subscriptionMessage, setSubscriptionMessage] = useState('');
+  const [subscriptionStatus, setSubscriptionStatus] = useState<'success' | 'error' | ''>('');
+
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear().toString());
@@ -20,30 +35,139 @@ export default function Footer() {
     return () => observer.disconnect();
   }, []);
 
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+  e.preventDefault();
+  
+  if (!email.trim()) {
+    setSubscriptionMessage('Please enter your email address');
+    setSubscriptionStatus('error');
+    return;
+  }
+
+  setIsSubscribing(true);
+  setSubscriptionMessage('');
+
+  try {
+    // Get user info from localStorage or context if available
+    const userInfo = typeof window !== 'undefined' ? 
+      JSON.parse(localStorage.getItem('userInfo') || '{}') : {};
+
+    const response = await apiClient.subscribeEmail(
+      email,
+      userInfo.name || undefined,
+      userInfo.id || undefined,
+      'footer'
+    );
+
+    if (response.success) {
+      setSubscriptionMessage('Successfully subscribed! Check your email for confirmation.');
+      setSubscriptionStatus('success');
+      setEmail(''); // Clear the input
+      
+      // Clear message after 5 seconds
+      setTimeout(() => {
+        setSubscriptionMessage('');
+        setSubscriptionStatus('');
+      }, 5000);
+    } else {
+      // Handle specific error messages
+      if (response.message === 'Email is already subscribed') {
+        setSubscriptionMessage('You\'re already subscribed! Check your email for our latest updates.');
+        setSubscriptionStatus('success'); // Treat as success, not error
+      } else {
+        setSubscriptionMessage(response.message || 'Subscription failed. Please try again.');
+        setSubscriptionStatus('error');
+      }
+    }
+  } catch (error: any) {
+    console.error('Email subscription error:', error);
+    
+    // Handle API errors more gracefully
+    if (error.status === 400 && error.message === 'Email is already subscribed') {
+      setSubscriptionMessage('You\'re already subscribed! Check your email for our latest updates.');
+      setSubscriptionStatus('success');
+    } else {
+      setSubscriptionMessage('Something went wrong. Please try again later.');
+      setSubscriptionStatus('error');
+    }
+  } finally {
+    setIsSubscribing(false);
+  }
+};
+
+  const navColor = "#717171"; // Neutral gray for inactive
+  const activeNavColor = "#4285F4"; // Brand blue for active
+
+  const getNavLinkClass = (path: string) => {
+    const isActive = path === '/' ? pathname === '/' : pathname.startsWith(path);
+    return `flex flex-col items-center flex-1 py-2 transition-all duration-300 ${
+      isActive ? 'scale-110' : 'opacity-80 hover:opacity-100'
+    }`;
+  };
+
+  const getIconStyle = (path: string) => {
+    const isActive = path === '/' ? pathname === '/' : pathname.startsWith(path);
+    return { color: isActive ? activeNavColor : navColor };
+  };
+
+  const getTextStyle = (path: string) => {
+    const isActive = path === '/' ? pathname === '/' : pathname.startsWith(path);
+    return { color: isActive ? activeNavColor : navColor, fontWeight: isActive ? '800' : '600' };
+  };
+
   return (
     <>
       {/* Mobile Bottom Bar */}
-      <nav className={`fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-2xl rounded-t-2xl flex justify-between items-center px-2 py-1 sm:hidden${hideMobileNav ? ' hidden' : ''}`}>
-        <Link href="/" className="flex flex-col items-center flex-1 py-2 text-gray-700 hover:text-indigo-600 transition-all">
-          <Home size={26} />
-          <span className="text-xs mt-1 font-semibold">Home</span>
+      <nav
+        className={`
+          fixed bottom-0 left-0 right-0 z-50
+          bg-white border-t border-gray-100 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] rounded-t-[2rem]
+          flex justify-between items-center px-4 py-1 md:hidden
+          transition-transform duration-300 ease-out
+          ${hideMobileNav || hideBottomNav ? 'hidden' : ''}
+          ${scrollDirection === 'down' ? 'translate-y-full' : 'translate-y-0'}
+        `}
+      >
+        <Link href="/" className={getNavLinkClass('/')}>
+          <Home size={20} style={getIconStyle('/')} strokeWidth={pathname === '/' ? 2.5 : 2} />
+          <span className="text-[10px] mt-1 " style={getTextStyle('/')}>Home</span>
         </Link>
-        <Link href="/search" className="flex flex-col items-center flex-1 py-2 text-gray-700 hover:text-indigo-600 transition-all">
-          <Home size={26} />
-          <span className="text-xs mt-1 font-semibold">Rooms</span>
+        
+        <Link href="/search" className={getNavLinkClass('/search')}>
+          <Search size={20} style={getIconStyle('/search')} strokeWidth={pathname.startsWith('/search') ? 2.5 : 2} />
+          <span className="text-[10px] mt-1" style={getTextStyle('/search')}>Rooms</span>
         </Link>
-        <Link href="/services" className="flex flex-col items-center flex-1 py-2 text-gray-700 hover:text-indigo-600 transition-all">
-          <Settings size={26} />
-          <span className="text-xs mt-1 font-semibold">Services</span>
+        
+        <Link href="/services" className={getNavLinkClass('/services')}>
+          <Settings size={20} style={getIconStyle('/services')} strokeWidth={pathname.startsWith('/services') ? 2.5 : 2} />
+          <span className="text-[10px] mt-1" style={getTextStyle('/services')}>Services</span>
         </Link>
 
-        <Link href="/user/profile" className="flex flex-col items-center flex-1 py-2 text-gray-700 hover:text-indigo-600 transition-all">
-          <User size={26} />
-          <span className="text-xs mt-1 font-semibold">Profile</span>
-        </Link>
+        {isAuthenticated ? (
+          <>
+            <Link href="/wishlist" className={getNavLinkClass('/wishlist')}>
+              <Heart size={20} style={getIconStyle('/wishlist')} strokeWidth={pathname.startsWith('/wishlist') ? 2.5 : 2} />
+              <span className="text-[10px] mt-1" style={getTextStyle('/wishlist')}>Wishlist</span>
+            </Link>
+
+            <Link href="/user/profile" className={getNavLinkClass('/user/profile')}>
+              <User size={20} style={getIconStyle('/user/profile')} strokeWidth={pathname.startsWith('/user/profile') ? 2.5 : 2} />
+              <span className="text-[10px] mt-1" style={getTextStyle('/user/profile')}>Profile</span>
+            </Link>
+          </>
+        ) : (
+          <Link href="/auth/login" className={getNavLinkClass('/auth/login')}>
+            <User size={20} style={getIconStyle('/auth/login')} strokeWidth={pathname.startsWith('/auth/login') ? 2.5 : 2} />
+            <span className="text-[10px] mt-1" style={getTextStyle('/auth/login')}>Login</span>
+          </Link>
+        )}
       </nav>
-      {/* Desktop Footer (unchanged, hidden on mobile) */}
-      <footer className="relative w-full bg-white border-t border-gray-200 mt-auto overflow-hidden hidden sm:block">
+      {/* Desktop Footer (now also visible on mobile) */}
+      {/* Desktop Footer (visible on mobile only on Home Page) */}
+      <footer className={`relative w-full bg-white border-t border-gray-200 mt-auto overflow-hidden ${
+        isHomePage ? 'pb-24 block' : 'hidden sm:block'
+      }`}>
         {/* Decorative background pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-4 left-8 text-6xl">🏛️</div>
@@ -70,7 +194,7 @@ export default function Footer() {
                 Discover incredible stays across India. From heritage havelis to modern apartments, 
                 find your perfect home away from home.
               </p>
-              <div className="flex space-x-3">
+              {/* <div className="flex space-x-3">
                 <a href="#" className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-2 rounded-full hover:scale-110 transition-transform duration-300 shadow-lg">
                   <span className="text-sm">📱</span>
                 </a>
@@ -83,7 +207,7 @@ export default function Footer() {
                 <a href="#" className="bg-gradient-to-r from-violet-500 to-purple-500 text-white p-2 rounded-full hover:scale-110 transition-transform duration-300 shadow-lg">
                   <span className="text-sm">🐦</span>
                 </a>
-              </div>
+              </div> */}
             </div>
 
             {/* Destinations */}
@@ -92,12 +216,15 @@ export default function Footer() {
                 <span className="mr-2">🏞️</span>
                 Popular Destinations
               </h3>
-              <ul className="space-y-2">
+              <ul className="space-y-2 text-xs md:text-base">
                 {['Goa', 'Rajasthan', 'Kerala', 'Himachal Pradesh', 'Uttarakhand', 'Kashmir'].map((destination) => (
                   <li key={destination}>
-                    <a href="#" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                    <Link 
+                      href={`/search?city=${encodeURIComponent(destination)}`} 
+                      className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group"
+                    >
                       <span className="group-hover:translate-x-1 transition-transform duration-200">{destination}</span>
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -109,7 +236,7 @@ export default function Footer() {
                 <span className="mr-2">🛟</span>
                 Support
               </h3>
-              <ul className="space-y-2">
+              <ul className="space-y-2 text-xs md:text-base">
                 <li>
                   <Link href="/contact" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">Contact Us</span>
@@ -149,11 +276,51 @@ export default function Footer() {
                 <span className="mr-2">📧</span>
                 Stay Connected
               </h3>
-              <p className="text-gray-600 mb-4 text-sm">
+              <p className="text-gray-600 mb-4 text-xs md:text-sm">
                 Get travel inspiration and exclusive deals delivered to your inbox.
               </p>
               <div className="space-y-3">
-                <div className="flex">
+                 <form onSubmit={handleSubscribe} className="space-y-3">
+            <div className="flex">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                disabled={isSubscribing}
+                required
+              />
+              <button 
+                type="submit"
+                disabled={isSubscribing}
+                className="bg-[#4285F4] text-white px-4 py-2 rounded-r-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubscribing ? (
+                  <span className="animate-spin">⏳</span>
+                ) : (
+                  <span>✈️</span>
+                )}
+              </button>
+            </div>
+            
+            {/* Status Message */}
+            {subscriptionMessage && (
+              <div className={`text-xs p-2 rounded-md ${
+                subscriptionStatus === 'success' 
+                  ? 'bg-green-100 text-green-700 border border-green-200' 
+                  : 'bg-red-100 text-red-700 border border-red-200'
+              }`}>
+                {subscriptionMessage}
+              </div>
+            )}
+            
+            <div className="flex items-center space-x-2 text-xs text-gray-500">
+              <span>🔒</span>
+              <span>We respect your privacy</span>
+            </div>
+          </form>
+                {/* <div className="flex">
                   <input
                     type="email"
                     placeholder="Enter your email"
@@ -166,39 +333,59 @@ export default function Footer() {
                 <div className="flex items-center space-x-2 text-xs text-gray-500">
                   <span>🔒</span>
                   <span>We respect your privacy</span>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
 
           {/* Divider */}
-          <div className="border-t border-purple-200 my-8"></div>
+           <div className="border-t border-purple-200 my-8"></div>
+<div className="flex flex-col md:flex-row justify-center gap-6 items-center space-y-4 md:space-y-0">
+  
+  {/* Existing text or links */}
+  <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
+    <span>Follow us!!</span>
+  </div>
 
-          {/* Bottom section */}
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
-              <Link href="/privacy" className="hover:text-purple-600 transition-colors duration-200">Privacy Policy</Link>
-              <Link href="/terms" className="hover:text-purple-600 transition-colors duration-200">Terms of Service</Link>
-              <Link href="/refund-cancellation" className="hover:text-purple-600 transition-colors duration-200">Refund Policy</Link>
-              <Link href="/about" className="hover:text-purple-600 transition-colors duration-200">About Us</Link>
-              <Link href="/contact" className="hover:text-purple-600 transition-colors duration-200">Contact</Link>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <span>🌍</span>
-                <select className="bg-transparent border-none text-gray-600 focus:outline-none cursor-pointer">
-                  <option>English (IN)</option>
-                  <option>हिंदी</option>
-                  <option>தமிழ்</option>
-                </select>
-              </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <span>₹</span>
-                <span>INR</span>
-              </div>
-            </div>
-          </div>
+  {/* Social Media Icons Group */}
+  <div className="flex items-center gap-4">
+    <a 
+      href="https://facebook.com/yourprofile" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="text-gray-600 hover:text-blue-600 transition-colors"
+    >
+      <Facebook size={20} />
+    </a>
+    <a 
+      href="https://twitter.com/yourprofile" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="text-gray-600 hover:text-sky-500 transition-colors"
+    >
+      <XIcon size={20} />
+    </a>
+    <a 
+      href="https://instagram.com/yourprofile" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="text-gray-600 hover:text-pink-600 transition-colors"
+    >
+      <Instagram size={20} />
+    </a>
+
+    <a 
+    href="https://youtube.com/yourchannel" 
+    target="_blank" 
+    rel="noopener noreferrer"
+    className="text-gray-600 hover:text-red-600 transition-colors"
+  >
+    <Youtube size={20} />
+  </a>
+  </div>
+
+</div>
+        
 
           {/* Copyright */}
           <div className="text-center mt-8 pt-6 border-t border-purple-200">

@@ -9,7 +9,8 @@ class ApiClient {
   private defaultHeaders: Record<string, string>;
 
   constructor() {
-    this.baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    this.baseURL = process.env.NEXT_PUBLIC_API_URL || 'localhost:5000/api';
+    console.log('API Client initialized with base URL:', this.baseURL);
     this.defaultHeaders = {
       'Content-Type': 'application/json',
     };
@@ -34,6 +35,7 @@ class ApiClient {
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }
+   
 
     const config: RequestInit = {
       ...options,
@@ -43,7 +45,7 @@ class ApiClient {
     try {
       console.log(`🔍 API Request: ${options.method || 'GET'} ${url}`);
       console.log(`🔍 Token present: ${!!token}`);
-      
+
       const response = await fetch(url, config);
       const data = await response.json();
 
@@ -52,11 +54,13 @@ class ApiClient {
       // console.log(`🔍 API Response data stringified:`, JSON.stringify(data, null, 2));
 
       if (!response.ok) {
+        const normalizedErrors = data?.errors || data?.details?.errors || [];
         const error: any = {
           status: response.status,
-          message: data.message || data.error || 'Request failed',
-          errors: data.errors || [],
-          details: data.details,
+          message: data?.message || data?.error || 'Request failed',
+          errors: normalizedErrors,
+          // Provide a stable place for validation issues
+          details: data?.details || { errors: normalizedErrors },
           response: data
         };
         console.error('❌ API Error object:', error);
@@ -68,8 +72,16 @@ class ApiClient {
       return data;
     } catch (error: any) {
       if (error.status === 401) {
-        // Token expired or invalid
+        // Token expired or invalid — clear session and redirect to login
         authService.logout();
+        if (typeof window !== 'undefined') {
+          const isTokenExpired =
+            error.message?.toLowerCase().includes('token expired') ||
+            error.response?.message?.toLowerCase().includes('token expired');
+          if (isTokenExpired) {
+            window.location.href = '/auth/login?reason=session_expired';
+          }
+        }
       }
       throw error;
     }
@@ -94,6 +106,13 @@ class ApiClient {
     return this.request('/auth/google', {
       method: 'POST',
       body: JSON.stringify({ provider: 'google', token }),
+    });
+  }
+
+  async resendVerificationEmail(email: string): Promise<ApiResponse<any>> {
+    return this.request('/auth/resend-verification', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
     });
   }
 
@@ -200,7 +219,7 @@ class ApiClient {
   // These use the new AvailabilityEvent model for precise hourly tracking
   // If backend APIs don't work, comment out these methods
   // ========================================
-  
+
   async getHourlyAvailability(listingId: string, startDate?: string, endDate?: string, durationHours?: number): Promise<ApiResponse<any>> {
     const queryParams = [];
     if (startDate) queryParams.push(`startDate=${startDate}`);
@@ -235,9 +254,9 @@ class ApiClient {
 
   // Check if a specific time slot is available (for custom check-in times)
   async checkTimeSlotAvailability(
-    listingId: string, 
-    checkIn: string, 
-    checkOut: string, 
+    listingId: string,
+    checkIn: string,
+    checkOut: string,
     extension?: number
   ): Promise<ApiResponse<any>> {
     const queryParams = [`checkIn=${encodeURIComponent(checkIn)}`, `checkOut=${encodeURIComponent(checkOut)}`];
@@ -245,7 +264,7 @@ class ApiClient {
     const queryString = `?${queryParams.join('&')}`;
     return this.request(`/availability/${listingId}/check-slot${queryString}`);
   }
-  
+
   // ========================================
   // END NEW: Hourly availability methods
   // ========================================
@@ -331,6 +350,43 @@ class ApiClient {
     });
   }
 
+  async getHostById(hostId: string): Promise<ApiResponse<any>> {
+    return this.request(`/host/profile/${hostId}`);
+  }
+
+  async getHostListing(hostId: string): Promise<ApiResponse<any>> {
+    console.log("get host listing call", hostId);
+    return this.request(`/host/profile/listings/${hostId}`);
+  }
+
+  async getPropertyReviews(propertyId: string, params?: any): Promise<ApiResponse<any>> {
+    console.log("get property call", propertyId)
+    const queryParams = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return this.request(`/reviews/properties/${propertyId}${queryParams}`);
+  }
+
+  async getPropertyReviewSummary(propertyId: string): Promise<ApiResponse<any>> {
+    console.log("get summary  call", propertyId)
+    return this.request(`/reviews/properties/${propertyId}/summary`);
+  }
+
+  async createReview(bookingId: string, reviewData: any): Promise<ApiResponse<any>> {
+    return this.request('/reviews', {
+      method: 'POST',
+      body: JSON.stringify({
+        bookingId,
+        ...reviewData
+      })
+    });
+  }
+
+  async updateReview(reviewId: string, reviewData: any): Promise<ApiResponse<any>> {
+    return this.request(`/reviews/${reviewId}`, {
+      method: 'PUT',
+      body: JSON.stringify(reviewData)
+    });
+  }
+
   async getListingReviews(listingId: string, params?: any): Promise<ApiResponse<any>> {
     const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
     return this.request(`/listings/${listingId}/reviews${queryString}`);
@@ -368,17 +424,54 @@ class ApiClient {
     return this.request(`/listings/wishlist${queryString}`);
   }
 
-  async addToListingWishlist(listingId: string): Promise<ApiResponse<any>> {
-    return this.request(`/listings/${listingId}/wishlist`, {
+  async createWishList(data: {
+    name: string;
+    description?: string;
+    isPublic?: boolean;
+  }): Promise<ApiResponse<any>> {
+    return this.request(`/wishlist`, {
       method: 'POST',
+      body: JSON.stringify(data),
     });
   }
 
-  async removeFromListingWishlist(listingId: string): Promise<ApiResponse<any>> {
-    return this.request(`/listings/${listingId}/wishlist`, {
+  async getMyWishlists(): Promise<ApiResponse<any>> {
+    return this.request('/wishlist', {
+      method: 'GET',
+    });
+  }
+
+
+  // async addToListingWishlist(listingId: string): Promise<ApiResponse<any>> {
+  //   return this.request(`/listings/${listingId}/wishlist`, {
+  //     method: 'POST',
+  //   });
+  // }
+  async addToWishlist(
+    wishlistId: string,
+    data: {
+      itemType: 'Property' | 'Service';
+      itemId: string;
+      notes?: string;
+    }
+  ) {
+    return this.request(`/wishlist/${wishlistId}/items`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // async removeFromListingWishlist(listingId: string): Promise<ApiResponse<any>> {
+  //   return this.request(`/wishlists/${wishlistId}/items`, {
+  //     method: 'DELETE',
+  //   });
+  // }
+  async removeFromWishlist(wishlistId: string, itemId: string) {
+    return this.request(`/wishlist/${wishlistId}/items/${itemId}`, {
       method: 'DELETE',
     });
   }
+
 
   async getListingStats(listingId: string, params?: any): Promise<ApiResponse<any>> {
     const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
@@ -428,6 +521,26 @@ class ApiClient {
     });
   }
 
+  // Admin featured/sponsored management
+  async setAdminListingFeatured(listingId: string, value: boolean): Promise<ApiResponse<any>> {
+    return this.request(`/admin/properties/${listingId}/featured`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isFeatured: value }),
+    });
+  }
+
+  async setAdminListingSponsored(listingId: string, value: boolean): Promise<ApiResponse<any>> {
+    return this.request(`/admin/properties/${listingId}/sponsored`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isSponsored: value }),
+    });
+  }
+
+  async getAdminFeaturedListings(params?: { isFeatured?: boolean; isSponsored?: boolean }): Promise<ApiResponse<any>> {
+    const queryParams = params ? `?${new URLSearchParams(params as any).toString()}` : '';
+    return this.request(`/admin/properties${queryParams}`);
+  }
+
   // Service endpoints
   async createService(serviceData: any): Promise<ApiResponse<any>> {
     return this.request('/services', {
@@ -460,6 +573,33 @@ class ApiClient {
   async deleteService(id: string): Promise<ApiResponse<void>> {
     return this.request(`/services/${id}`, {
       method: 'DELETE',
+    });
+  }
+
+  // Pricing endpoints
+  async getPlatformFeeRate(): Promise<ApiResponse<{ rate: number, ratePercentage: string, gstRate: number }>> {
+    return this.request('/pricing/platform-fee-rate');
+  }
+
+  // Pre-validate booking BEFORE showing Razorpay UI
+  // Call this first — if it fails, don't open payment at all
+  async preValidateBooking(bookingData: {
+    propertyId?: string;
+    listingId?: string;
+    serviceId?: string;
+    checkIn: string;
+    checkOut: string;
+    checkInDateTime?: string;
+    bookingDuration?: 'daily' | '24hour';
+    guests: { adults: number; children?: number; infants?: number };
+    hourlyExtension?: any;
+    extensionHours?: number;
+    isLateCheckIn?: boolean;
+  }): Promise<ApiResponse<{ validationToken: string; expiresAt: string; is24HourBooking: boolean }>> {
+    console.log('Booking data before pre-validation:', bookingData);
+    return this.request('/bookings/pre-validate', {
+      method: 'POST',
+      body: JSON.stringify(bookingData),
     });
   }
 
@@ -505,10 +645,49 @@ class ApiClient {
     });
   }
 
-  async createRazorpayOrder(bookingId: string | null, amount: number, currency: string = 'INR', propertyId?: string): Promise<ApiResponse<any>> {
+  async createRazorpayOrder(
+    bookingId: string | null,
+    amount: number,
+    currency: string = 'INR',
+    serviceOrPropertyId?: string,
+    securePricingContext?: {
+      pricingToken?: string;
+      serviceId?: string;
+      propertyId?: string;
+      checkIn: string;
+      checkOut: string;
+      guests: { adults: number; children?: number; infants?: number };
+      nights: number;
+      totalAmount: number;
+      currency?: string;
+    },
+    isService: boolean = false
+  ): Promise<ApiResponse<any>> {
     return this.request('/payments/create-order', {
       method: 'POST',
-      body: JSON.stringify({ bookingId, propertyId, amount, currency }),
+      body: JSON.stringify({
+        bookingId,
+        // Send as serviceId or propertyId depending on context
+        ...(isService
+          ? { serviceId: serviceOrPropertyId }
+          : { propertyId: serviceOrPropertyId }
+        ),
+        amount,
+        currency,
+        ...(securePricingContext?.pricingToken && {
+          pricingToken: securePricingContext.pricingToken,
+          pricingContext: {
+            propertyId: securePricingContext.propertyId,
+            serviceId: securePricingContext.serviceId,
+            checkIn: securePricingContext.checkIn,
+            checkOut: securePricingContext.checkOut,
+            guests: securePricingContext.guests,
+            nights: securePricingContext.nights,
+            totalAmount: securePricingContext.totalAmount,
+            currency: securePricingContext.currency || currency
+          }
+        })
+      }),
     });
   }
 
@@ -820,10 +999,42 @@ class ApiClient {
     });
   }
 
+  // ── Admin Payout Management ──────────────────────────────────────
+  async getAdminPayouts(params?: any): Promise<ApiResponse<any>> {
+    const queryParams = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return this.request(`/payouts/admin/all${queryParams}`);
+  }
+
+  async getAdminPayoutStats(): Promise<ApiResponse<any>> {
+    return this.request('/payouts/admin/stats');
+  }
+
+  async confirmPayoutDone(payoutId: string, data: {
+    razorpayPayoutId?: string;
+    utrNumber?: string;
+    transactionId?: string;
+    adminNotes?: string;
+    processedDate?: string;
+  }): Promise<ApiResponse<any>> {
+    return this.request(`/payouts/admin/${payoutId}/confirm`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async reverseAdminPayout(payoutId: string, reason: string, notes?: string): Promise<ApiResponse<any>> {
+    return this.request(`/payouts/admin/${payoutId}/reverse`, {
+      method: 'POST',
+      body: JSON.stringify({ reason, notes }),
+    });
+  }
+
   async getAdminReviews(params?: any): Promise<ApiResponse<PaginatedResponse<any>>> {
     const queryParams = params ? `?${new URLSearchParams(params).toString()}` : '';
     return this.request(`/admin/reviews${queryParams}`);
   }
+
+
 
   async flagReview(reviewId: string, reason: string): Promise<ApiResponse<any>> {
     return this.request(`/admin/reviews/${reviewId}/flag`, {
@@ -832,9 +1043,33 @@ class ApiClient {
     });
   }
 
+  // async deleteReview(reviewId: string): Promise<ApiResponse<void>> {
+  //   return this.request(`/admin/reviews/${reviewId}`, {
+  //     method: 'DELETE',
+  //   });
+  // }
   async deleteReview(reviewId: string): Promise<ApiResponse<void>> {
-    return this.request(`/admin/reviews/${reviewId}`, {
-      method: 'DELETE',
+    return this.request(`/reviews/${reviewId}`, {
+      method: 'DELETE'
+    });
+  }
+  async markReviewHelpful(reviewId: string): Promise<ApiResponse<void>> {
+    return this.request(`/reviews/${reviewId}/helpful`, {
+      method: 'POST'
+    });
+  }
+
+  async reportReview(reviewId: string, data: { reason: string }): Promise<ApiResponse<void>> {
+    return this.request(`/reviews/${reviewId}/report`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  }
+
+  async respondToReview(reviewId: string, data: { response: string }): Promise<ApiResponse<any>> {
+    return this.request(`/reviews/${reviewId}/response`, {
+      method: 'POST',
+      body: JSON.stringify(data)
     });
   }
 
@@ -928,6 +1163,128 @@ class ApiClient {
   async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'DELETE',
+    });
+  }
+
+  // Email subscription endpoints
+  async subscribeEmail(email: string, name?: string, userId?: string, source?: string): Promise<ApiResponse<any>> {
+    return this.request('/email-subscription/subscribe', {
+      method: 'POST',
+      body: JSON.stringify({ email, name, userId, source }),
+    });
+  }
+
+  async unsubscribeEmail(email: string): Promise<ApiResponse<any>> {
+    return this.request('/email-subscription/unsubscribe', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  // ─── Popular Destinations ──────────────────────────────────────────────────
+
+  /** Public — used by homepage */
+  async getPopularDestinations(): Promise<ApiResponse<any>> {
+    return this.request('/popular-destinations');
+  }
+
+  /** Admin — get all (incl. inactive) */
+  async getAdminPopularDestinations(): Promise<ApiResponse<any>> {
+    return this.request('/popular-destinations/admin');
+  }
+
+  /** Admin — create */
+  async createPopularDestination(data: {
+    name: string;
+    description?: string;
+    image: string;
+    staysLabel?: string;
+    displayOrder?: number;
+    isActive?: boolean;
+    searchCity?: string;
+  }): Promise<ApiResponse<any>> {
+    return this.request('/popular-destinations/admin', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  /** Admin — update */
+  async updatePopularDestination(id: string, data: any): Promise<ApiResponse<any>> {
+    return this.request(`/popular-destinations/admin/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  /** Admin — delete */
+  async deletePopularDestination(id: string): Promise<ApiResponse<any>> {
+    return this.request(`/popular-destinations/admin/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  /** Admin — toggle active/inactive */
+  async togglePopularDestination(id: string): Promise<ApiResponse<any>> {
+    return this.request(`/popular-destinations/admin/${id}/toggle`, {
+      method: 'PATCH',
+    });
+  }
+
+  // ─── Badge Management ──────────────────────────────────────────────────
+
+  /** Get available badge types */
+  async getAvailableBadges(): Promise<ApiResponse<any>> {
+    return this.request('/admin/badges/available');
+  }
+
+  /** Get property badges (admin and dynamic) */
+  async getPropertyBadges(propertyId: string): Promise<ApiResponse<any>> {
+    return this.request(`/admin/properties/${propertyId}/badges`);
+  }
+
+  /** Update all badges for a property */
+  async updatePropertyBadges(propertyId: string, data: {
+    badges?: {
+      highlight?: Array<{ type: string; label: string; priority?: number }>;
+      details?: Array<{ type: string; label: string; priority?: number }>;
+      insights?: Array<{ type: string; label: string; priority?: number }>;
+      urgency?: Array<{ type: string; label: string; priority?: number }>;
+    };
+    useAdminBadges?: boolean;
+  }): Promise<ApiResponse<any>> {
+    return this.request(`/admin/properties/${propertyId}/badges`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  /** Add a single badge to a property */
+  async addPropertyBadge(propertyId: string, data: {
+    category: 'highlight' | 'details' | 'insights' | 'urgency';
+    badge: { type: string; label: string; priority?: number };
+  }): Promise<ApiResponse<any>> {
+    return this.request(`/admin/properties/${propertyId}/badges`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  /** Remove a badge from a property */
+  async removePropertyBadge(propertyId: string, data: {
+    category: 'highlight' | 'details' | 'insights' | 'urgency';
+    badgeType: string;
+  }): Promise<ApiResponse<any>> {
+    return this.request(`/admin/properties/${propertyId}/badges`, {
+      method: 'DELETE',
+      body: JSON.stringify(data),
+    });
+  }
+
+  /** Toggle admin badges on/off for a property */
+  async toggleAdminBadges(propertyId: string): Promise<ApiResponse<any>> {
+    return this.request(`/admin/properties/${propertyId}/badges/toggle`, {
+      method: 'PATCH',
     });
   }
 }

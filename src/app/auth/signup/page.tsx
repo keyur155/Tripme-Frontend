@@ -143,42 +143,46 @@ export default function SignupPage() {
     } catch (error: unknown) {
       console.error('Signup error:', error);
       
-      const errorObj = error as { status?: number; message?: string; details?: { errors?: Array<{ field?: string; message: string }> } };
+      const errorObj = error as { 
+        status?: number; 
+        message?: string; 
+        errors?: Array<{ field?: string; message: string }>;
+        details?: { errors?: Array<{ field?: string; message: string }> }; 
+        response?: { errors?: Array<{ field?: string; message: string }> };
+      };
       
-      console.error('Error details:', errorObj.details);
-      console.error('Error status:', errorObj.status);
-      console.error('Error message:', errorObj.message);
-      
-      if (errorObj.status === 400) {
-        // Handle validation errors
-        if (errorObj.message === 'Validation error' && errorObj.details) {
-          // Map backend validation errors to form fields
-          const fieldErrors: Record<string, string> = {};
-          
-          if (errorObj.details.errors) {
-            errorObj.details.errors.forEach((err: { field?: string; message: string }) => {
-              // Map backend field names to frontend field names
-              let fieldName = err.field;
-              if (fieldName === 'acceptTerms') {
-                fieldName = 'agreeToTerms';
-              }
-              fieldErrors[fieldName] = err.message;
-            });
+      const backendErrors = errorObj.errors 
+        || errorObj.details?.errors 
+        || errorObj.response?.errors 
+        || [];
+
+      if (backendErrors.length > 0) {
+        const fieldErrors: Record<string, string> = {};
+
+        backendErrors.forEach((err) => {
+          let fieldName = err.field;
+          if (fieldName === 'acceptTerms') {
+            fieldName = 'agreeToTerms';
           }
-          
-          // If no specific field errors, show general validation message
-          if (Object.keys(fieldErrors).length === 0) {
-            setErrors({ general: 'Please check your input and try again.' });
-          } else {
-            setErrors(fieldErrors);
+
+          if (fieldName) {
+            fieldErrors[fieldName] = err.message;
           }
+        });
+
+        if (Object.keys(fieldErrors).length === 0) {
+          setErrors({ general: backendErrors[0]?.message || 'Please check your input and try again.' });
         } else {
-          setErrors({ general: errorObj.message || 'Please check your input and try again.' });
+          setErrors(fieldErrors);
         }
       } else if (errorObj.status === 409) {
-        setErrors({ email: 'An account with this email already exists.' });
+        setErrors({ email: errorObj.message || 'An account with this email already exists.' });
+      } else if (errorObj.status === 400) {
+        setErrors({ general: errorObj.message || 'Please check your input and try again.' });
+      } else if (errorObj.status === 0) {
+        setErrors({ general: 'Network error. Please check your connection.' });
       } else {
-        setErrors({ general: 'Signup failed. Please try again.' });
+        setErrors({ general: errorObj.message || 'Signup failed. Please try again.' });
       }
     } finally {
       setLoading(false);
@@ -186,15 +190,15 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="h-screen flex bg-white">
+    <div className="min-h-screen flex bg-white">
       {/* Left Side - Carousel */}
-      <div className="hidden lg:block lg:w-1/2 h-screen">
+      <div className="hidden lg:block lg:w-1/2 min-h-screen sticky top-0">
         <Carousel images={carouselImages} />
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 flex items-start justify-center p-4 overflow-y-auto pt-16">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 border-0">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
+        <div className="w-full max-w-md mx-auto bg-white rounded-2xl sm:shadow-lg p-6 sm:p-8 border-0">
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
@@ -254,14 +258,14 @@ export default function SignupPage() {
 
           {/* Phone field */}
           <Input
-            label="Phone number (optional)"
+            label="Phone number "
             type="tel"
             placeholder="Enter your phone number"
             value={formData.phone}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('phone', e.target.value)}
             leftIcon={<Phone size={20} />}
             error={errors.phone}
-            helperText="Enter your phone number (optional)"
+            helperText="Enter your phone number "
           />
 
           {/* Password field */}

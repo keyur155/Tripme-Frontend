@@ -253,6 +253,8 @@ const AirbnbSearchForm: React.FC<AirbnbSearchFormProps> = ({
   activeCategory = 'homes',
   onSearch
 }) => {
+  const [isCompact, setIsCompact] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -276,6 +278,32 @@ const AirbnbSearchForm: React.FC<AirbnbSearchFormProps> = ({
     infants: 0
   });
 
+  useEffect(() => {
+  let lastScrollY = window.scrollY;
+
+  const onScroll = () => {
+    const currentScrollY = window.scrollY;
+
+    // Hide when scrolling DOWN
+    if (currentScrollY > lastScrollY && currentScrollY > 120) {
+      setIsHidden(true);
+    } 
+    // Show when scrolling UP
+    else {
+      setIsHidden(false);
+    }
+
+    // Compact after small scroll
+    setIsCompact(currentScrollY > 80);
+
+    lastScrollY = currentScrollY;
+  };
+
+  window.addEventListener("scroll", onScroll);
+  return () => window.removeEventListener("scroll", onScroll);
+}, []);
+
+
   // Update form when initialValues change
   useEffect(() => {
     if (initialValues?.location) {
@@ -296,7 +324,12 @@ const AirbnbSearchForm: React.FC<AirbnbSearchFormProps> = ({
   const [recentSearches, setRecentSearches] = useState<Array<{ location: string; dates?: string }>>([]);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [searchInputValue, setSearchInputValue] = useState('');
-  
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+const secondMonth = new Date(
+  currentDate.getFullYear(),
+  currentDate.getMonth() + 1
+);
   // Service options for Services category
   const serviceOptions = [
     { value: 'cleaning', label: 'Cleaning' },
@@ -457,6 +490,156 @@ const AirbnbSearchForm: React.FC<AirbnbSearchFormProps> = ({
       }
     }
   };
+
+
+  function MonthCalendar({
+  date,
+  selectedDates,
+  handleDateClick,
+  isDateInRange,
+  isStartOrEnd
+}) {
+  const daysInMonth = new Date(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    0
+  ).getDate();
+
+  const firstDayOfMonth = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    1
+  ).getDay();
+
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  const emptyDays = Array.from({ length: firstDayOfMonth });
+
+  const monthYear = date.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
+
+  const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+
+  return (
+    
+    <div className="space-y-3">
+      <h4 className="text-[#4285f4] font-semibold text-center">
+        {monthYear}
+      </h4>
+
+      <div className="grid grid-cols-7 gap-1">
+        {emptyDays.map((_, i) => (
+          <div key={`empty-${i}`} />
+        ))}
+
+        {days.map((day) => {
+            const currentDayDate = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            day
+          );
+
+          const isPast = currentDayDate < today;
+          const inRange = isDateInRange(day, date);
+          const isStartOrEndDay = isStartOrEnd(day, date);
+
+          return (
+            <button
+              key={day}
+             onClick={() => !isPast && handleDateClick(day, date)}
+              disabled={isPast}
+             className={`py-2 text-sm font-medium rounded-lg transition ${
+  isPast
+    ? "text-gray-300 cursor-not-allowed pointer-events-none"
+    : isStartOrEndDay
+    ? "bg-[#4285f4] text-white font-bold"
+    : inRange
+    ? "bg-[#ECF2FD] text-black"
+    : "text-gray-900 hover:bg-gray-100"
+}`}
+
+            >
+              {day}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+const handleDateClick = (day, monthDate) => {
+  const newDate = new Date(
+    monthDate.getFullYear(),
+    monthDate.getMonth(),
+    day
+  );
+
+  // first click OR reset
+  if (!dateRange.startDate || dateRange.endDate) {
+    setDateRange({
+      startDate: newDate,
+      endDate: null,
+      key: "selection",
+    });
+  } else {
+    // second click
+    if (newDate < dateRange.startDate) {
+      setDateRange({
+        startDate: newDate,
+        endDate: dateRange.startDate,
+        key: "selection",
+      });
+    } else {
+      setDateRange({
+        startDate: dateRange.startDate,
+        endDate: newDate,
+        key: "selection",
+      });
+    }
+
+   
+  }
+};
+
+const isDateInRange = (day, monthDate) => {
+  if (!dateRange.startDate) return false;
+
+  const date = new Date(
+    monthDate.getFullYear(),
+    monthDate.getMonth(),
+    day
+  );
+
+  if (!dateRange.endDate)
+    return date.getTime() === dateRange.startDate.getTime();
+
+  return date >= dateRange.startDate && date <= dateRange.endDate;
+};
+
+const isStartOrEnd = (day, monthDate) => {
+  const date = new Date(
+    monthDate.getFullYear(),
+    monthDate.getMonth(),
+    day
+  );
+
+  return (
+    (dateRange.startDate &&
+      date.getTime() === dateRange.startDate.getTime()) ||
+    (dateRange.endDate &&
+      date.getTime() === dateRange.endDate.getTime())
+  );
+};
+
+
+
+
+
+  
 
   // Calculate total guests
   const totalGuests = guestCounts.adults + guestCounts.children + guestCounts.infants;
@@ -859,159 +1042,120 @@ const AirbnbSearchForm: React.FC<AirbnbSearchFormProps> = ({
 
   return (
     <div className={cn("search-form-container relative w-full", className)}>
-      {/* Main Search Bar */}
+      {/* Main Search Bar - Airbnb Style */}
       <form
         onSubmit={handleSearch}
-        className="flex bg-white rounded-full shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 min-h-[56px] items-center relative"
+        className={cn(
+          "flex rounded-full  items-center transition-all duration-300",
+            // isCompact ? "min-h-[44px]" : "min-h-[56px]",
+             isHidden && "h-0 opacity-0 -translate-y-6 pointer-events-none",
+    !isHidden && "opacity-100 translate-y-0",
+          activeField 
+             ? "bg-[#F8F9FA] shadow-[0_4px_16px_rgba(0,0,0,0.12)] border border-gray-200" 
+             : "bg-white shadow-[0_1px_2px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.05)] border border-gray-200 hover:shadow-[0_6px_20px_rgba(0,0,0,0.1)]"
+            // ? "bg-[#EBEBEB] shadow-[0_3px_12px_rgba(0,0,0,0.1),0_1px_2px_rgba(0,0,0,0.08)]" 
+            // : "bg-white shadow-[0_1px_2px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.05)] border border-gray-200 hover:shadow-[0_2px_4px_rgba(0,0,0,0.1),0_8px_16px_rgba(0,0,0,0.1)]"
+          
+        )}
       >
-        {/* Where Field - Fixed width */}
-        <div className="w-80 relative">
+        {/* Where Field */}
+        <div className="flex-1 min-w-0 relative">
           <button
             type="button"
             onClick={() => setActiveField(activeField === 'where' ? null : 'where')}
             className={cn(
-              "w-full px-6 py-3 text-left transition-all duration-200 flex flex-col justify-center min-h-[56px]",
+              "w-full px-8 py-3.5 text-left transition-all duration-200 rounded-full flex flex-col justify-center",
+              // isCompact ? "px-4 py-2" : "px-8 py-3.5",
               activeField === 'where' 
-                ? "bg-white shadow-lg border-r border-gray-200" 
-                : "hover:bg-gray-50"
+                ? "bg-white shadow-[0_2px_16px_rgba(0,0,0,0.12)]  border-[#4285F4]" 
+                : activeField 
+                ? "hover:bg-[#F1F3F4] text-gray-500" // Dimmed: Soft gray hover when another field is active
+        : "hover:bg-[#F8F9FA] text-gray-700" // Neutral: Very light gray hover
+                  // ? "hover:bg-[#DDDDDD]" 
+                  // : "hover:bg-gray-100"
             )}
           >
-            <div className="text-sm font-semibold text-gray-900 mb-1">Where</div>
+             <div className="text-xs font-semibold text-gray-800">Where</div>
+           
             <div className={cn(
-              "text-base truncate",
-              selectedCity ? "text-gray-900" : "text-gray-500"
+              "text-sm truncate mt-0.5",
+              selectedCity ? "text-gray-800" : "text-gray-400"
             )}>
               {selectedCity ? selectedCity.label : 'Search destinations'}
             </div>
           </button>
         </div>
 
-        {/* Divider */}
-        <div className="w-px h-12 bg-gray-300 flex-shrink-0"></div>
+        {/* Divider - hide when any field is active */}
+        <div className={cn(
+          "h-8 w-px flex-shrink-0 transition-opacity duration-200",
+          activeField ? "bg-transparent" : "bg-gray-300"
+        )}></div>
 
-        {/* Date Field - Different layout for Services vs Homes */}
-        {currentCategory === 'services' ? (
-          /* Single Date Range Field for Services */
-          <div className="w-64 relative">
-            <button
-              type="button"
-              onClick={() => {
-                setActiveField(activeField === 'checkin' ? null : 'checkin');
-                if (activeField !== 'checkin') {
-                  setIsSelectingStartDate(true); // Reset to start date selection
-                }
-              }}
-              className={cn(
-                "w-full px-4 py-3 text-left transition-all duration-200 flex flex-col justify-center min-h-[56px]",
-                activeField === 'checkin' 
-                  ? "bg-white shadow-lg border-r border-gray-200" 
-                  : "hover:bg-gray-50"
-              )}
-            >
-              <div className="text-sm font-semibold text-gray-900 mb-1">Date</div>
-              <div className={cn(
-                "text-base truncate",
-                dateRange.startDate && dateRange.endDate ? "text-gray-900" : "text-gray-500"
-              )}>
-                {dateRange.startDate && dateRange.endDate 
-                  ? `${formatDate(dateRange.startDate)} - ${formatDate(dateRange.endDate)}`
-                  : dateRange.startDate 
-                    ? `${formatDate(dateRange.startDate)} - Select end date`
-                    : 'Add dates'
+        {/* When Field */}
+        <div className="flex-1 min-w-0 relative">
+          <button
+            type="button"
+            onClick={() => {
+              setActiveField(activeField === 'checkin' ? null : 'checkin');
+              if (activeField !== 'checkin') {
+                setIsSelectingStartDate(true);
               }
-              </div>
-            </button>
-          </div>
-        ) : (
-          /* Separate Check In and Check Out Fields for Homes */
-          <>
-            {/* Check In Field - Fixed width */}
-            <div className="w-32 relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveField(activeField === 'checkin' ? null : 'checkin');
-                  if (activeField !== 'checkin') {
-                    setIsSelectingStartDate(true); // Reset to start date selection
-                  }
-                }}
-                className={cn(
-                  "w-full px-4 py-3 text-left transition-all duration-200 flex flex-col justify-center min-h-[56px]",
-                  activeField === 'checkin' 
-                    ? "bg-white shadow-lg border-r border-gray-200" 
-                    : "hover:bg-gray-50"
-                )}
-              >
-                <div className="text-sm font-semibold text-gray-900 mb-1">Check in</div>
-                <div className={cn(
-                  "text-base truncate",
-                  dateRange.startDate ? "text-gray-900" : "text-gray-500"
-                )}>
-                  {dateRange.startDate && dateRange.endDate 
-                    ? formatDate(dateRange.startDate)
-                    : dateRange.startDate 
-                      ? `${formatDate(dateRange.startDate)} - Select end date`
-                      : 'Add dates'
-                }
-              </div>
-            </button>
-          </div>
+            }}
+            className={cn(
+              "w-full px-8 py-3.5 text-left transition-all duration-200 rounded-full flex flex-col justify-center",
+              
+              (activeField === 'checkin' || activeField === 'checkout')
+                ? "bg-white shadow-[0_2px_16px_rgba(0,0,0,0.12)]" 
+                : activeField 
+                   ? "hover:bg-[#F1F3F4] text-gray-500" // Dimmed: Soft gray hover when another field is active
+        : "hover:bg-[#F8F9FA] text-gray-700" // Neutral: Very light gray hover
+                  // ? "hover:bg-[#DDDDDD]" 
+                  // : "hover:bg-gray-100"
+            )}
+          >
+             <div className="text-xs font-semibold text-gray-800">Date</div>
+            <div className={cn(
+              "text-sm truncate mt-0.5",
+              dateRange.startDate && dateRange.endDate ? "text-gray-800" : "text-gray-400"
+            )}>
+              {dateRange.startDate && dateRange.endDate 
+                ? `${formatDate(dateRange.startDate)} - ${formatDate(dateRange.endDate)}`
+                : 'Add dates'
+              }
+            </div>
+          </button>
+        </div>
 
-            {/* Divider */}
-            <div className="w-px h-12 bg-gray-300 flex-shrink-0"></div>
+        {/* Divider - hide when any field is active */}
+        <div className={cn(
+          "h-8 w-px flex-shrink-0 transition-opacity duration-200",
+          activeField 
+             ? "hover:bg-[#F1F3F4] text-gray-500" // Dimmed: Soft gray hover when another field is active
+        : "hover:bg-[#F8F9FA] text-gray-700" // Neutral: Very light gray hover
+          // ? "bg-transparent" : "bg-gray-300"
+        )}></div>
 
-            {/* Check Out Field - Fixed width */}
-            <div className="w-32 relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveField(activeField === 'checkout' ? null : 'checkout');
-                  if (activeField !== 'checkout') {
-                    setIsSelectingStartDate(true); // Reset to start date selection
-                  }
-                }}
-                className={cn(
-                  "w-full px-4 py-3 text-left transition-all duration-200 flex flex-col justify-center min-h-[56px]",
-                  activeField === 'checkout' 
-                    ? "bg-white shadow-lg border-r border-gray-200" 
-                    : "hover:bg-gray-50"
-                )}
-              >
-                <div className="text-sm font-semibold text-gray-900 mb-1">Check out</div>
-                <div className={cn(
-                  "text-base truncate",
-                  dateRange.endDate ? "text-gray-900" : "text-gray-500"
-                )}>
-                  {dateRange.startDate && dateRange.endDate 
-                    ? formatDate(dateRange.endDate)
-                    : dateRange.startDate 
-                      ? 'Add end date'
-                      : 'Add dates'
-                }
-              </div>
-            </button>
-          </div>
-          </>
-        )}
-
-        {/* Divider */}
-        <div className="w-px h-12 bg-gray-300 flex-shrink-0"></div>
-
-        {/* Who/Service Field - Fixed width */}
-        <div className="w-40 relative">
+        {/* Who Field + Search Button */}
+        <div className="flex items-center flex-1 min-w-0">
           {currentCategory === 'services' ? (
             <button
               type="button"
               onClick={() => setActiveField(activeField === 'service' ? null : 'service')}
               className={cn(
-                "w-full px-4 py-3 text-left transition-all duration-200 flex flex-col justify-center min-h-[56px]",
+                "flex-1 px-8 py-3.5 text-left transition-all duration-200 rounded-full flex flex-col justify-center",
                 activeField === 'service' 
-                  ? "bg-white shadow-lg" 
-                  : "hover:bg-gray-50"
+                  ? "bg-white shadow-[0_2px_16px_rgba(0,0,0,0.12)]" 
+                  : activeField 
+                    ? "hover:bg-[#DDDDDD]" 
+                    : "hover:bg-gray-100"
               )}
             >
-              <div className="text-sm font-semibold text-gray-900 mb-1">Type of service</div>
-              <div className="text-gray-500 text-base truncate">
+              <div className="text-xs font-semibold text-gray-800">Service</div>
+              <div className={cn(
+                "text-sm truncate mt-0.5",
+                selectedService ? "text-gray-800" : "text-gray-400"
+              )}>
                 {selectedService ? selectedService.label : 'Add service'}
               </div>
             </button>
@@ -1020,25 +1164,36 @@ const AirbnbSearchForm: React.FC<AirbnbSearchFormProps> = ({
               type="button"
               onClick={() => setActiveField(activeField === 'who' ? null : 'who')}
               className={cn(
-                "w-full px-4 py-3 text-left transition-all duration-200 flex flex-col justify-center min-h-[56px]",
+                "flex-1 px-8 py-3.5 text-left transition-all duration-200 rounded-full flex flex-col justify-center",
+                
                 activeField === 'who' 
-                  ? "bg-white shadow-lg" 
-                  : "hover:bg-gray-50"
+                  ? "bg-white shadow-[0_2px_16px_rgba(0,0,0,0.12)]" 
+                  : activeField 
+                      ? "hover:bg-[#F1F3F4] text-gray-500" // Dimmed: Soft gray hover when another field is active
+        : "hover:bg-[#F8F9FA] text-gray-700" // Neutral: Very light gray hover
+                    // ? "hover:bg-[#DDDDDD]" 
+                    // : "hover:bg-gray-100"
               )}
             >
-              <div className="text-sm font-semibold text-gray-900 mb-1">Who</div>
-              <div className="text-gray-500 text-base truncate">{getGuestDisplayText()}</div>
+              <div className="text-xs font-semibold text-gray-800">Who</div>
+              <div className={cn(
+                "text-sm truncate mt-0.5",
+                guestCounts.adults > 1 || guestCounts.children > 0 || guestCounts.infants > 0 ? "text-gray-800" : "text-gray-400"
+              )}>
+                {getGuestDisplayText()}
+              </div>
             </button>
           )}
-        </div>
 
-        {/* Search Button - Fixed size and positioned at extreme right */}
-        <button
-          type="submit"
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105 z-10"
-        >
-          <Search size={20} />
-        </button>
+          {/* Search Button - Airbnb Pink Pill */}
+          <button
+            type="submit"
+            className="mr-2 h-12 px-5 bg-[#1967D2] hover:bg-[#1A73E8] text-white rounded-full flex items-center justify-center gap-2 transition-all duration-200 hover:scale-[1.04] active:scale-[0.98] font-medium shadow-sm"
+          >
+            <Search size={16} strokeWidth={2.5} />
+            <span className="text-sm font-medium">Search</span>
+          </button>
+        </div>
       </form>
 
       {/* Where Overlay */}
@@ -1206,39 +1361,67 @@ const AirbnbSearchForm: React.FC<AirbnbSearchFormProps> = ({
           "absolute top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 search-overlay w-full max-h-[80vh] overflow-hidden",
           activeCategory === 'services' ? "left-0" : "left-0"
         )}>
-          <div className="p-3 max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center gap-0 mb-4">
-              <button
-                type="button"
-                className={cn(
-                  "px-6 py-3 text-sm font-semibold transition-colors border-b-2",
-                  activeField === 'checkin' 
-                    ? "text-gray-900 border-gray-900" 
-                    : "text-gray-500 border-transparent hover:text-gray-700"
-                )}
-                onClick={() => setActiveField('checkin')}
-              >
-                {currentCategory === 'services' ? 'Date' : 'Dates'}
-              </button>
-              {currentCategory !== 'services' && (
-                <>
-                  <button
-                    type="button"
-                    className="px-6 py-3 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition-colors"
-                  >
-                    Months
-                  </button>
-                  <button
-                    type="button"
-                    className="px-6 py-3 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition-colors"
-                  >
-                    Flexible
-                  </button>
-                </>
-              )}
+          <div className="p-3 max-h-[70vh] overflow-y-auto">
+            <div className="flex items-center justify-center mb-4">
+              <div className="inline-flex bg-[#4285f4] rounded-full p-1">
+                <button
+                  type="button"
+                  className="px-6 py-2 text-sm font-semibold rounded-full   text-white shadow-sm"
+                >
+                  Dates
+                </button>
+              </div>
             </div>
 
-            <DateRange
+            <div className="flex justify-between items-center mb-4 px-4">
+  <button
+    onClick={() =>
+      setCurrentDate(
+        new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth() - 1
+        )
+      )
+    }
+    className="text-lg text-[#4285F4] hover:text-[#174EA6]"
+  >
+    ←
+  </button>
+
+  <button
+    onClick={() =>
+      setCurrentDate(
+        new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth() + 1
+        )
+      )
+    }
+    className="text-lg text-[#4285F4] hover:text-[#174EA6]"
+  >
+    →
+  </button>
+</div>
+
+
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+  <MonthCalendar
+    date={currentDate}
+    handleDateClick={handleDateClick}
+    isDateInRange={isDateInRange}
+    isStartOrEnd={isStartOrEnd}
+  />
+
+  <MonthCalendar
+    date={secondMonth}
+    handleDateClick={handleDateClick}
+    isDateInRange={isDateInRange}
+    isStartOrEnd={isStartOrEnd}
+  />
+</div>
+
+
+            {/* <DateRange
               ranges={[dateRange]}
               onChange={(ranges: RangeKeyDict) => {
                 const selection = ranges.selection;
@@ -1271,16 +1454,18 @@ const AirbnbSearchForm: React.FC<AirbnbSearchFormProps> = ({
               }}
               minDate={new Date()}
               showDateDisplay={false}
-              showMonthAndYearPickers={true}
+              showMonthAndYearPickers={false}
               direction="horizontal"
               months={2}
+              rangeColors={['#333333']}
+              color="#333333"
               className={`${searchCalendarStyles.searchCalendarWrapper} rounded-lg`}
               editableDateInputs={false}
               moveRangeOnFirstSelection={false}
-            />
+            /> */}
 
             {/* Date Flexibility Options */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
+            {/* <div className="mt-6 pt-6 border-t border-gray-200">
               <div className="text-sm font-semibold text-gray-700 mb-3">Date flexibility</div>
               <div className="flex flex-wrap gap-2">
                 {[
@@ -1306,7 +1491,7 @@ const AirbnbSearchForm: React.FC<AirbnbSearchFormProps> = ({
                   </button>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* Action Buttons */}
             <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
@@ -1320,14 +1505,14 @@ const AirbnbSearchForm: React.FC<AirbnbSearchFormProps> = ({
                   });
                   setIsSelectingStartDate(true);
                 }}
-                className="text-sm text-gray-600 hover:text-gray-800 underline"
+                className="text-sm text-[#4285f4] hover:text-gray-800 underline"
               >
                 Clear dates
               </button>
               <button
                 type="button"
                 onClick={() => setActiveField(null)}
-                className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+                className="px-4 py-2 bg-[#4285f4] text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
               >
                 Close
               </button>

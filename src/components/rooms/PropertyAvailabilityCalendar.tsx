@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, isToday, isPast } from 'date-fns';
 import { apiClient } from '@/infrastructure/api/clients/api-client';
 import { Calendar as CalendarIcon, CheckCircle, XCircle, Clock, ChevronLeft, ChevronRight, Wrench } from 'lucide-react';
@@ -49,19 +49,20 @@ export default function PropertyAvailabilityCalendar({
   const [availability, setAvailability] = useState<AvailabilityData>({});
   const [loading, setLoading] = useState(true);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedDateState, setSelectedDateState] = useState<Date | null>(selectedDate || null);
+  const nextMonth = useMemo(() => addMonths(currentMonth, 1), [currentMonth]);
+  // const [selectedDateState, setSelectedDateState] = useState<Date | null>(selectedDate || null);
   const [hoveredDate, setHoveredDate] = useState<string | null>(null);
 
   // Sync selectedDateState with checkInDate when provided
-  useEffect(() => {
-    if (checkInDate) {
-      setSelectedDateState(checkInDate);
-      // Navigate calendar to show check-in date month
-      setCurrentMonth(checkInDate);
-    } else if (selectedDate) {
-      setSelectedDateState(selectedDate);
-    }
-  }, [checkInDate, selectedDate]);
+  // useEffect(() => {
+  //   if (checkInDate) {
+  //     setSelectedDateState(checkInDate);
+  //     // Navigate calendar to show check-in date month
+  //     setCurrentMonth(checkInDate);
+  //   } else if (selectedDate) {
+  //     setSelectedDateState(selectedDate);
+  //   }
+  // }, [checkInDate, selectedDate]);
 
   // Navigate calendar to show check-out date month if available
   useEffect(() => {
@@ -204,9 +205,9 @@ export default function PropertyAvailabilityCalendar({
         };
       case 'unavailable':
         return {
-          bg: 'bg-red-100',
+          // bg: 'bg-red-100',
           text: 'text-red-700',
-          border: 'border-red-300',
+          //  border: 'border-red-300',
           icon: <XCircle className="w-3 h-3 text-red-600" />,
           dot: 'bg-red-500'
         };
@@ -263,49 +264,93 @@ export default function PropertyAvailabilityCalendar({
     }
   };
 
-  const renderHeader = () => {
-    return (
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <ChevronLeft className="w-5 h-5 text-gray-600" />
+  // const renderHeader = () => {
+  //   return (
+  //     <div className="sticky top-0 z-20
+  // bg-white md:bg-transparent
+  // py-3 md:py-0
+  // flex items-center justify-between">
+  //       <button
+  //         onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+  //         className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+  //       >
+  //         <ChevronLeft className="w-5 h-5 text-gray-600" />
+  //       </button>
+  //       <div className="flex items-center gap-2">
+  //         <span className="text-base md:text-lg font-semibold text-gray-900">
+  //           {format(currentMonth, 'MMMM')}
+  //         </span>
+  //         <span className="text-base md:text-lg text-gray-500">
+  //           {format(currentMonth, 'yyyy')}
+  //         </span>
+  //       </div>
+  //       <button
+  //         onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+  //         className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+  //       >
+  //         <ChevronRight className="w-5 h-5 text-gray-600" />
+  //       </button>
+  //     </div>
+  //   );
+  // };
+
+ const renderHeader = (
+  month: Date,
+  isFirstMonth = false,
+  isMobile = false
+) => {
+  return (
+    <div className="flex items-center justify-between">
+
+      {/* LEFT ARROW */}
+      {(isMobile || isFirstMonth) ? (
+        <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
+          <ChevronLeft />
         </button>
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold text-gray-900">
-            {format(currentMonth, 'MMMM')}
-          </span>
-          <span className="text-lg text-gray-500">
-            {format(currentMonth, 'yyyy')}
-          </span>
-        </div>
-        <button
-          onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <ChevronRight className="w-5 h-5 text-gray-600" />
-        </button>
+      ) : <div />}
+
+      {/* MONTH LABEL */}
+      <div>
+        {format(month, "MMMM yyyy")}
       </div>
-    );
-  };
+
+      {/* RIGHT ARROW */}
+      {(isMobile || !isFirstMonth) ? (
+        <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
+          <ChevronRight />
+        </button>
+      ) : <div />}
+
+    </div>
+  );
+};
+  // const renderDays = () => {
+  //   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  //   return (
+  //     <div className="grid grid-cols-7 gap-1 mb-2 ">
+  //       {days.map(day => (
+  //         <div key={day} className="grid grid-cols-7 text-[11px] md:text-xs text-gray-500 mb-1">
+  //           {day}
+  //         </div>
+  //       ))}
+  //     </div>
+  //   );
+  // };
 
   const renderDays = () => {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    return (
-      <div className="grid grid-cols-7 gap-1 mb-2">
-        {days.map(day => (
-          <div key={day} className="text-center text-xs font-medium text-gray-500 py-2">
-            {day}
-          </div>
-        ))}
-      </div>
-    );
-  };
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  return (
+    <div className="grid grid-cols-7 gap-1 text-xs md:text-sm sm:text-sm p-2 gap-2">
+      {days.map(d => <div key={d}>{d}</div>)}
+    </div>
+  );
+};
 
-  const renderCells = () => {
-    const monthStart = startOfMonth(currentMonth);
+  const renderCells = (month) => {
+     const monthStart = startOfMonth(month);
     const monthEnd = endOfMonth(monthStart);
+    // const monthStart = startOfMonth(currentMonth);
+    // const monthEnd = endOfMonth(monthStart);
     const startDate = startOfWeek(monthStart);
     const endDate = endOfWeek(monthEnd);
 
@@ -318,7 +363,7 @@ export default function PropertyAvailabilityCalendar({
         const dateKey = format(day, 'yyyy-MM-dd');
         const dayData = availability[dateKey];
         const isCurrentMonth = isSameMonth(day, monthStart);
-        const isSelected = selectedDateState && isSameDay(day, selectedDateState);
+        const isSelected = selectedDate && isSameDay(day, selectedDate);
         const isCheckIn = checkInDate && isSameDay(day, checkInDate);
         const isCheckOut = checkOutDate && isSameDay(day, checkOutDate);
         const isTodayDate = isToday(day);
@@ -344,21 +389,42 @@ export default function PropertyAvailabilityCalendar({
           <div
             key={day.toString()}
             className={`
-              relative min-h-[48px] p-1 rounded-lg transition-all duration-200 cursor-pointer
-              ${!isCurrentMonth ? 'opacity-30' : ''}
-              ${isPastDate ? 'opacity-40 cursor-not-allowed' : ''}
-              ${isCheckIn ? 'ring-2 ring-blue-500 ring-offset-1 bg-blue-50' : ''}
-              ${isCheckOut ? 'ring-2 ring-green-500 ring-offset-1 bg-green-50' : ''}
-              ${isInRange ? 'bg-indigo-100 border-indigo-300 border' : ''}
-              ${isSelected && !isCheckIn && !isCheckOut && !isInRange ? 'ring-2 ring-indigo-500 ring-offset-1' : ''}
-              ${isTodayDate && !isCheckIn && !isCheckOut && !isInRange ? 'ring-2 ring-blue-400' : ''}
-              ${isCurrentMonth && !isPastDate && !isCheckIn && !isCheckOut && !isInRange ? style.bg : ''}
-              ${isCurrentMonth && !isPastDate && !isCheckIn && !isCheckOut && !isInRange ? `border ${style.border}` : ''}
-              ${isCurrentMonth && !isPastDate && (isCheckIn || isCheckOut) ? 'border-2' : ''}
+             relative
+              h-[52px] md:min-h-[48px]
+              rounded-xl
+              flex flex-col items-center justify-center
+              transition
+             
+  /* Common visibility rules */
+  ${!isCurrentMonth ? 'opacity-30' : ''}
+  ${isPastDate ? 'opacity-40 cursor-not-allowed' : ''}
+
+  /* ================= MOBILE STYLES ================= */
+
+  ${isCheckIn ? 'bg-[#4285f4] text-blue-700 font-bold' : ''}
+  ${isCheckOut ? 'bg-[#4285f4] text-blue-700 font-bold' : ''}
+  ${isInRange ? 'bg-indigo-100' : ''}
+  // ${isTodayDate && !isCheckIn && !isCheckOut && !isInRange ? 'bg-blue-50' : ''}
+
+  /* No borders / rings on mobile */
+  
+  /* ================= DESKTOP STYLES ================= */
+
+ 
+ 
+${isCurrentMonth && !isPastDate && !isCheckIn && !isCheckOut && !isInRange
+    ? `md:${style.bg} hover:border md:hover:${style.border} transition-all`
+    : 'hover:border hover:border-gray-300 transition-all'
+}
+
+  ${isCurrentMonth && !isPastDate && (isCheckIn || isCheckOut)
+    ? 'md:border-2'
+    : ''
+  }
             `}
             onClick={() => {
               if (isSelectable) {
-                setSelectedDateState(clonedDay);
+                // setSelectedDateState(clonedDay);
                 onDateSelect?.(clonedDay);
               }
             }}
@@ -366,7 +432,7 @@ export default function PropertyAvailabilityCalendar({
             onMouseLeave={() => setHoveredDate(null)}
           >
             {/* Check-in/Check-out labels */}
-            {isCheckIn && isCurrentMonth && (
+            {/* {isCheckIn && isCurrentMonth && (
               <div className="absolute top-0 left-0 right-0 text-[8px] font-bold text-blue-700 bg-blue-200 rounded-t-lg px-1 text-center">
                 Check-in
               </div>
@@ -375,7 +441,16 @@ export default function PropertyAvailabilityCalendar({
               <div className="absolute top-0 left-0 right-0 text-[8px] font-bold text-green-700 bg-green-200 rounded-t-lg px-1 text-center">
                 Check-out
               </div>
-            )}
+            )} */}
+{/* ..... */}
+            {/* {isCheckIn && (
+  <span className="hidden lg:absolute bottom-1 w-1.5 h-1.5 rounded-full bg-blue-600" />
+)}
+
+{isCheckOut && (
+  <span className="hidden lg:absolute bottom-1 w-1.5 h-1.5 rounded-full bg-green-600" />
+)} */}
+
             
             {/* Date number */}
             <div className={`text-sm font-medium text-center ${isCurrentMonth ? (isCheckIn || isCheckOut || isInRange ? 'text-gray-900' : style.text) : 'text-gray-400'} ${(isCheckIn || isCheckOut) ? 'mt-1' : ''}`}>
@@ -383,11 +458,32 @@ export default function PropertyAvailabilityCalendar({
             </div>
             
             {/* Status icon - show for current month and non-past dates */}
-            {isCurrentMonth && !isPastDate && (
-              <div className="flex justify-center mt-0.5">
-                {style.icon}
-              </div>
-            )}
+           {/* Status icon – DESKTOP ONLY */}
+              {/* {isCurrentMonth && !isPastDate && (
+                <div className="hidden md:flex justify-center mt-0.5">
+                  {style.icon}
+                </div>
+              )} */}
+              {/* Mobile status dot */}
+{isCurrentMonth && !isPastDate && (
+  <span
+    className={`
+      
+      absolute bottom-1
+      w-1.5 h-1.5 rounded-full
+
+      ${isCheckIn ? 'bg-[#4285f4]' : ''}
+      ${isCheckOut ? 'bg-[#4285f4]' : ''}
+      ${!isCheckIn && !isCheckOut && status === 'available' ? 'bg-green-500' : ''}
+      ${status === 'unavailable' ? '' : ''}
+      ${status === 'booked' ? 'bg-purple-500' : ''}
+      ${status === 'maintenance' ? 'bg-orange-500' : ''}
+      ${status === 'partially-available' ? 'bg-blue-500' : ''}
+    `}
+  />
+)}
+
+
             
             {/* Price if available */}
             {dayData?.price && isCurrentMonth && !isPastDate && (
@@ -417,7 +513,7 @@ export default function PropertyAvailabilityCalendar({
                     Guest: {dayData.guestName}
                   </div>
                 )}
-                {/* Arrow */}
+                
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
               </div>
             )}
@@ -433,7 +529,7 @@ export default function PropertyAvailabilityCalendar({
                   <Clock className="w-3 h-3 text-orange-200" />
                   <span>Available after: {format(new Date(dayData.maintenance.availableAfter), 'h:mm a')}</span>
                 </div>
-                {/* Arrow */}
+               
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-orange-600"></div>
               </div>
             )}
@@ -452,7 +548,7 @@ export default function PropertyAvailabilityCalendar({
                 <div className="text-blue-200 text-[10px] mt-1">
                   Select check-in time after maintenance period
                 </div>
-                {/* Arrow */}
+               
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-blue-600"></div>
               </div>
             )}
@@ -472,13 +568,13 @@ export default function PropertyAvailabilityCalendar({
                 <div className="text-blue-200 text-[10px] mt-1">
                   Select check-in time within these hours
                 </div>
-                {/* Arrow */}
+               
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-blue-600"></div>
               </div>
             )}
 
             {/* Tooltip for unavailable dates - GUEST VIEW */}
-            {!isHostView && hoveredDate === dateKey && status === 'unavailable' && isCurrentMonth && (
+            {/* {!isHostView && hoveredDate === dateKey && status === 'unavailable' && isCurrentMonth && (
               <div className="absolute z-50 bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-red-600 text-white text-xs rounded-lg shadow-lg whitespace-nowrap">
                 <div className="font-semibold mb-1 flex items-center gap-1">
                   <XCircle className="w-3 h-3" />
@@ -487,10 +583,10 @@ export default function PropertyAvailabilityCalendar({
                 <div className="text-red-200 text-[10px]">
                   This date is not available for booking
                 </div>
-                {/* Arrow */}
+                
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-red-600"></div>
               </div>
-            )}
+            )} */}
 
             {/* Tooltip for available dates with maintenance that has ended - show "Cleaning complete" */}
             {hoveredDate === dateKey && status === 'available' && isCurrentMonth && dayData?.maintenance?.availableAfter && !hasHourRestrictions && (
@@ -524,7 +620,7 @@ export default function PropertyAvailabilityCalendar({
     return (
       <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-[#4285f4] rounded-xl flex items-center justify-center">
             <CalendarIcon className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -540,23 +636,49 @@ export default function PropertyAvailabilityCalendar({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
-          <CalendarIcon className="w-5 h-5 text-white" />
+ 
+     <div className="md:bg-white
+      md:rounded-2xl
+      md:shadow-lg
+      md:border md:border-gray-200
+      bg-transparent
+      p-5 md:p-6">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center">
+          <CalendarIcon className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4] " />
         </div>
         <div>
-          <h3 className="text-xl font-bold text-gray-900">Availability Calendar</h3>
+          <h3 className="text-xl sm:text-2xl md:text-2xl  font-bold text-gray-900">Availability Calendar</h3>
           <p className="text-sm text-gray-600">Check available dates and prices</p>
         </div>
       </div>
 
       {/* Calendar */}
-      <div className="mb-6">
-        {renderHeader()}
+      
+
+      <div className="mb-6 ">
+
+        <div className="block md:hidden">
+    {renderHeader(currentMonth, true , true)}
+    {renderDays()}
+    {renderCells(currentMonth)}
+  </div>
+    <div className="hidden md:grid md:grid-cols-2 gap-6">
+      {/* LEFT MONTH */}
+      <div>
+        {renderHeader(currentMonth, true)}
         {renderDays()}
-        {renderCells()}
+        {renderCells(currentMonth)}
       </div>
+
+      {/* RIGHT MONTH */}
+      <div>
+        {renderHeader(nextMonth, false)}
+        {renderDays()}
+        {renderCells(nextMonth)}
+      </div>
+   </div>
+    </div>
 
       {/* Legend */}
       <div className="grid grid-cols-2 gap-2 text-sm">
@@ -579,22 +701,24 @@ export default function PropertyAvailabilityCalendar({
       </div>
 
       {/* Selected Date Info */}
-      {selectedDateState && (
+      {selectedDate && (
         <div className="mt-4 p-4 bg-indigo-50 rounded-xl border border-indigo-200">
           <div className="flex items-center gap-2 mb-2">
             <CalendarIcon className="w-4 h-4 text-indigo-600" />
             <span className="font-medium text-indigo-900">Selected Date</span>
           </div>
           <p className="text-indigo-800">
-            {format(selectedDateState, 'EEEE, MMMM do, yyyy')}
+            {format(selectedDate, 'EEEE, MMMM do, yyyy')}
           </p>
-          {availability[format(selectedDateState, 'yyyy-MM-dd')]?.price && (
+          {availability[format(selectedDate, 'yyyy-MM-dd')]?.price && (
             <p className="text-sm text-indigo-600 mt-1">
-              Price: ₹{availability[format(selectedDateState, 'yyyy-MM-dd')].price}
+              Price: ₹{availability[format(selectedDate, 'yyyy-MM-dd')].price}
             </p>
           )}
         </div>
       )}
     </div>
+
+
   );
 }

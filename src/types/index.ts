@@ -33,6 +33,20 @@ export interface User {
   updatedAt: Date;
 }
 
+// Badge types for frontend display
+export interface BadgeData {
+  type: string;
+  label: string;
+  priority?: number;
+}
+
+export interface PropertyBadges {
+  highlight?: BadgeData[];
+  details?: BadgeData[];
+  insights?: BadgeData[];
+  urgency?: BadgeData[];
+}
+
 // Stay/Property types (for frontend display)
 export interface Stay {
   id: string;
@@ -42,8 +56,8 @@ export interface Stay {
   location: {
     city: string;
     state: string;
-    country: string;
-    coordinates: [number, number];
+    country?: string;
+    coordinates?: [number, number];
   };
   price: {
     amount: number;
@@ -51,21 +65,27 @@ export interface Stay {
   };
   rating: number;
   reviewCount: number;
-  maxGuests: number;
+  maxGuests?: number;
   bedrooms: number;
   beds: number;
   bathrooms: number;
-  tags: string[];
-  instantBookable: boolean;
-  amenities: string[];
-  host: {
+  tags?: string[];
+  instantBookable?: boolean;
+  amenities?: string[];
+  host?: {
     id: string;
     name: string;
     avatar?: string;
-    isSuperhost: boolean;
+    isSuperhost?: boolean;
   };
-  createdAt: Date;
-  updatedAt: Date;
+  // Badge-related fields
+  badges?: PropertyBadges;
+  adminBadges?: PropertyBadges;
+  isFeatured?: boolean;
+  isSponsored?: boolean;
+  isTopRated?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 // Authentication types

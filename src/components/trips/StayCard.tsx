@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Image from 'next/image';
 import { Heart, Star, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Stay } from '@/types';
 import { formatCurrency } from '@/shared/constants/pricing.constants';
+import { CardBadge, getPrimaryBadge, type BadgeData } from '@/components/ui/Badge';
 
 interface StayCardProps {
   stay: Stay;
@@ -11,6 +12,11 @@ interface StayCardProps {
   className?: string;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  checkIn?: string;
+  checkOut?: string;
+  guests?: number;
+  onCardClick?: (stay: Stay) => void;
+  varient?: "default" | "compact" | "featured";
 }
 
 const StayCard: React.FC<StayCardProps> = ({
@@ -19,7 +25,12 @@ const StayCard: React.FC<StayCardProps> = ({
   isFavorite = false,
   className,
   onMouseEnter,
-  onMouseLeave
+  onMouseLeave,
+  checkIn,
+  checkOut,
+  guests,
+  onCardClick,
+  varient = "default"
 }) => {
   const [currentImage, setCurrentImage] = React.useState(0);
   const [isHovered, setIsHovered] = React.useState(false);
@@ -27,17 +38,14 @@ const StayCard: React.FC<StayCardProps> = ({
   const handleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    onFavorite?.(stay.id);
+    const stayId = stay.id || (stay as any)._id;
+    if (stayId) {
+      onFavorite?.(stayId);
+    }
   };
 
-  // Enhanced badge logic
-  const badge = stay.tags?.includes('superhost')
-    ? { text: 'Superhost', color: 'bg-gradient-to-r from-purple-600 to-pink-600' }
-    : stay.tags?.includes('favourite')
-    ? { text: 'Guest favorite', color: 'bg-gradient-to-r from-orange-500 to-red-500' }
-    : stay.tags?.includes('new')
-    ? { text: 'New', color: 'bg-gradient-to-r from-green-500 to-emerald-500' }
-    : null;
+  // Get primary badge using centralized badge system
+  const primaryBadge = useMemo(() => getPrimaryBadge(stay), [stay]);
 
   const totalImages = stay.images.length;
   const showArrows = totalImages > 1;
@@ -62,10 +70,54 @@ const StayCard: React.FC<StayCardProps> = ({
     onMouseLeave?.();
   };
 
+
+
   const handleCardClick = () => {
+  const stayId = stay.id || (stay as any)._id;
+  if (!stayId) {
+    onCardClick?.(stay);
+    return;
+  }
+
+  try {
+    const RECENT_PROPERTIES_KEY = 'tripme_recent_properties';
+    const MAX_RECENT_PROPERTIES = 8;
+    const stored = localStorage.getItem(RECENT_PROPERTIES_KEY);
+    const recent = stored ? JSON.parse(stored) : [];
+    const filtered = recent.filter((item: any) => (item.id || item._id) !== stayId);
+    const recentProperty = {
+      ...stay,
+      id: stayId,
+      viewedAt: new Date().toISOString()
+    };
+    const updated = [recentProperty, ...filtered].slice(0, MAX_RECENT_PROPERTIES);
+    localStorage.setItem(RECENT_PROPERTIES_KEY, JSON.stringify(updated));
+  } catch (error) {
+    console.error('Error saving recent property:', error);
+  }
+
+  onCardClick?.(stay);
+  const params = new URLSearchParams();
+  params.append('checkIn', checkIn || '');
+  params.append('checkOut', checkOut || '');
+  params.append('guests', guests?.toString() || '');
+
+  window.open(`/rooms/${stayId}?${params.toString()}`, '_blank');
     // Open property page in new tab
-    window.open(`/rooms/${stay.id}`, '_blank');
+    
   };
+const priceAmount =
+  stay.price?.amount ;
+
+const currency =
+  stay.price?.currency || "INR";
+
+  const imageSrc =
+  typeof stay.images?.[currentImage] === "string"
+    ? stay.images[currentImage]
+    : stay.images?.[currentImage]?.url;
+
+  
 
   return (
     <div
@@ -77,9 +129,10 @@ const StayCard: React.FC<StayCardProps> = ({
       {/* Vertical Layout - Airbnb Style */}
       <div className="w-full">
         {/* Image Section - Top */}
-        <div className="relative aspect-[4/3] w-full overflow-hidden">
+        <div className="relative  aspect-[4/3] w-full overflow-hidden">
           <Image
-            src={stay.images[currentImage]}
+            // src={stay.images[currentImage]}
+            src={imageSrc || "/placeholder.jpg"}
             alt={stay.title}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -105,7 +158,7 @@ const StayCard: React.FC<StayCardProps> = ({
           )}
           
           {/* Image Dots */}
-          {showArrows && (
+          {showArrows && varient != "featured" && (
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
               {stay.images.map((_, index) => (
                 <div
@@ -121,7 +174,8 @@ const StayCard: React.FC<StayCardProps> = ({
           {/* Favorite Button */}
           <button
             onClick={handleFavorite}
-            className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 hover:scale-110 shadow-lg"
+            className="absolute top-2 right-2 md:top-4 md:right-4 p-1 md:p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 hover:scale-110 shadow-lg z-30 pointer-events-auto"
+            aria-label="Add to favorites"
           >
             <Heart
               size={18}
@@ -131,51 +185,63 @@ const StayCard: React.FC<StayCardProps> = ({
             />
           </button>
           
-          {/* Badge */}
-          {badge && (
-            <div className={`absolute top-4 left-4 ${badge.color} text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg`}>
-              {badge.text}
-            </div>
+          {/* Badge - Only render if badge exists */}
+          {primaryBadge && (
+            <CardBadge
+              type={primaryBadge.type}
+              label={primaryBadge.label}
+              position="top-left"
+            />
           )}
         </div>
 
         {/* Content Section - Bottom */}
-        <div className="p-4 space-y-2">
+        <div className="p-2 space-y-[2px] md:p-4 space-y-1 md:space-y-2">
           {/* Title & Rating */}
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start justify-between gap-1 md:gap-3">
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 text-base leading-tight line-clamp-2 group-hover:text-gray-700 transition-colors">
+              <h3 className="font-bold text-gray-900 text-xs md:text-base leading-tight  line-clamp-1 h-[16px] group-hover:text-gray-700 transition-colors">
                 {stay.title}
               </h3>
+              { varient == "featured" &&( 
               <div className="flex items-center gap-1 mt-1">
-                <MapPin size={14} className="text-gray-400 flex-shrink-0" />
-                <p className="text-sm text-gray-500 truncate">
+                <MapPin size={14} className="text-[#4285f4] flex-shrink-0" />
+                <p className="text-xs md:text-sm text-gray-500 truncate">
                   {stay.location.city}, {stay.location.state}
                 </p>
               </div>
+)}
             </div>
-            {stay.rating > 0 && (
+            {/* {stay.rating > 0 && (
               <div className="flex items-center gap-1 bg-gray-50 rounded-full px-2 py-1 flex-shrink-0">
-                <Star size={14} className="fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-semibold text-gray-900">{stay.rating}</span>
+                <Star  className=" w-2 h-2 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
+                <span className="text-[10px] md:text-sm font-semibold text-gray-900">{stay.rating}</span>
               </div>
-            )}
+            )} */}
           </div>
           
           {/* Property Details */}
-          <div className="text-sm text-gray-600">
+          <div className="text-[10px] md:text-sm text-gray-600">
             {stay.bedrooms > 0 && `${stay.bedrooms} bedroom${stay.bedrooms > 1 ? 's' : ''}`}
             {stay.bedrooms > 0 && stay.beds > 0 && ' · '}
-            {stay.beds > 0 && `${stay.beds} bed${stay.beds > 1 ? 's' : ''}`}
+            {/* {stay.beds > 0 && `${stay.beds} bed${stay.beds > 1 ? 's' : ''}`} */}
+             {stay.rating > 0 ? (
+        
+          <span>★{stay.rating}</span>
+      
+      ) : (
+        <span className="invisible">★ 0</span>
+      )}
           </div>
           
           {/* Price */}
-          <div className="flex items-baseline gap-1">
-            <span className="text-lg font-bold text-gray-900">
+
+         {priceAmount &&( <div className="flex items-baseline gap-1">
+            <span className="text-xs md:text-lg font-bold text-[#4285f4]">
               {formatCurrency(stay.price.amount, stay.price.currency)}
             </span>
-            <span className="text-sm text-gray-600 font-medium">night</span>
-          </div>
+            <span className="text-xs md:text-sm text-gray-600 font-medium">night</span>
+          </div> )}
         </div>
       </div>
     </div>

@@ -16,6 +16,7 @@ interface PropertyMapProps {
   state: string;
   country?: string;
   coordinates?: [number, number] | { lat: number; lng: number };
+  price: number;
 }
 
 // Default coordinates for major Indian cities if not provided
@@ -78,7 +79,8 @@ export default function PropertyMap({
   city, 
   state, 
   country = 'India',
-  coordinates 
+  coordinates ,
+  price
 }: PropertyMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
@@ -222,63 +224,112 @@ export default function PropertyMap({
     try {
       
       // Create map instance
+      // const map = new window.google.maps.Map(mapRef.current, {
+      //   center: { lat: currentCoords.lat, lng: currentCoords.lng },
+      //   zoom: 14,
+      //   mapTypeControl: true,
+      //   streetViewControl: true,
+      //   fullscreenControl: true,
+      //   zoomControl: true,
+      //   styles: [
+      //     {
+      //       featureType: 'poi',
+      //       elementType: 'labels',
+      //       stylers: [{ visibility: 'on' }]
+      //     }
+      //   ]
+      // });
+   
       const map = new window.google.maps.Map(mapRef.current, {
-        center: { lat: currentCoords.lat, lng: currentCoords.lng },
-        zoom: 14,
-        mapTypeControl: true,
-        streetViewControl: true,
-        fullscreenControl: true,
-        zoomControl: true,
-        styles: [
-          {
-            featureType: 'poi',
-            elementType: 'labels',
-            stylers: [{ visibility: 'on' }]
-          }
-        ]
-      });
+              center: { lat: currentCoords.lat, lng: currentCoords.lng },
+              zoom: 15,
+              styles: airbnbMapStyle,
+              disableDefaultUI: true,
+              zoomControl: true,
+              gestureHandling: "greedy",
+              scrollwheel: false,
+            });
+
 
       mapInstanceRef.current = map;
 
       // Create custom marker icon (using home icon)
-      const markerIcon = {
-        url: '/home.png',
-        scaledSize: new window.google.maps.Size(48, 60),
-        anchor: new window.google.maps.Point(24, 60),
-        origin: new window.google.maps.Point(0, 0)
-      };
+      // const markerIcon = {
+      //   url: '/home.png',
+      //   scaledSize: new window.google.maps.Size(48, 60),
+      //   anchor: new window.google.maps.Point(24, 60),
+      //   origin: new window.google.maps.Point(0, 0)
+      // };
 
-      // Create marker
-      const marker = new window.google.maps.Marker({
-        position: { lat: currentCoords.lat, lng: currentCoords.lng },
-        map: map,
-        title: `${address}, ${city}, ${state}`,
-        icon: markerIcon,
-        animation: window.google.maps.Animation.DROP
-      });
+      // // Create marker
+      // const marker = new window.google.maps.Marker({
+      //   position: { lat: currentCoords.lat, lng: currentCoords.lng },
+      //   map: map,
+      //   title: `${address}, ${city}, ${state}`,
+      //   icon: markerIcon,
+      //   animation: window.google.maps.Animation.DROP
+      // });
 
-      markerRef.current = marker;
+      const markerDiv = document.createElement("div");
+markerDiv.innerHTML = `
+  <div style="
+    background:white;
+    padding:6px 14px;
+    border-radius:999px;
+    font-weight:600;
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    cursor:pointer;
+  ">
+     ₹${price}
+  </div>
+`;
+
+class PriceMarker extends window.google.maps.OverlayView {
+  position;
+  div;
+
+  constructor(position) {
+    super();
+    this.position = position;
+  }
+
+  onAdd() {
+    this.div = markerDiv;
+    this.getPanes().overlayMouseTarget.appendChild(this.div);
+  }
+
+  draw() {
+    const point = this.getProjection().fromLatLngToDivPixel(
+      new window.google.maps.LatLng(this.position)
+    );
+    this.div.style.position = "absolute";
+    this.div.style.left = point.x + "px";
+    this.div.style.top = point.y + "px";
+  }
+}
+
+new PriceMarker({ lat: currentCoords.lat, lng: currentCoords.lng }).setMap(map);
+
+
+      markerRef.current = markerDiv;
 
       // Create info window
-      const infoWindow = new window.google.maps.InfoWindow({
-        content: `
-          <div style="padding: 8px; min-width: 200px;">
-            <h3 style="font-weight: bold; margin-bottom: 4px; color: #1f2937;">Property Location</h3>
-            <p style="margin: 0; color: #4b5563; font-size: 14px;">${address}</p>
-            <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 12px;">${city}, ${state}</p>
-          </div>
-        `
-      });
+     <div className="absolute bottom-4 left-4 right-4 bg-white rounded-2xl shadow-xl p-4">
+  <h3 className="font-semibold text-lg">{address}</h3>
+  <p className="text-sm text-gray-600">{city}, {state}</p>
+  <p className="mt-2 font-bold">₹3,200 / night</p>
+</div>
 
-      infoWindowRef.current = infoWindow;
+
+      // infoWindowRef.current = infoWindow;
 
       // Open info window on marker click
-      marker.addListener('click', () => {
-        infoWindow.open(map, marker);
-      });
+      // markerDiv.addListener('click', () => {
+      //   infoWindow.open(map, marker);
+      // });
 
-      // Open info window initially
-      infoWindow.open(map, marker);
+      // // Open info window initially
+      // infoWindow.open(map, marker);
 
         console.log('✅ Google Map initialized successfully');
         setIsLoading(false);
@@ -331,31 +382,58 @@ export default function PropertyMap({
     window.open(directionsUrl, '_blank');
   };
 
+  const airbnbMapStyle = [
+  { elementType: "geometry", stylers: [{ color: "#f5f5f5" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#616161" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#f5f5f5" }] },
+  {
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [{ color: "#ffffff" }]
+  },
+  {
+    featureType: "road",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#8a8a8a" }]
+  },
+  {
+    featureType: "poi",
+    elementType: "geometry",
+    stylers: [{ color: "#eeeeee" }]
+  },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#dceef2" }]
+  },
+];
+
+
   return (
     <div className="w-full">
-      <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-6">
-        <div className="flex items-center justify-between mb-4">
+      <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-gray-100 p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
-              <MapPin className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 flex items-center justify-center shrink-0">
+              <MapPin className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-900">Property Location</h3>
-              <p className="text-sm text-gray-600">{address}, {city}, {state}</p>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Property Location</h2>
+              <p className="text-sm text-gray-500">Get directions or view on map</p>
             </div>
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex flex-col xs:flex-row gap-3 w-full sm:w-auto">
             <button
               onClick={getDirections}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-6 py-2.5 bg-[#4285f4] text-white rounded-xl hover:bg-blue-600 transition-all shadow-md shadow-blue-100 text-sm font-bold"
             >
-              <Navigation className="w-4 h-4" />
+              <Navigation className="w-4 h-4 fill-white" />
               Directions
             </button>
             <button
               onClick={openInMaps}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-50 text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-100 transition-all text-sm font-bold"
             >
               <ExternalLink className="w-4 h-4" />
               Open in Maps
@@ -365,7 +443,7 @@ export default function PropertyMap({
 
         <div className="relative">
           {mapError || !coords.lat || !coords.lng || isNaN(coords.lat) || isNaN(coords.lng) ? (
-            <div className="h-96 bg-gray-100 rounded-xl flex items-center justify-center">
+            <div className="h-100 bg-gray-100 rounded-xl flex items-center justify-center">
               <div className="text-center">
                 <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                 <p className="text-gray-600 mb-2">Map unavailable</p>
@@ -400,7 +478,7 @@ export default function PropertyMap({
                   setMapContainerReady(true);
                 }
               }}
-              className="h-96 bg-gray-100 rounded-xl overflow-hidden"
+              className="h-[320px] sm:h-96 bg-gray-100 rounded-xl overflow-hidden"
               style={{ 
                 minHeight: '384px',
                 width: '100%',
@@ -410,12 +488,19 @@ export default function PropertyMap({
           )}
         </div>
 
-        <div className="mt-4 p-4 bg-blue-50 rounded-xl">
+      
+      </div>
+    </div>
+  );
+}
+
+
+  {/* <div className="mt-4  p-3 sm:p-4  bg-blue-50 rounded-xl">
           <div className="flex items-start gap-3">
             <MapPin className="w-5 h-5 text-blue-600 mt-0.5" />
             <div>
-              <h4 className="font-medium text-gray-900 mb-1">Getting There</h4>
-              <p className="text-sm text-gray-600 mb-2">
+              <h4 className="font-medium text-gray-900 mb-1  text-sm sm:text-base">Getting There</h4>
+              <p className="text-xs sm:text-sm text-gray-600">
                 The property is located in {city}, {state}. Use the directions button above to get turn-by-turn navigation.
               </p>
               <div className="text-xs text-gray-500">
@@ -425,8 +510,4 @@ export default function PropertyMap({
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+        </div> */}

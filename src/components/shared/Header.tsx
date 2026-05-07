@@ -1,50 +1,127 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useUI } from "@/core/store/uiContext";
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import { 
-  Menu, 
-  X, 
-  User, 
-  LogOut, 
-  Settings, 
-  Heart, 
-  Calendar, 
+import { useAuth } from '@/core/store/auth-context';
+import Dropdown from '../ui/Dropdown';
+import AirbnbSearchForm from '../trips/AirbnbSearchForm';
+import MobileSearchSheet from "@/components/trips/mobileSearchForm";
+import Button from '../ui/Button';
+import {
+  Menu,
+  X,
+  User,
+  LogOut,
+  Settings,
+  Heart,
+  Calendar,
   MapPin,
   ChevronDown,
   Home,
   Bell,
   BookOpen,
+  ArrowLeft,
+  Share2,
   Star,
   Sparkles,
   Search,
-  Shield
+  Shield,
+  Filter,
+  AlertCircle,
+  Loader2,
+  CheckCircle,
+  Zap,
+  IndianRupee
+
 } from 'lucide-react';
-import Button from '@/shared/components/ui/Button';
-import { apiClient } from '@/infrastructure/api/clients/api-client';
-import { useAuth } from '@/core/store/auth-context';
-import Dropdown from '../ui/Dropdown';
-import AirbnbSearchForm from '@/components/trips/AirbnbSearchForm';
+import { boolean } from 'zod/v4';
+import { on } from 'events';
+import { cn } from '@/lib/utils';
+
+
 
 interface HeaderProps {
   searchExpanded?: boolean;
   onSearchToggle?: (expanded: boolean) => void;
   onSearch?: (location: any, guestsCount?: number, checkInDate?: string, checkOutDate?: string) => void;
   hideSearch?: boolean;
+  visibleFilter?: boolean;
+  onFilterClick?: () => void;
+  searchValues?: {
+    location?: string;
+    checkIn?: string;
+    checkOut?: string;
+    guests?: number;
+  };
+  visibleWishlist?: boolean;
+  visibleShare?: boolean;
+  onShareClick?: () => void;
+  onWishlistClick?: () => void;
+  isFavorited?: boolean;
+  checkAvailability?: boolean;
+  onCheckAvailability?: () => void;
+  showBookingButton?: boolean;
+  pricing?: string;
+  night?: number;
+  onHandleBooking?: () => void;
+  rating?: number;
+  isOwenProperty?: boolean;
+  // availabilityChecked?: boolean;
+
 }
 
-const Header = ({ searchExpanded: externalSearchExpanded, onSearchToggle, onSearch, hideSearch = false }: HeaderProps = {}) => {
+const Header = ({ searchExpanded: externalSearchExpanded,
+  onSearchToggle,
+  onSearch,
+  hideSearch = false,
+  visibleFilter = false,
+  onFilterClick,
+  visibleShare = false,
+  visibleWishlist = false,
+  onShareClick,
+  onWishlistClick,
+  isFavorited = false,
+  showBookingButton = false,
+  checkAvailability = false,
+  pricing,
+  night,
+  onCheckAvailability,
+  onHandleBooking,
+  rating,
+  isOwenProperty = false,
+  searchValues
+
+}: HeaderProps = {}) => {
+
+  // 
+  const { hideHeader, availabilityLoading, availabilityError,
+    selectionStep, availabilityChecked, bookingLoading } = useUI();
   const router = useRouter();
   const pathname = usePathname();
+  const [activeCategory, setActiveCategory] = useState<'homes' | 'services' | 'stories' | null>(null);
   const { user, isAuthenticated, isLoading, logout, refreshUser } = useAuth();
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [hostMenuOpen, setHostMenuOpen] = useState(false);
+  const hostMenuRef = useRef<HTMLDivElement>(null);
+  const [internalSearchExpanded, setInternalSearchExpanded] = useState(false);
+  const searchExpanded = externalSearchExpanded !== undefined ? externalSearchExpanded : internalSearchExpanded;
+  const setSearchExpanded = onSearchToggle || setInternalSearchExpanded;
   const [scrolled, setScrolled] = useState(false);
   const [hideMobileHeader, setHideMobileHeader] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [internalSearchExpanded, setInternalSearchExpanded] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<'homes' | 'services' | 'stories' | null>(null);
-  
+
+  const categories = [
+  { id: 'homes', icon: '🏠', label: 'Homes', path: '/' },
+  { id: 'services',icon: '🔔', label: 'Services', path: '/services' },
+  { id: 'stories',  icon: '📖', label: 'Stories', path: '/stories' },
+];
+
+  const isStoriesPage = pathname?.startsWith('/stories');
+  const isSearchPage = pathname?.startsWith('/search');
+  const isRoomsPage = pathname?.startsWith('/rooms');
+
   // Set active category based on current route
   useEffect(() => {
     if (pathname === '/services') {
@@ -54,23 +131,10 @@ const Header = ({ searchExpanded: externalSearchExpanded, onSearchToggle, onSear
     } else if (pathname === '/search') {
       setActiveCategory('homes');
     } else {
-      setActiveCategory(null); // Default state - nothing selected
+      setActiveCategory('homes'); // Default state - nothing selected
     }
   }, [pathname]);
-  
-  // Use external search state if provided, otherwise use internal state
-  const searchExpanded = externalSearchExpanded !== undefined ? externalSearchExpanded : internalSearchExpanded;
-  const setSearchExpanded = onSearchToggle || setInternalSearchExpanded;
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Refresh user data when component mounts to ensure we have the latest role
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
       // Only refresh once when component mounts
@@ -79,29 +143,50 @@ const Header = ({ searchExpanded: externalSearchExpanded, onSearchToggle, onSear
         refreshUser();
       }
     }
-  }, [isAuthenticated, isLoading]); // Removed refreshUser from dependencies
+  }, [isAuthenticated, isLoading]);
+
+  // Close host menu on click outside or Escape
+  useEffect(() => {
+    if (!hostMenuOpen) return;
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setHostMenuOpen(false); };
+    const handleOutside = (e: MouseEvent) => {
+      if (hostMenuRef.current && !hostMenuRef.current.contains(e.target as Node)) {
+        setHostMenuOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKey);
+    document.addEventListener('mousedown', handleOutside);
+    return () => {
+      document.removeEventListener('keydown', handleKey);
+      document.removeEventListener('mousedown', handleOutside);
+    };
+  }, [hostMenuOpen]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const check = () => setHideMobileHeader(document.body.classList.contains('search-open'));
-    check();
-    const observer = new MutationObserver(check);
-    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // handle logout
+  const handleLogout = async () => {
+    try {
+      // Logout is handled by the auth service
+      logout();
+      router.push('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setSearchExpanded(false);
-      }
     };
 
     const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as Element;
-      if (!target.closest('.search-container') && !target.closest('.header-container')) {
-        setSearchExpanded(false);
-      }
     };
 
     if (searchExpanded) {
@@ -115,16 +200,6 @@ const Header = ({ searchExpanded: externalSearchExpanded, onSearchToggle, onSear
     };
   }, [searchExpanded]);
 
-  const handleLogout = async () => {
-    try {
-      // Logout is handled by the auth service
-      logout();
-      router.push('/');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
-
   if (isLoading) {
     return null;
   }
@@ -133,54 +208,57 @@ const Header = ({ searchExpanded: externalSearchExpanded, onSearchToggle, onSear
     return null;
   }
 
-  // When search is expanded, show full header regardless of scroll state
-  // Show search bar on stories page only when expanded
-  // On search page, keep search compressed by default unless explicitly expanded
-  // If hideSearch is true, always show full header (navigation) without search form
-  const shouldShowFullHeader = hideSearch ? true : ((!scrolled || searchExpanded) && (pathname !== '/stories' || searchExpanded) && (pathname !== '/search' || searchExpanded));
+  const shouldShowFullHeader = hideSearch
+    ? true
+    : ((!scrolled || searchExpanded)
+      && (!isStoriesPage || searchExpanded)
+      && (!isSearchPage || searchExpanded)
+      && (!isRoomsPage || searchExpanded));
 
   return (
-    <header className={`w-full z-50 fixed top-0 left-0 right-0 transition-all duration-500 ease-in-out header-container ${
-      scrolled && !searchExpanded
-        ? 'bg-white border-b border-gray-200 shadow-lg' 
-        : 'bg-white border-b border-gray-100'
-    }`}> 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Main Navigation Bar */}
-        <div className={`flex items-center justify-between relative transition-all duration-500 ease-in-out ${
-          shouldShowFullHeader ? 'h-20' : 'h-24 my-1'
-        }`}>
-          {/* Logo */}
-          <Link href="/" className={`flex items-center group relative z-10 ${
-            !shouldShowFullHeader ? 'pt-1' : ''
-          }`}>
-            <div className="relative">
-              <Image
-                src="/logo.png"
-                alt="TripMe"
-                width={120}
-                height={120}
-                className="h-30 w-30 object-contain transition-transform duration-300 group-hover:scale-110"
-                priority
-              />
-            </div>
-          </Link>
+    <>
+      <header
+        className={`w-full z-[100] fixed top-0 left-0 right-0 transition-all duration-300 ${
+          hideHeader ? 'hidden' : ''
+        } ${
+          scrolled && !searchExpanded
+            ? 'bg-white border-b border-gray-200 shadow-lg'
+            : 'bg-white border-b border-gray-100'
+        }`}
+      >
 
-          {/* Desktop Navigation - Centered - Show when not scrolled or search expanded */}
-          {shouldShowFullHeader ? (
-            <div className="hidden lg:flex items-center gap-12 transition-all duration-500 ease-in-out">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          {/* Main Nav Bar container */}
+          <div className={`hidden lg:flex item-center justify-between relative transition-all duration-500 ease-in-out ${shouldShowFullHeader ? 'h-20' : 'h-24 my-1'}`}>
+
+            <Link href="/" className={`flex items-center group relative z-10 ${!shouldShowFullHeader ? 'pt-1' : ''
+              }`}>
+              <div className="relative">
+                <Image
+                  src="/logo.png"
+                  alt="TripMe"
+                  width={120}
+                  height={120}
+                  className="h-30 w-30 object-contain transition-transform duration-300 group-hover:scale-110"
+                  priority
+                />
+              </div>
+            </Link>
+
+            {shouldShowFullHeader && !hideSearch ? <div className="hidden lg:flex items-center gap-12 transition-all duration-500 ease-in-out">
               <button
                 onClick={() => {
                   setActiveCategory('homes');
-                  router.push('/search');
+                  router.push('/');
                 }}
-                className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-200 group relative ${
-                  activeCategory === 'homes' 
-                    ? 'text-purple-600 bg-purple-50' 
-                    : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
-                }`}
+                className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-200 group relative ${activeCategory === 'homes'
+                  ? 'text-[#4285F4]'
+                  : 'text-gray-700 hover:text-[#4285F4]'
+                  }`}
               >
-                <Home size={22} className="group-hover:scale-110 transition-transform duration-200" />
+                <span className='text-3xl group-hover:scale-110 transition-transform duration-200'>🏠</span>
+                {/* <Home size={22} className="group-hover:scale-110 transition-transform duration-200" /> */}
                 <span className="font-medium text-base">Homes</span>
               </button>
               <button
@@ -188,13 +266,13 @@ const Header = ({ searchExpanded: externalSearchExpanded, onSearchToggle, onSear
                   setActiveCategory('services');
                   router.push('/services');
                 }}
-                className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-200 group relative ${
-                  activeCategory === 'services'
-                    ? 'text-purple-600 bg-purple-50'
-                    : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
-                }`}
+                className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-200 group relative ${activeCategory === 'services'
+                  ? 'text-[#4285F4]'
+                  : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
+                  }`}
               >
-                <Bell size={22} className="group-hover:scale-110 transition-transform duration-200" />
+                <span className='text-2xl group-hover:scale-110 transition-transform duration-200'>🔔</span>
+                {/* <Bell size={22} className="group-hover:scale-110 transition-transform duration-200" /> */}
                 <span className="font-medium text-base">Services</span>
               </button>
               <button
@@ -202,318 +280,861 @@ const Header = ({ searchExpanded: externalSearchExpanded, onSearchToggle, onSear
                   setActiveCategory('stories');
                   router.push('/stories');
                 }}
-                className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-200 group relative ${
-                  activeCategory === 'stories'
-                    ? 'text-purple-600 bg-purple-50'
-                    : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
-                }`}
+                className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-200 group relative ${activeCategory === 'stories'
+                  ? 'text-[#4285F4]'
+                  : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
+                  }`}
               >
-                <BookOpen size={22} className="group-hover:scale-110 transition-transform duration-200" />
+                <span className='text-2xl group-hover:scale-110 transition-transform duration-200'>📖</span>
+                {/* <BookOpen size={22} className="group-hover:scale-110 transition-transform duration-200" /> */}
                 <span className="font-medium text-base">Stories</span>
               </button>
             </div>
-          ) : !hideSearch ? (
-            <div className="hidden lg:flex items-center transition-all duration-500 ease-in-out">
-              <div 
-                className="bg-white border border-gray-300 rounded-full shadow-sm hover:shadow-md transition-all duration-500 ease-in-out p-1 cursor-pointer"
-                onClick={() => setSearchExpanded(true)}
-              >
-                <div className="flex items-center justify-between">
-                  {/* Location */}
-                  <div className="flex items-center gap-3 px-3 py-1 flex-1 hover:bg-gray-50 rounded-lg transition-colors">
-                    <MapPin className="text-gray-600" size={18} />
-                    <div className="text-left">
-                      <div className="text-sm font-medium text-gray-900">Where?</div>
+              : (
+                <div className="hidden lg:flex items-center transition-all duration-500 ease-in-out">
+                  <div
+                    className="bg-white border border-gray-300 rounded-full shadow-sm hover:shadow-md transition-all duration-500 ease-in-out p-1 cursor-pointer"
+                    onClick={() => setSearchExpanded(true)}
+                  >
+                    <div className="flex items-center justify-between">
+                      {/* Location */}
+                      <div className="flex items-center gap-3 px-3 py-1 flex-1 hover:bg-gray-50 rounded-lg transition-colors">
+                        <MapPin className="text-gray-600" size={18} />
+                        <div className="text-left">
+                          <div className="text-sm font-medium text-gray-900">Where?</div>
+                        </div>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="w-px h-6 bg-gray-300"></div>
+
+                      {/* Dates */}
+                      <div className="flex items-center gap-3 px-3 py-1 flex-1 hover:bg-gray-50 rounded-lg transition-colors">
+                        <Calendar className="text-gray-600" size={18} />
+                        <div className="text-left">
+                          <div className="text-sm font-medium text-gray-900">When</div>
+                        </div>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="w-px h-6 bg-gray-300"></div>
+
+                      {/* Guests */}
+                      <div className="flex items-center gap-3 px-3 py-1 flex-1 hover:bg-gray-50 rounded-lg transition-colors">
+                        <User className="text-gray-600" size={18} />
+                        <div className="text-left">
+                          <div className="text-sm font-medium text-gray-900">Who?</div>
+                        </div>
+                      </div>
+
+                      {/* Search Button */}
+                      <button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white p-1.5 rounded-full transition-all duration-200 ml-2">
+                        <Search className="w-4 h-4"  />
+                      </button>
                     </div>
                   </div>
-                  
-                  {/* Divider */}
-                  <div className="w-px h-6 bg-gray-300"></div>
-                  
-                  {/* Dates */}
-                  <div className="flex items-center gap-3 px-3 py-1 flex-1 hover:bg-gray-50 rounded-lg transition-colors">
-                    <Calendar className="text-gray-600" size={18} />
+                </div>
+
+              )}
+
+            {visibleFilter && (
+              <div className="hidden lg:flex items-center transition-all duration-500 ease-in-out">
+                {/* className="bg-white border border-gray-300 rounded-full shadow-sm hover:shadow-md transition-all duration-500 ease-in-out p-1 cursor-pointer */}
+                <button
+                  onClick={onFilterClick}
+                  className="bg-white border border-gray-300 rounded-full shadow-sm
+                 hover:shadow-md transition-all duration-500 ease-in-out
+                 p-1 cursor-pointer"
+                  type="button"
+                >
+                  <div className="flex items-center gap-3 px-3 py-1 flex-1 hover:bg-gray-50 rounded-lg transition-colors" onClick={onFilterClick}>
+                    <Filter className="text-gray-600" size={18} />
                     <div className="text-left">
-                      <div className="text-sm font-medium text-gray-900">When</div>
+                      <div className="text-sm font-medium text-gray-900">Filter</div>
                     </div>
                   </div>
-                  
-                  {/* Divider */}
-                  <div className="w-px h-6 bg-gray-300"></div>
-                  
-                  {/* Guests */}
-                  <div className="flex items-center gap-3 px-3 py-1 flex-1 hover:bg-gray-50 rounded-lg transition-colors">
-                    <User className="text-gray-600" size={18} />
-                    <div className="text-left">
-                      <div className="text-sm font-medium text-gray-900">Who?</div>
+                </button>
+              </div>
+
+            )}
+
+
+
+
+            {/* Desktop actions right side*/}
+
+            {showBookingButton ? (
+              /* 🟢 BOOKING STATE */
+              <div className={`hidden lg:flex items-center gap-4 ${!shouldShowFullHeader ? "pt-1" : ""}`}>
+                <div className="mt-4 flex items-center gap-4">
+                  <div className="flex flex-col items-start font-sans">
+                    {/* Price Row */}
+                    <div className="flex items-center gap-0.5 border-b-2 border-black pb-0.5">
+                      <IndianRupee className="w-4 h-4 stroke-[3px]" />
+                      <span className="text-xl font-bold tracking-tight">
+                        {pricing}
+                      </span>
+                    </div>
+
+                    {/* Night Info Row */}
+                    <div className="text-xs text-gray-800 mt-1">
+                      for {night ?? 0} {(night ?? 0) > 1 ? 'nights' : 'night'}
+                    </div>
+
+                    {/* Rating Row (Optional, based on your image) */}
+                    <div className="flex items-center gap-1 mt-2 text-xs text-gray-600">
+                      <span className="text-black">★</span>
+                      <span className="font-semibold text-black">{rating || 0}</span>
+
                     </div>
                   </div>
-                  
-                  {/* Search Button */}
-                  <button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white p-1.5 rounded-full transition-all duration-200 ml-2">
-                    <Search className="w-4 h-4" />
-                  </button>
+
+                  <Button
+                    className={`w-full py-4 rounded-2xl font-bold text-sm shadow-xl transition-all duration-300 transform ${availabilityChecked && (night ?? 0) > 0
+                      ? 'bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white hover:shadow-2xl hover:scale-105'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                    onClick={onHandleBooking}
+                    disabled={bookingLoading || !availabilityChecked || (night ?? 0) === 0}
+                  >
+                    {bookingLoading ? (
+                      <div className="flex items-center justify-center gap-3">
+                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Processing...</span>
+                      </div>
+                    ) : !availabilityChecked ? (
+                      <div className="flex items-center justify-center gap-3">
+                        <CheckCircle className="w-6 h-6" />
+                        <span>Check Availability First</span>
+                      </div>
+                    ) : night === 0 ? (
+                      <div className="flex items-center justify-center gap-3">
+                        <Calendar className="w-6 h-6" />
+                        <span>Select Valid Dates</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center gap-3">
+                        <Zap className="w-6 h-6" />
+                        <span>Continue to Book </span>
+                      </div>
+                    )}
+                  </Button>
                 </div>
               </div>
-            </div>
-          ) : null}
 
-          {/* Desktop Actions - Right Side */}
-          <div className={`hidden lg:flex items-center gap-4 ${
-            !shouldShowFullHeader ? 'pt-1' : ''
-          }`}>
-            {/* Host Button */}
-            {isAuthenticated && user?.role === 'host' ? (
-              <Link href="/host/dashboard">
-                <span className="text-gray-700 hover:text-gray-900 font-medium text-sm transition-colors duration-200">
-                  Host Dashboard
-                </span>
-              </Link>
-            ) : (
-              <Link href="/become-host">
-                <span className="text-gray-700 hover:text-gray-900 font-medium text-sm transition-colors duration-200">
-                  Become a host
-                </span>
-              </Link>
-            )}
-            
-            {/* User Menu */}
-            {isAuthenticated ? (
-              <div className="relative">
-                <button
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-purple-400 focus:outline-none transition-all duration-200 border border-gray-300 rounded-full"
-                >
-                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center overflow-hidden">
-                    {user?.profileImage ? (
-                      <img 
-                        src={user.profileImage} 
-                        alt={user.name} 
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <User className="w-4 h-4 text-purple-600" />
-                    )}
+            ) :
+              checkAvailability ? (
+                <div className={`hidden lg:flex items-center gap-4 ${!shouldShowFullHeader ? 'pt-1' : ''}`}>
+
+                  <div className="mt-4 flex flex-row items-center justify-between gap-4">
+                    <div className="flex flex-col items-start font-sans">
+                      {/* Price Row */}
+                      <div className="flex items-center gap-0.5 border-b-2 border-black pb-0.5">
+                        <IndianRupee className="w-4 h-4 stroke-[3px]" />
+                        <span className="text-xl font-bold tracking-tight">
+                          {pricing}
+                        </span>
+                      </div>
+
+                      {/* Night Info Row */}
+                      <div className="text-xs text-gray-800 mt-1">
+                        for {night ?? 0} {(night ?? 0) > 1 ? 'nights' : 'night'}
+                      </div>
+
+                      {/* Rating Row (Optional, based on your image) */}
+                      <div className="flex items-center gap-1 mt-2 text-xs text-gray-600">
+                        <span className="text-black">★</span>
+                        <span className="font-semibold text-black">{rating || 0}</span>
+
+                      </div>
+                    </div>
+
+
+                    <Button
+                      onClick={onCheckAvailability}
+                      disabled={bookingLoading || availabilityLoading || selectionStep !== 'complete'}
+                      className={`flex items-center gap-2 font-bold py-3 px-5 rounded-2xl shadow-xl transition-all duration-300 transform ${selectionStep === 'complete'
+                        ? 'bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white hover:shadow-2xl hover:scale-105'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        }`}
+                    >
+                      {bookingLoading || availabilityLoading ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <span>{availabilityLoading ? 'Checking...' : 'Processing...'}</span>
+                        </>
+                      ) : selectionStep !== 'complete' ? (
+                        <>
+                          <Calendar className="w-4 h-4" />
+                          <span>{selectionStep === 'checkin' ? 'Select Check-in' : 'Select Check-out'}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="w-4 h-4" />
+                          <span>Complete Booking</span>
+                        </>
+                      )}
+                    </Button>
+
+
                   </div>
-                  <span className="text-sm font-medium">{user?.name}</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
+
+                </div>
+              ) : (
+                <div className={`hidden lg:flex items-center gap-4 ${!shouldShowFullHeader ? 'pt-1' : ''}`}>
+                  {/* Host Button */}
+                  {isAuthenticated && user?.role === 'host' ? (
+                    <Link href="/host/dashboard">
+                      <span className="text-gray-700 hover:text-gray-900 font-medium text-sm transition-colors duration-200">
+                        Host Dashboard
+                      </span>
+                    </Link>
+                  ) : (
+                    <div className="relative" ref={hostMenuRef}>
+                      <button
+                        onClick={() => setHostMenuOpen((prev) => !prev)}
+                        className="text-gray-700 hover:text-gray-900 font-medium text-sm transition-colors duration-200 hover:underline focus:outline-none"
+                      >
+                        Become a host
+                      </button>
+
+                      {/* ===== Airbnb-style Host Popup ===== */}
+                      {hostMenuOpen && (
+                        <div
+                          className="absolute right-0 top-[calc(100%+12px)] w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[100] animate-fadeInDown"
+                          style={{ animation: 'fadeInDown 0.18s ease' }}
+                        >
+                          {/* Header section */}
+                          <div className="px-5 pt-5 pb-3">
+                            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Hosting</p>
+
+                            {/* Host your home */}
+                            <Link
+                              href="/become-host"
+                              onClick={() => setHostMenuOpen(false)}
+                              className="flex items-center gap-4 px-3 py-3 rounded-xl hover:bg-purple-50 transition-all duration-200 group"
+                            >
+                              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center shrink-0 group-hover:from-purple-200 group-hover:to-indigo-200 transition-all">
+                                <Home size={18} className="text-purple-600" />
+                              </div>
+                              <div>
+                                <div className="text-sm font-semibold text-gray-800 group-hover:text-purple-700">Host your home</div>
+                                <div className="text-xs text-gray-400 mt-0.5">Earn money sharing your space</div>
+                              </div>
+                            </Link>
+
+                            {/* Host services */}
+                            <Link
+                              href="/host/service/new"
+                              onClick={() => setHostMenuOpen(false)}
+                              className="flex items-center gap-4 px-3 py-3 rounded-xl hover:bg-purple-50 transition-all duration-200 group"
+                            >
+                              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 to-blue-100 flex items-center justify-center shrink-0 group-hover:from-indigo-200 group-hover:to-blue-200 transition-all">
+                                <Sparkles size={18} className="text-indigo-600" />
+                              </div>
+                              <div>
+                                <div className="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">Host services</div>
+                                <div className="text-xs text-gray-400 mt-0.5">Offer unique local experiences</div>
+                              </div>
+                            </Link>
+                          </div>
+
+                          {/* Divider */}
+                          <div className="h-px bg-gray-100 mx-5" />
+
+                          {/* Navigate section */}
+                          <div className="px-5 py-3 mt-5">
+                            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Explore</p>
+                            <div className="flex flex-col gap-0.5">
+                              <button
+                                onClick={() => { setHostMenuOpen(false); router.push('/'); }}
+                                className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200"
+                              >
+                                <Home size={15} className="text-gray-400" />
+                                <span>Homes</span>
+                              </button>
+                              <button
+                                onClick={() => { setHostMenuOpen(false); router.push('/services'); }}
+                                className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200"
+                              >
+                                <Bell size={15} className="text-gray-400" />
+                                <span>Services</span>
+                              </button>
+                              <button
+                                onClick={() => { setHostMenuOpen(false); router.push('/stories'); }}
+                                className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200"
+                              >
+                                <BookOpen size={15} className="text-gray-400" />
+                                <span>Stories</span>
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Footer CTA */}
+                          <div className="px-5 pb-5 pt-1">
+                            <Link
+                              href="/become-host"
+                              onClick={() => setHostMenuOpen(false)}
+                              className="block w-full text-center py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+                            >
+                              Get started as a host
+                            </Link>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* User Menu */}
+                  {isAuthenticated ? (
+                    <div className="relative">
+                      <button
+                        onClick={() => setUserMenuOpen(!userMenuOpen)}
+                        className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-purple-400 focus:outline-none transition-all duration-200 border border-gray-300 rounded-full"
+                      >
+                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center overflow-hidden">
+                          {user?.profileImage ? (
+                            <img
+                              src={user.profileImage}
+                              alt={user.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <User className="w-4 h-4 text-purple-600" />
+                          )}
+                        </div>
+                        <span className="text-sm font-medium">{user?.name}</span>
+                        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      {userMenuOpen && (
+                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+                          <Link
+                            href="/user/profile"
+                            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                            onClick={() => setUserMenuOpen(false)}
+                          >
+                            <User size={20} />
+                            <span className="font-medium">Profile</span>
+                          </Link>
+
+                          <Link
+                            href="/wishlist"
+                            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                            onClick={() => setUserMenuOpen(false)}
+                          >
+                            <Heart size={20} />
+                            <span className="font-medium">Wishlist</span>
+                          </Link>
+                          <Link
+                            href="/bookings"
+                            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                            onClick={() => setUserMenuOpen(false)}
+                          >
+                            <Calendar size={20} />
+                            <span className="font-medium">My Bookings</span>
+                          </Link>
+                          {user?.role === 'admin' && (
+                            <>
+                              <div className="border-t border-gray-200 my-2"></div>
+                              <Link
+                                href="/admin/dashboard"
+                                className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                                onClick={() => setUserMenuOpen(false)}
+                              >
+                                <Shield size={20} />
+                                <span className="font-medium">Admin Portal</span>
+                              </Link>
+                            </>
+                          )}
+                          <div className="border-t border-gray-200 my-2"></div>
+                          <button
+                            onClick={() => {
+                              handleLogout();
+                              setUserMenuOpen(false);
+                            }}
+                            className="flex items-center gap-3 w-full px-4 py-3 text-gray-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                          >
+                            <LogOut size={20} />
+                            <span className="font-medium">Sign out</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <Dropdown
+                      trigger={
+                        <button
+                          className="flex items-center justify-center gap-2 p-2 rounded-full text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-purple-400 focus:outline-none transition-all duration-200 border border-gray-300"
+                          aria-haspopup="true"
+                        >
+                          <Menu size={20} className="text-gray-700" />
+                          <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center shadow-sm overflow-hidden">
+                            <User size={16} className="text-white flex-shrink-0" />
+                          </div>
+                        </button>
+                      }
+                      align="right"
+                    >
+                      <div className="py-2 space-y-2">
+                        <Link
+                          href="/auth/login"
+                          className="block w-full text-center px-4 py-2 rounded-xl text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 font-medium"
+                        >
+                          Sign In
+                        </Link>
+                        <Link
+                          href="/auth/signup"
+                          className="block w-full text-center px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium transition-all duration-200"
+                        >
+                          Sign Up
+                        </Link>
+                      </div>
+                    </Dropdown>
+                  )}
+                </div>)}
+
+            {/* mobile menu button */}
+            {/* TODO . */}
+            {/* Need to create three tabs like home , services and stories */}
+
+            {visibleFilter ? (
+              <div className="flex items-center transition-all duration-500 ease-in-out lg:hidden">
+                {/* className="bg-white border border-gray-300 rounded-full shadow-sm hover:shadow-md transition-all duration-500 ease-in-out p-1 cursor-pointer */}
+                <button
+                  onClick={onFilterClick}
+                  className="bg-white border border-gray-300 rounded-full shadow-sm
+                 hover:shadow-md transition-all duration-500 ease-in-out
+                 p-1 cursor-pointer "
+                  type="button"
+                >
+                  <div className="flex items-center gap-3 px-3 py-1 flex-1 hover:bg-gray-50 rounded-lg transition-colors" onClick={onFilterClick}>
+                    <Filter className="text-gray-600" size={18} />
+                    <div className="text-left">
+                      <div className="text-sm font-medium text-gray-900">Filter</div>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            ) : <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-full text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200"
+            >
+              {mobileMenuOpen ? (
+                <X size={24} className="text-gray-700" />
+              ) : (
+                <Menu size={24} className="text-gray-700" />
+              )}
+            </button>}
+
+
+
+
+          </div>
+
+          {/* Mobile menu */}
+          {/* this code replace with tab menu */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden absolute top-full mt-5 left-0 right-0 bg-white border-b border-gray-200 shadow-lg z-50">
+              <div className="px-4 py-4 space-y-3">
+                <button
+                  onClick={() => {
+                    setActiveCategory('homes');
+                    router.push('/');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-2xl w-full text-left transition-all duration-200 ${activeCategory === 'homes'
+                    ? 'text-purple-600 bg-purple-50'
+                    : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
+                    }`}
+                >
+                  <Home size={20} />
+                  <span className="font-medium">Homes</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveCategory('services');
+                    router.push('/services');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-2xl w-full text-left transition-all duration-200 ${activeCategory === 'services'
+                    ? 'text-purple-600 bg-purple-50'
+                    : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
+                    }`}
+                >
+                  <Bell size={20} />
+                  <span className="font-medium">Services</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveCategory('stories');
+                    router.push('/stories');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-2xl w-full text-left transition-all duration-200 ${activeCategory === 'stories'
+                    ? 'text-purple-600 bg-purple-50'
+                    : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
+                    }`}
+                >
+                  <BookOpen size={20} />
+                  <span className="font-medium">Stories</span>
                 </button>
 
-                {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-                    <Link 
-                      href="/user/profile" 
-                      className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      <User size={20} />
-                      <span className="font-medium">Profile</span>
-                    </Link>
-                    <Link 
-                      href="/bookings" 
-                      className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      <Calendar size={20} />
-                      <span className="font-medium">My Bookings</span>
-                    </Link>
-                    {user?.role === 'admin' && (
-                      <>
-                        <div className="border-t border-gray-200 my-2"></div>
-                        <Link 
-                          href="/admin/dashboard" 
-                          className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
-                          onClick={() => setUserMenuOpen(false)}
+                {isAuthenticated ? (
+                  <>
+                    <div className="border-t border-gray-200 pt-3 mt-3">
+                      <Link
+                        href="/user/profile"
+                        className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <User size={20} />
+                        <span className="font-medium">Profile</span>
+                      </Link>
+
+                      <Link
+                        href="/wishlist"
+                        className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <Heart size={20} />
+                        <span className="font-medium">Wishlist</span>
+                      </Link>
+                      <Link
+                        href="/bookings"
+                        className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <Calendar size={20} />
+                        <span className="font-medium">My Bookings</span>
+                      </Link>
+                      {user?.role === 'admin' && (
+                        <Link
+                          href="/admin/dashboard"
+                          className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                          onClick={() => setMobileMenuOpen(false)}
                         >
                           <Shield size={20} />
                           <span className="font-medium">Admin Portal</span>
                         </Link>
-                      </>
-                    )}
-                    <div className="border-t border-gray-200 my-2"></div>
-                    <button
-                      onClick={() => {
-                        handleLogout();
-                        setUserMenuOpen(false);
-                      }}
-                      className="flex items-center gap-3 w-full px-4 py-3 text-gray-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                      )}
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setMobileMenuOpen(false);
+                        }}
+                        className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-gray-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                      >
+                        <LogOut size={20} />
+                        <span className="font-medium">Sign out</span>
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="border-t border-gray-200 pt-3 mt-3 space-y-2">
+                    <Link
+                      href="/auth/login"
+                      className="block w-full text-center px-4 py-3 rounded-2xl text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 font-medium"
+                      onClick={() => setMobileMenuOpen(false)}
                     >
-                      <LogOut size={20} />
-                      <span className="font-medium">Sign out</span>
-                    </button>
+                      Sign In
+                    </Link>
+                    <Link
+                      href="/auth/signup"
+                      className="block w-full text-center px-4 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium transition-all duration-200"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Sign Up
+                    </Link>
                   </div>
                 )}
               </div>
-            ) : (
-              <Dropdown
-                trigger={
-                  <button
-                    className="flex items-center justify-center gap-2 p-2 rounded-full text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-purple-400 focus:outline-none transition-all duration-200 border border-gray-300"
-                    aria-haspopup="true"
-                  >
-                    <Menu size={20} className="text-gray-700" />
-                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center shadow-sm overflow-hidden">
-                      <User size={16} className="text-white flex-shrink-0" />
-                    </div>
-                  </button>
-                }
-                align="right"
+            </div>)}
+
+          {shouldShowFullHeader && !hideHeader && !hideSearch && (<div className="hidden lg:flex justify-center w-full pb-3">
+            <div className="w-full max-w-4xl">
+              <AirbnbSearchForm
+                variant="compact"
+                activeCategory={activeCategory}
+                onSearch={onSearch}
+              />
+            </div>
+
+          </div>)}
+
+          {/* mobile search form - hidden when search sheet is open */}
+          <div
+  className={cn(
+    "md:hidden px-4  mt-5 transition-transform duration-300",
+    scrolled ? "scale-[0.96]" : "scale-100",
+    (hideSearch || searchExpanded) && "hidden"
+  )}
+>
+            <button
+              onClick={() => setSearchExpanded(true)}
+              className="
+      w-full
+      bg-white
+      border border-gray-200
+      rounded-full
+      shadow-sm
+      flex items-center gap-3
+      px-4 py-3
+      text-left
+    "
+            >
+              <Search className="w-4 h-4 text-[#4285F4] flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                {searchValues && (searchValues.location || searchValues.checkIn) ? (
+                  <div className="flex flex-col">
+                    <span className="text-gray-900 font-semibold text-sm truncate">
+                      {searchValues.location || "Anywhere"}
+                    </span>
+                    <span className="text-gray-500 text-xs font-medium truncate">
+                      {searchValues.checkIn && searchValues.checkOut 
+                        ? `${new Date(searchValues.checkIn).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} - ${new Date(searchValues.checkOut).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}`
+                        : "Any week"}
+                      {" · "}
+                      {searchValues.guests ? `${searchValues.guests} guests` : "Add guests"}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-gray-700 font-medium text-sm">
+                    Start your search
+                  </span>
+                )}
+              </div>
+            </button>
+
+            {/* Tabs */}
+            {/* <div className="flex justify-around border-b border-gray-200 mt-5 ">
+              <button
+                onClick={() => {
+                  setActiveCategory("homes");
+                  router.push("/");
+                }}
+                className={`pb-2 text-sm font-medium relative ${activeCategory === "homes"
+                  ? "text-black"
+                  : "text-gray-500"
+                  }`}
               >
-                <div className="py-2 space-y-2">
-                  <Link 
-                    href="/auth/login" 
-                    className="block w-full text-center px-4 py-2 rounded-xl text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 font-medium"
-                  >
-                    Sign In
-                  </Link>
-                  <Link 
-                    href="/auth/signup" 
-                    className="block w-full text-center px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium transition-all duration-200"
-                  >
-                    Sign Up
-                  </Link>
-                </div>
-              </Dropdown>
-            )}
+                Homes
+                {activeCategory === "homes" && (
+                  <span className="absolute left-0 right-0 -bottom-[1px] h-[2px] bg-black rounded-full" />
+                )}
+              </button>
+
+              <button
+                onClick={() => {
+                  setActiveCategory("services");
+                  router.push("/services");
+                }}
+                className={`pb-2 text-sm font-medium relative ${activeCategory === "services"
+                  ? "text-black"
+                  : "text-gray-500"
+                  }`}
+              >
+                services
+                {activeCategory === "services" && (
+                  <span className="absolute left-0 right-0 -bottom-[1px] h-[2px] bg-black rounded-full" />
+                )}
+              </button>
+
+              <button
+                onClick={() => {
+                  setActiveCategory("stories");
+                  router.push("/stories");
+                }}
+                className={`pb-2 text-sm font-medium relative ${activeCategory === "stories"
+                  ? "text-black"
+                  : "text-gray-500"
+                  }`}
+              >
+                stories
+                {activeCategory === "stories" && (
+                  <span className="absolute left-0 right-0 -bottom-[1px] h-[2px] bg-black rounded-full" />
+                )}
+              </button>
+            </div> */}
+           <div
+  className={cn(
+    "flex justify-around bg-white sticky z-40 transition-all duration-300 ease-in-out",
+    
+    // 🔥 dynamic spacing
+    scrolled
+      ? "top-[56px] py-1 "
+      : "top-[72px] py-3"
+  )}
+>
+  {categories.map((cat) => {
+    const isActive = activeCategory === cat.id;
+
+    return (
+      <button
+  key={cat.id}
+  onClick={() => {
+    // setActiveCategory(cat.id);
+    router.push(cat.path);
+  }}
+  className={cn(
+    "flex flex-col items-center justify-center relative min-w-[70px]",
+    "transition-all duration-300 ease-in-out",
+    scrolled ? "gap-0" : "gap-1.5",
+    isActive ? "text-[#4285F4]" : "text-gray-500"
+  )}
+>
+  {/* ICON with smooth fade + collapse */}
+  <div
+    className={cn(
+      "text-3xl transition-all duration-300 ease-in-out transform ",
+
+      scrolled
+        ? "opacity-0 scale-75 h-0 overflow-hidden"
+        : "opacity-100 scale-100 h-5"
+    )}
+  >
+    {cat.icon}
+  </div>
+
+  {/* LABEL */}
+  <span
+    className={cn(
+      "font-medium tracking-wide transition-all duration-300 mt-4 pb-2",
+      scrolled ? "text-sm" : "text-xs",
+      isActive ? "text-[#4285F4]" : "text-gray-500"
+    )}
+  >
+    {cat.label}
+  </span>
+
+  {/* ACTIVE LINE */}
+  <span
+    className={cn(
+      "absolute left-0 right-0 bottom-0 h-[3px] rounded-t-full transition-all duration-300",
+      isActive ? "bg-[#4285F4] opacity-100" : "opacity-0"
+    )}
+  />
+</button>
+    );
+  })}
+</div>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-full text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200"
-          >
-            {mobileMenuOpen ? (
-              <X size={24} className="text-gray-700" />
-            ) : (
-              <Menu size={24} className="text-gray-700" />
-            )}
-          </button>
+
+
         </div>
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg z-50">
-            <div className="px-4 py-4 space-y-3">
-              <button
-                onClick={() => {
-                  setActiveCategory('homes');
-                  router.push('/search');
-                  setMobileMenuOpen(false);
-                }}
-                className={`flex items-center gap-3 px-4 py-3 rounded-2xl w-full text-left transition-all duration-200 ${
-                  activeCategory === 'homes' 
-                    ? 'text-purple-600 bg-purple-50' 
-                    : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
-                }`}
-              >
-                <Home size={20} />
-                <span className="font-medium">Homes</span>
-              </button>
-              <button
-                onClick={() => {
-                  setActiveCategory('services');
-                  router.push('/services');
-                  setMobileMenuOpen(false);
-                }}
-                className={`flex items-center gap-3 px-4 py-3 rounded-2xl w-full text-left transition-all duration-200 ${
-                  activeCategory === 'services'
-                    ? 'text-purple-600 bg-purple-50'
-                    : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
-                }`}
-              >
-                <Bell size={20} />
-                <span className="font-medium">Services</span>
-              </button>
-              <button
-                onClick={() => {
-                  setActiveCategory('stories');
-                  router.push('/stories');
-                  setMobileMenuOpen(false);
-                }}
-                className={`flex items-center gap-3 px-4 py-3 rounded-2xl w-full text-left transition-all duration-200 ${
-                  activeCategory === 'stories'
-                    ? 'text-purple-600 bg-purple-50'
-                    : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
-                }`}
-              >
-                <BookOpen size={20} />
-                <span className="font-medium">Stories</span>
-              </button>
-              
-              {isAuthenticated ? (
-                <>
-                  <div className="border-t border-gray-200 pt-3 mt-3">
-                    <Link 
-                      href="/user/profile" 
-                      className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <User size={20} />
-                      <span className="font-medium">Profile</span>
-                    </Link>
-                    <Link 
-                      href="/bookings" 
-                      className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Calendar size={20} />
-                      <span className="font-medium">My Bookings</span>
-                    </Link>
-                    {user?.role === 'admin' && (
-                      <Link 
-                        href="/admin/dashboard" 
-                        className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <Shield size={20} />
-                        <span className="font-medium">Admin Portal</span>
-                      </Link>
-                    )}
-                    <button
-                      onClick={() => {
-                        handleLogout();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-gray-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
-                    >
-                      <LogOut size={20} />
-                      <span className="font-medium">Sign out</span>
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <div className="border-t border-gray-200 pt-3 mt-3 space-y-2">
-                  <Link 
-                    href="/auth/login" 
-                    className="block w-full text-center px-4 py-3 rounded-2xl text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 font-medium"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Sign In
-                  </Link>
-                  <Link 
-                    href="/auth/signup" 
-                    className="block w-full text-center px-4 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium transition-all duration-200"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Sign Up
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+      </header >
 
-        {/* Search Bar - Show when not scrolled or search expanded, unless hideSearch is true */}
-        {shouldShowFullHeader && !hideSearch && (
-          <div className="flex justify-center w-full pb-3">
-            <div className="w-full max-w-4xl">
-              <AirbnbSearchForm variant="compact" activeCategory={activeCategory} onSearch={onSearch} />
-            </div>
+      {hideHeader && (
+        <div className="lg:hidden sticky top-0 z-50 bg-white">
+          <div className="flex items-center justify-between px-4 py-3">
+
+            {/* LEFT SIDE */}
+            <button
+              onClick={() => router.push('/')}
+              className="w-9 h-9 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center shrink-0"
+            >
+              <ArrowLeft className="w-4 h-4 text-gray-900" />
+            </button>
+
+            {/* ===== SHARE MODE ===== */}
+            {visibleShare ? (
+              <div className="flex items-center gap-2 ml-auto">
+                {visibleShare && (
+                  <button
+                    onClick={onShareClick}
+                    className="w-9 h-9 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center"
+                  >
+                    <Share2 className="w-4 h-4 text-gray-700" />
+                  </button>
+                )}
+
+                {visibleWishlist && (
+                  <button
+                    onClick={onWishlistClick}
+                    className="w-9 h-9 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center"
+                  >
+                    <Heart
+                      className={`w-4 h-4 transition ${isFavorited
+                        ? "fill-red-500 text-red-500"
+                        : "text-gray-700"
+                        }`}
+                    />
+
+                  </button>
+                )}
+              </div>
+            ) : (
+              /* ===== NORMAL MODE ===== */
+              <>
+                <button
+                  onClick={() => setSearchExpanded(true)}
+                  className="
+          flex-1
+          mx-3
+          bg-white
+          border border-gray-200
+          rounded-full
+          shadow-sm
+          flex items-center gap-3
+          px-4 py-2.5
+          text-left
+        "
+                >
+                  <Search className="w-4 h-4 text-[#4285F4] flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    {searchValues && (searchValues.location || searchValues.checkIn) ? (
+                      <div className="flex flex-col">
+                        <span className="text-gray-900 font-semibold text-sm truncate">
+                          {searchValues.location || "Anywhere"}
+                        </span>
+                        <span className="text-gray-500 text-xs font-medium truncate">
+                          {searchValues.checkIn && searchValues.checkOut
+                            ? `${new Date(searchValues.checkIn).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} - ${new Date(searchValues.checkOut).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}`
+                            : "Any week"}
+                          {" · "}
+                          {searchValues.guests ? `${searchValues.guests} guests` : "Add guests"}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-gray-700 font-medium text-sm">
+                        Start your search
+                      </span>
+                    )}
+                  </div>
+                </button>
+
+                {visibleFilter && (
+                  <button
+                    onClick={onFilterClick}
+                    className="w-9 h-9 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center"
+                  >
+                    <Filter className="w-4 h-4 text-gray-700" />
+                  </button>
+                )}
+              </>
+            )}
           </div>
-        )}
-      </div>
-    </header>
-  );
-};
+
+        </div>
+      )
+      }
+
+
+
+      <MobileSearchSheet
+        // open={searchExpanded}
+        open={searchExpanded && window.innerWidth < 1024}
+        onClose={() => setSearchExpanded(false)}
+      />
+
+
+
+    </>
+  )
+}
+
+
 
 export default Header;

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { apiClient } from "@/infrastructure/api/clients/api-client";
 import { useAuth } from "@/core/store/auth-context";
@@ -15,9 +15,17 @@ import { addDays, format, differenceInDays } from 'date-fns';
 import { createPortal } from 'react-dom';
 import PropertyAvailabilityCalendar from "@/components/rooms/PropertyAvailabilityCalendar";
 import dynamic from 'next/dynamic';
-
+import Link from "next/link";
+import ImageGallery from "@/components/rooms/gallery/ImageGallery";
+import { ReviewsSection } from "@/components/rooms/reviews";
+import HostCard from "@/components/rooms/host-section/hostCard";
+import MobileBookingBar from "@/components/booking/MobileBookingBar";
+import { ShareOption } from "@/components/shared/SharedProperty";
+import CancellationPolicy from "@/components/rooms/property/CancellationPolicy";
+import HouseRules from "@/components/rooms/property/HouseRules";
+import { Crown } from "lucide-react";
 // Dynamically import PropertyMap to avoid SSR issues with Google Maps
-const PropertyMap = dynamic(() => import("@/components/rooms/PropertyMap"), { 
+const PropertyMap = dynamic(() => import("@/components/rooms/PropertyMap"), {
   ssr: false,
   loading: () => (
     <div className="h-96 bg-gray-100 rounded-xl flex items-center justify-center">
@@ -28,11 +36,11 @@ const PropertyMap = dynamic(() => import("@/components/rooms/PropertyMap"), {
     </div>
   )
 });
-import { 
-  Calendar, 
-  MapPin, 
-  Users, 
-  Star, 
+import {
+  Calendar,
+  MapPin,
+  Users,
+  Star,
   Heart,
   Wifi,
   Tv,
@@ -73,6 +81,9 @@ import {
   Users as UsersIcon,
   Zap,
   Lock,
+  
+  Sparkles,
+  BedDouble,
   Wifi as WifiIcon,
   Car as CarIcon,
   Coffee as CoffeeIcon,
@@ -94,8 +105,14 @@ import {
   Twitter,
   Loader2,
   RefreshCw,
-  Receipt
+  Receipt,
+  // Link
 } from "lucide-react";
+import { useUI } from "@/core/store/uiContext";
+import { TimeStepper } from "@/components/booking/TimeStepper";
+import { TimeSpinner } from "@/components/rooms/timeSelection/TimeSpinner";
+import { is } from "date-fns/locale";
+
 
 export default function PropertyDetailsPage() {
   const router = useRouter();
@@ -109,7 +126,217 @@ export default function PropertyDetailsPage() {
   const [error, setError] = useState("");
   const [selectedImage, setSelectedImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const { setHideBottomNav, hideHeader, setHideHeader, setAvailabilityChecked,
+    availabilityChecked, availabilityError, setAvailabilityError,
+    availabilityLoading, setAvailabilityLoading,
+    setSelectionStep, selectionStep,
+    bookingLoading, setBookingLoading
+  } = useUI();
+
+  const [timeConfirmed, setTimeConfirmed] = useState(false);
+  const [searchExpanded, setSearchExpanded] = useState(false);
+  const [showHeaderCheckBtn, setShowHeaderCheckBtn] = useState(false);
+  const [showBookingButton, setShowBookingButton] = useState(false);
+  //  badges
+  // ⭐ HERO (only 1)
+const heroBadge = property?.badges?.highlight?.[0] || null;
+
+// 📊 DETAILS (multiple)
+const detailBadges = property?.badges?.details || [];
+
+// 🔥 INSIGHTS (pricing section)
+const insightBadges = property?.badges?.insights || [];
+
+// ⚡ URGENCY (bottom / sticky)
+const urgencyBadge = property?.badges?.urgency?.[0] || null;
   
+
+
+const PricingBadge = ({ badge }) => {
+  return (
+    <div className="flex items-center gap-3 px-5 py-4 rounded-2xl bg-white border border-gray-200 shadow-sm">
+      
+      {/* Icon */}
+      <div className="text-lg">
+        {badge.icon}
+      </div>
+
+      {/* Label */}
+      <p className="text-gray-900 text-sm font-semibold leading-snug">
+        {badge.label}
+      </p>
+    </div>
+  );
+};
+
+// const FloatingInsightBadge = ({ badge }) => {
+//   if (!badge || !badge.label) return null;
+
+//   return (
+//     <div className="fixed bottom-40 left-4 right-4 z-50 block md:hidden">
+//       <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white border border-gray-200 shadow-lg">
+        
+//         <div className="text-lg">{badge.icon}</div>
+
+//         <p className="text-sm font-medium text-gray-800">
+//           {badge.label}
+//         </p>
+
+//       </div>
+//     </div>
+//   );
+// };
+
+
+
+const FloatingInsightBadge = ({ badge }) => {
+  const [show, setShow] = useState(false);
+
+  // 🧠 Check if already shown
+  useEffect(() => {
+    const alreadyShown = sessionStorage.getItem("insightBadgeShown");
+
+    if (!alreadyShown && badge) {
+      setShow(true);
+      sessionStorage.setItem("insightBadgeShown", "true");
+    }
+  }, [badge]);
+
+  // ⏱ Auto hide after 3 sec
+  useEffect(() => {
+    if (!show) return;
+
+    const timer = setTimeout(() => {
+      setShow(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [show]);
+
+  // 📜 Hide on scroll
+  useEffect(() => {
+    if (!show) return;
+
+    const handleScroll = () => {
+      setShow(false);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [show]);
+
+  if (!badge || !badge.label || !show) return null;
+
+  return (
+    <div
+      className={`fixed bottom-20 left-4 right-4 z-[9999] md:hidden transition-all duration-300 ${
+        show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+      }`}
+    >
+      <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white border border-gray-200 shadow-lg">
+        
+        <div className="text-lg">{badge.icon}</div>
+
+        <p className="text-sm font-medium text-gray-800">
+          {badge.label}
+        </p>
+
+      </div>
+    </div>
+  );
+};
+
+
+
+  //   useEffect(() => {
+  //   const handleScroll = () => {
+  //     setShowHeaderCheckBtn(window.scrollY > 1000);
+  //     if(availabilityChecked && window.scrollY > 1200) {
+  //           setShowBookingButton(true);
+  //       // adjust trigger
+  //   } else {
+  //       setShowBookingButton(false);
+  //     }
+  //   };
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, [availabilityChecked]);
+  const isOwnProperty = isAuthenticated && user && property?.host && (
+    typeof property.host === 'string'
+      ? property.host === user.id || property.host === user._id
+      : property.host._id?.toString() === user.id?.toString() ||
+      property.host._id?.toString() === user._id?.toString() ||
+      property.host.id === user.id ||
+      property.host.id === user._id
+  );
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      if (!isOwnProperty) {
+        // Header CTA visibility
+        setShowHeaderCheckBtn(scrollY > 2000);
+
+        // Booking button only AFTER availability check
+        const shouldShowBooking =
+          availabilityChecked && scrollY > 2000;
+
+        setShowBookingButton(prev => {
+          if (prev !== shouldShowBooking) {
+            return shouldShowBooking;
+          }
+          return prev;
+        });
+      }
+
+      // Sticky tab nav: show after scrolling past the photos section
+      // When sticky nav shows, hide the main Header to avoid both showing at once
+      const photosEl = photosRef.current;
+      if (photosEl) {
+        const photosBottom = photosEl.getBoundingClientRect().bottom;
+        const shouldShowSticky = photosBottom < 80;
+        setShowStickyNav(shouldShowSticky);
+        // Hide main header whenever sticky nav is visible
+        const isMobileScreen = window.innerWidth < 1024;
+        setHideHeader(shouldShowSticky || isMobileScreen);
+      }
+
+      // Determine active tab by which section is nearest top
+      const sectionRefs = [
+        { key: 'photos' as const, ref: photosRef },
+        { key: 'amenities' as const, ref: amenitiesRef },
+        { key: 'reviews' as const, ref: reviewsRef },
+        { key: 'location' as const, ref: locationRef },
+      ];
+
+      let currentTab: 'photos' | 'amenities' | 'reviews' | 'location' = 'photos';
+      for (const { key, ref } of sectionRefs) {
+        if (ref.current) {
+          const rect = ref.current.getBoundingClientRect();
+          if (rect.top <= 120) {
+            currentTab = key;
+          }
+        }
+      }
+      setActiveTab(currentTab);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [availabilityChecked, isOwnProperty]);
+
+
+
+
+
+
+
+
+  const [calendarAnchor, setCalendarAnchor] =
+    useState<'checkin' | 'checkout'>('checkin');
+
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+
   // Booking state - initialize from context or defaults
   const [dateRange, setDateRange] = useState<{
     startDate: Date;
@@ -129,42 +356,56 @@ export default function PropertyDetailsPage() {
       key: 'selection',
     };
   });
-  
+
   const [guests, setGuests] = useState(() => {
     return bookingData?.guests?.adults || 1;
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showGuestPicker, setShowGuestPicker] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const [bookingLoading, setBookingLoading] = useState(false);
-  
+  // const [bookingLoading, setBookingLoading] = useState(false);
+  const [showExtras, setShowExtras] = useState(false);
+  const [showWishlistModal, setShowWishlistModal] = useState(false);
+  const [showWishlistPicker, setShowWishlistPicker] = useState(false);
+
+  // const [listName, setListName] = useState('');
+  const [selectedStay, setSelectedStay] = useState<string | null>(null);
+  const [wishlists, setWishlists] = useState<any[]>([]);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [wishlistName, setWishlistName] = useState('');
+
+
   // Hourly booking state
   const [hourlyExtension, setHourlyExtension] = useState<number | null>(() => {
     return bookingData?.hourlyExtension || null;
   });
   // 24-hour mode check-in time selector
-  const [checkInTimeStr, setCheckInTimeStr] = useState<string>('15:00');
+  const [checkInTimeStr, setCheckInTimeStr] = useState<string>(property?.checkInTime || '15:00');
   const [hourlyPricing, setHourlyPricing] = useState<any>(null);
   const [specialRequests, setSpecialRequests] = useState(() => {
     return bookingData?.specialRequests || '';
   });
   // Platform fee rate is now handled by backend
-  
+
   // Pricing breakdown state
   const [priceBreakdown, setPriceBreakdown] = useState({
     basePrice: 0,
+    baseAmount: 0,
     serviceFee: 0,
     cleaningFee: 0,
     securityDeposit: 0,
     extraGuestCost: 0,
-    hourlyExtensionCost: 0,
+    extraGuestPrice: 0,
+    extraGuests: 0,
+    hourlyExtension: 0,
     platformFee: 0,
     gst: 0,
     processingFee: 0,
     taxes: 0,
     total: 0,
     nights: 0,
-    subtotal: 0
+    subtotal: 0,
+    discountAmount: 0
   });
 
   // Sync local state with booking context
@@ -183,11 +424,22 @@ export default function PropertyDetailsPage() {
       if (bookingData.hourlyExtension) {
         setHourlyExtension(bookingData.hourlyExtension);
       }
+
+      if (bookingData.checkInTime) {
+        setCheckInTimeStr(bookingData.checkInTime);
+      }
+
       if (bookingData.specialRequests) {
         setSpecialRequests(bookingData.specialRequests);
       }
     }
   }, [bookingData]);
+
+  useEffect(() => {
+    if (property?.checkInTime && !bookingData?.checkInTime) {
+      setCheckInTimeStr(property.checkInTime);
+    }
+  }, [property?.checkInTime, bookingData?.checkInTime]);
 
   // Debug dateRange changes
   useEffect(() => {
@@ -198,8 +450,60 @@ export default function PropertyDetailsPage() {
     });
   }, [dateRange]);
 
+  useEffect(() => {
+    setHideBottomNav(true);
+    setHideHeader(true);
+
+    return () => {
+      setHideBottomNav(false);
+      setHideHeader(false);
+    };
+  }, []);
+
+
   // Fetch current platform fee rate immediately
   // Platform fee rate is now handled by backend API
+
+  const parseTimeToMinutes = (time?: string | null) => {
+    if (!time) return 0;
+    const [h, m] = time.split(':').map(Number);
+    const hours = isNaN(h) ? 0 : h;
+    const minutes = isNaN(m) ? 0 : m;
+    return hours * 60 + minutes;
+  };
+
+  // True when check-in is after 4 PM (applies 24-hour pricing for ANY booking duration)
+  const isLateCheckIn = useMemo(() => {
+    if (!property) return false;
+    const selectedTime = checkInTimeStr || property.checkInTime || '15:00';
+    const thresholdTime = '16:00';
+    // Always compute based purely on time >= 4PM (backend decides price based on its config)
+    return parseTimeToMinutes(selectedTime) >= parseTimeToMinutes(thresholdTime);
+  }, [property, checkInTimeStr]);
+
+  // True ONLY for single-night bookings after 4 PM → uses the full 24-hour booking flow
+  const is24HourBooking = useMemo(() => {
+    if (!property) return false;
+    const startDay = dateRange.startDate
+      ? new Date(dateRange.startDate.getFullYear(), dateRange.startDate.getMonth(), dateRange.startDate.getDate())
+      : null;
+    const endDay = dateRange.endDate
+      ? new Date(dateRange.endDate.getFullYear(), dateRange.endDate.getMonth(), dateRange.endDate.getDate())
+      : null;
+    const isSingleNight = startDay && endDay
+      ? endDay.getTime() - startDay.getTime() === 24 * 60 * 60 * 1000
+      : true;
+    return isLateCheckIn && isSingleNight;
+  }, [isLateCheckIn, dateRange.startDate, dateRange.endDate, property]);
+
+  // Use basePrice24Hour whenever check-in is after 4 PM, regardless of number of nights
+  const effectiveBasePrice = useMemo(() => {
+    if (!property) return 0;
+    if (isLateCheckIn) {
+      return property.pricing?.basePrice24Hour || property.pricing?.basePrice || 0;
+    }
+    return property.pricing?.basePrice || 0;
+  }, [isLateCheckIn, property]);
 
   // Update priceBreakdown when pricing calculation changes
   useEffect(() => {
@@ -211,33 +515,33 @@ export default function PropertyDetailsPage() {
       hourlyExtension
     });
     console.log('🔄 useEffect triggered at:', new Date().toISOString());
-    
+
     const updatePricing = async () => {
-      console.log('🔄 Pricing useEffect triggered', { 
-        property: !!property, 
-        startDate: !!dateRange.startDate, 
+      console.log('🔄 Pricing useEffect triggered', {
+        property: !!property,
+        startDate: !!dateRange.startDate,
         endDate: !!dateRange.endDate,
         guests,
         hourlyExtension
       });
-      
+
       if (!property || !dateRange.startDate || !dateRange.endDate) {
         console.log('⏳ Waiting for required data to load...');
         return;
       }
-      
+
       console.log('🚀 Calling secure pricing API...');
       const pricing = await getSecurePricing();
-      
+
       if (!pricing) {
         console.log('❌ No pricing data returned from secure pricing API');
         return;
       }
-      
+
       console.log('💰 Pricing data received:', pricing);
-      
+
       const newPriceBreakdown = {
-        basePrice: property?.pricing?.basePrice || 0, // Fixed: use actual price per night, not total base amount
+        basePrice: effectiveBasePrice, // Fixed: use actual price per night, not total base amount
         baseAmount: pricing.baseAmount, // Backend calculated base amount
         serviceFee: pricing.serviceFee,
         cleaningFee: pricing.cleaningFee,
@@ -255,15 +559,15 @@ export default function PropertyDetailsPage() {
         subtotal: pricing.subtotal,
         discountAmount: pricing.discountAmount
       };
-      
+
       console.log('✅ Price breakdown updated:', newPriceBreakdown);
       console.log('🔍 NIGHTS IN STATE:', newPriceBreakdown.nights);
       console.log('🔍 TOTAL IN STATE:', newPriceBreakdown.total);
       setPriceBreakdown(newPriceBreakdown);
     };
-    
+
     updatePricing();
-  }, [property, dateRange.startDate, dateRange.endDate, guests, hourlyExtension]);
+  }, [property, dateRange.startDate, dateRange.endDate, guests, hourlyExtension, is24HourBooking, isLateCheckIn]);
 
   // If hourly booking is enabled for the property, enforce 24-hour flow:
   // checkout = check-in + 23h (+ any extension hours)
@@ -271,6 +575,7 @@ export default function PropertyDetailsPage() {
     if (!property?.hourlyBooking?.enabled) return;
     if (!dateRange.startDate) return;
     try {
+      setTimeConfirmed(false);
       const [hh, mm] = (checkInTimeStr || '15:00').split(':').map(Number);
       const start = new Date(dateRange.startDate);
       start.setHours(isNaN(hh) ? 15 : hh, isNaN(mm) ? 0 : mm, 0, 0);
@@ -285,38 +590,225 @@ export default function PropertyDetailsPage() {
       if (noEndSelected && (startChanged || endChanged)) {
         setDateRange(prev => ({ ...prev, startDate: start, endDate: end }));
       }
-    } catch {}
+    } catch { }
   }, [property?.hourlyBooking?.enabled, dateRange.startDate, dateRange.endDate, checkInTimeStr, hourlyExtension]);
-  
-  
+
+
   // Availability state
   const [availability, setAvailability] = useState<any[]>([]);
-  const [availabilityLoading, setAvailabilityLoading] = useState(false);
-  const [availabilityChecked, setAvailabilityChecked] = useState(false);
-  const [availabilityError, setAvailabilityError] = useState('');
   const [showAvailabilityCalendar, setShowAvailabilityCalendar] = useState(false);
-  
+  const [showTimePrompt, setShowTimePrompt] = useState(false);
+  const [showTimeSelector, setShowTimeSelector] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+
+
+
+  const Stat = ({ label, value }: { label: string; value: number }) => (
+  <div>
+    <p className="font-semibold text-lg"> {typeof value === "number" ? value.toFixed(1) : "0.0"}</p>
+    <p className="text-xs text-gray-500">{label}</p>
+  </div>
+);
+
   // Booked dates state - for showing red marks on calendar
   const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
-  
+
   // Maintenance info by date - for validating check-in times
   const [maintenanceByDate, setMaintenanceByDate] = useState<Map<string, { availableAfter: Date; availableHours?: Array<{ startTime: string; endTime: string }> }>>(new Map());
-  
+
   // UI state
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
-  
+
   // Calendar navigation state
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  
+
   // Date selection state
-  const [selectionStep, setSelectionStep] = useState<'checkin' | 'checkout' | 'complete'>('checkin');
-  
+  // const [selectionStep, setSelectionStep] = useState<'checkin' | 'checkout' | 'complete'>('checkin');
+
   // Refs
   const datePickerRef = useRef<HTMLDivElement>(null);
   const guestPickerRef = useRef<HTMLDivElement>(null);
   const bookingCardRef = useRef<HTMLDivElement>(null);
+  const checkInRef = useRef<HTMLDivElement>(null);
+  const checkOutRef = useRef<HTMLDivElement>(null);
+  const bookingSentinelRef = useRef<HTMLDivElement>(null);
+
+  // Section refs for sticky tab navigation
+  const photosRef = useRef<HTMLDivElement>(null);
+  const amenitiesRef = useRef<HTMLDivElement>(null);
+  const reviewsRef = useRef<HTMLDivElement>(null);
+  const locationRef = useRef<HTMLDivElement>(null);
+
+  // Sticky tab nav state
+  const [showStickyNav, setShowStickyNav] = useState(false);
+  const [activeTab, setActiveTab] = useState<'photos' | 'amenities' | 'reviews' | 'location'>('photos');
+  //  review model 
+  const [isOpen, setIsOpen] = useState(false);
+
+  const timeOptions = generateTimeOptions();
+
   const lastAutoAdjustedDate = useRef<string | null>(null); // Track last date we auto-adjusted for
+
+
+
+
+  const getCalendarPosition = () => {
+    const el =
+      calendarAnchor === 'checkin'
+        ? checkInRef.current
+        : checkOutRef.current;
+
+    if (!el) return { top: 0, left: 0 };
+
+    const rect = el.getBoundingClientRect();
+    return {
+      top: rect.bottom + window.scrollY + 8,
+      left: rect.left + window.scrollX,
+    };
+  };
+
+
+  const findWishlistItem = (stayId: string) => {
+    for (const wl of wishlists) {
+      const item = wl.items.find((i: any) =>
+        (i.itemId._id?.toString() || i.itemId?.toString()) === stayId
+      );
+      if (item) return { wishlistId: wl._id, wishlistItemId: item._id };
+    }
+    return null;
+  };
+
+
+  const handleFavorite = async (stayId: string) => {
+
+    // ---------- REMOVE ----------
+    if (favorites.has(stayId)) {
+      const found = findWishlistItem(stayId);
+      if (!found) return;
+
+      await apiClient.removeFromWishlist(
+        found.wishlistId,
+        found.wishlistItemId
+      );
+
+      // update local state from truth
+      setFavorites(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(stayId);
+        return newSet;
+      });
+      setIsFavorite(false);
+      // setWishlists(prev =>
+      //   prev.map(wl =>
+      //     wl._id === found.wishlistId
+      //       ? { ...wl, items: wl.items.filter(i => i._id !== found.wishlistItemId) }
+      //       : wl
+      //   )
+      // );
+
+      return;
+    }
+
+    // ---------- ADD ----------
+    // if (wishlists.length === 0) {
+    //   setSelectedStay(stayId);
+    //   setShowWishlistModal(true);
+    //   return;
+    // }
+
+    if (wishlists.length === 0) {
+      // no list → create modal
+      setSelectedStay(stayId);
+      setShowWishlistModal(true);
+    } else {
+      // show picker modal
+      setSelectedStay(stayId);
+      setShowWishlistPicker(true);
+    }
+
+    const wishlist = wishlists[0]; // default list
+
+    // 🔥 THIS IS WHERE YOUR BLOCK GOES
+    const res = await apiClient.addToWishlist(wishlist._id, {
+      itemType: 'Property',
+      itemId: stayId
+    });
+
+    // use backend truth
+    setWishlists(prev =>
+      prev.map(wl =>
+        wl._id === wishlist._id ? res.data : wl
+      )
+    );
+
+    setFavorites(prev => new Set(prev).add(stayId));
+    setIsFavorite(true);
+  };
+
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)");
+
+    const update = () => setHideHeader(mq.matches);
+    update();
+
+    mq.addEventListener("change", update);
+    return () => {
+      mq.removeEventListener("change", update);
+      setHideHeader(false);
+    };
+  }, []);
+
+
+  const handleShare = async () => {
+    if (typeof window === "undefined") return;
+
+    const shareData = {
+      title: property.title,
+      text: "Check out this place",
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log("Share cancelled");
+      }
+    } else {
+      // Desktop fallback
+      setShowShare(true);
+    }
+  };
+
+  const shareUrl =
+    typeof window !== "undefined" ? window.location.href : "";
+
+  const handleCopyLink = async () => {
+    await navigator.clipboard.writeText(shareUrl);
+    alert("Link copied to clipboard");
+  };
+
+  const handleWhatsApp = () => {
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(shareUrl)}`,
+      "_blank"
+    );
+  };
+
+  const handleFacebook = () => {
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`,
+      "_blank"
+    );
+  };
+
+  const handleEmail = () => {
+    window.location.href = `mailto:?subject=Check this place&body=${shareUrl}`;
+  };
+
+
 
   // Clear availability state when dates OR extension hours change
   // This allows user to try different extensions without refreshing
@@ -332,23 +824,23 @@ export default function PropertyDetailsPage() {
   // Also validate check-in time is after maintenance end time for checkout dates
   useEffect(() => {
     if (!dateRange.startDate) return;
-    
+
     const now = new Date();
     const isToday = dateRange.startDate.toDateString() === now.toDateString();
-    
+
     // Get date string for maintenance lookup
     const dateStr = `${dateRange.startDate.getFullYear()}-${String(dateRange.startDate.getMonth() + 1).padStart(2, '0')}-${String(dateRange.startDate.getDate()).padStart(2, '0')}`;
     const maintenanceInfo = maintenanceByDate.get(dateStr);
-    
+
     // Only auto-adjust if this is a new date (not already adjusted)
     const shouldAutoAdjust = lastAutoAdjustedDate.current !== dateStr;
-    
+
     // Check if maintenance restriction exists for this date
     if (maintenanceInfo && shouldAutoAdjust) {
       const [selectedHour, selectedMinute] = checkInTimeStr.split(':').map(Number);
       const selectedTime = new Date(dateRange.startDate);
       selectedTime.setHours(selectedHour, selectedMinute, 0, 0);
-      
+
       // Check if selected time is before maintenance end
       if (selectedTime < maintenanceInfo.availableAfter) {
         // Auto-adjust to maintenance end time (rounded up to next hour)
@@ -356,18 +848,18 @@ export default function PropertyDetailsPage() {
         const maintenanceEndMinute = maintenanceInfo.availableAfter.getMinutes();
         const nextAvailableHour = maintenanceEndMinute > 0 ? maintenanceEndHour + 1 : maintenanceEndHour;
         const newTimeStr = `${nextAvailableHour.toString().padStart(2, '0')}:00`;
-        
+
         console.log(`⏰ Auto-adjusting check-in time from ${checkInTimeStr} to ${newTimeStr} (before maintenance end at ${maintenanceInfo.availableAfter.toLocaleTimeString()})`);
         setCheckInTimeStr(newTimeStr);
         lastAutoAdjustedDate.current = dateStr; // Mark as adjusted
         return;
       }
     }
-    
+
     if (isToday && shouldAutoAdjust) {
       const currentHour = now.getHours();
       const [selectedHour] = checkInTimeStr.split(':').map(Number);
-      
+
       // If selected time is in the past, auto-adjust to next available hour
       if (selectedHour <= currentHour) {
         const nextAvailableHour = Math.min(currentHour + 1, 23);
@@ -377,7 +869,7 @@ export default function PropertyDetailsPage() {
         lastAutoAdjustedDate.current = dateStr; // Mark as adjusted
       }
     }
-    
+
     // Clear adjustment flag when date changes (so we can adjust again for new date)
     if (lastAutoAdjustedDate.current !== dateStr && !shouldAutoAdjust) {
       lastAutoAdjustedDate.current = null;
@@ -388,7 +880,8 @@ export default function PropertyDetailsPage() {
   useEffect(() => {
     const checkInParam = searchParams.get('checkIn');
     const checkOutParam = searchParams.get('checkOut');
-    
+    const guestsParam = searchParams.get('guests');
+    console.log("check in params", checkInParam, checkOutParam, guestsParam);
     if (checkInParam) {
       try {
         const checkInDate = new Date(checkInParam);
@@ -404,7 +897,7 @@ export default function PropertyDetailsPage() {
         console.error('Error parsing checkIn param:', error);
       }
     }
-    
+
     if (checkOutParam && checkInParam) {
       try {
         const checkOutDate = new Date(checkOutParam);
@@ -422,6 +915,13 @@ export default function PropertyDetailsPage() {
         console.error('Error parsing checkOut param:', error);
       }
     }
+
+    if (guestsParam) {
+      const guestsNum = parseInt(guestsParam);
+      if (!isNaN(guestsNum) && guestsNum > 0) {
+        setGuests(guestsNum);
+      }
+    }
   }, [searchParams]);
 
   useEffect(() => {
@@ -432,6 +932,7 @@ export default function PropertyDetailsPage() {
       .then((res: any) => {
         console.log('🏠 Property loaded:', res.data?.listing);
         setProperty(res.data?.listing || null);
+
         setError("");
       })
       .catch((error) => {
@@ -444,40 +945,40 @@ export default function PropertyDetailsPage() {
   // Load booked dates when property is loaded (for showing red marks on calendar)
   useEffect(() => {
     if (!id) return;
-    
+
     const fetchBookedDates = async () => {
       try {
         // Fetch availability for the next 6 months
         const startDate = new Date();
         const endDate = new Date();
         endDate.setMonth(endDate.getMonth() + 6);
-        
+
         const startDateStr = startDate.toISOString().split('T')[0];
         const endDateStr = endDate.toISOString().split('T')[0];
-        
+
         const response = await apiClient.getAvailability(id as string, startDateStr, endDateStr);
-        
+
         if (response.success && response.data?.availability) {
           const bookedSet = new Set<string>();
           const maintenanceMap = new Map<string, { availableAfter: Date }>();
-          
+
           response.data.availability.forEach((slot: any) => {
             // FIXED: Use local date format to avoid timezone shift issues
             const slotDate = new Date(slot.date);
             const dateStr = `${slotDate.getFullYear()}-${String(slotDate.getMonth() + 1).padStart(2, '0')}-${String(slotDate.getDate()).padStart(2, '0')}`;
-            
+
             // Store maintenance info if available
             if (slot.maintenance?.availableAfter) {
               const availableAfter = new Date(slot.maintenance.availableAfter);
               const existing = maintenanceMap.get(dateStr) || { availableAfter };
-              maintenanceMap.set(dateStr, { 
+              maintenanceMap.set(dateStr, {
                 ...existing,
                 availableAfter,
                 availableHours: slot.availableHours || existing.availableHours
               });
               console.log(`🔧 Maintenance info for ${dateStr}: available after ${availableAfter.toISOString()}`);
             }
-            
+
             // Store hour restrictions for available dates
             if (slot.status === 'available' && slot.availableHours && slot.availableHours.length > 0) {
               const existing = maintenanceMap.get(dateStr) || { availableAfter: new Date() };
@@ -487,16 +988,18 @@ export default function PropertyDetailsPage() {
               });
               console.log(`⏰ Hour restrictions for ${dateStr}:`, slot.availableHours);
             }
-            
-            // Mark dates that are booked, blocked, maintenance, or unavailable
-            if (['booked', 'blocked', 'maintenance', 'unavailable'].includes(slot.status)) {
+
+            // Mark dates that are booked, blocked, maintenance, unavailable, or partially-available
+            // 'partially-available' = checkout day with time restriction — must appear blocked in calendar
+            // so users know they cannot freely check in at any time.
+            if (['booked', 'blocked', 'maintenance', 'unavailable', 'partially-available'].includes(slot.status)) {
               bookedSet.add(dateStr);
-              console.log(`📅 Marking ${dateStr} as booked/blocked (status: ${slot.status})`);
+              console.log(`📅 Marking ${dateStr} as blocked in calendar (status: ${slot.status})`);
             }
           });
-          
+
           setMaintenanceByDate(maintenanceMap);
-          
+
           setBookedDates(bookedSet);
           console.log('📅 Loaded booked dates:', bookedSet.size, 'dates');
         }
@@ -504,23 +1007,118 @@ export default function PropertyDetailsPage() {
         console.error('Error fetching booked dates:', error);
       }
     };
-    
+
     fetchBookedDates();
   }, [id]);
 
   // Close dropdowns on outside click
+  // useEffect(() => {
+  //   function handleClickOutside(event: MouseEvent) {
+  //     if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node)) {
+  //       setShowDatePicker(false);
+  //     }
+  //     if (guestPickerRef.current && !guestPickerRef.current.contains(event.target as Node)) {
+  //       setShowGuestPicker(false);
+  //     }
+  //   }
+  //   document.addEventListener('mousedown', handleClickOutside);
+  //   return () => document.removeEventListener('mousedown', handleClickOutside);
+
+
+  // }, []);
+
+  //   useEffect(() => {
+  //   if (!user) return;
+
+  //   const loadWishlists = async () => {
+  //     const res = await apiClient.getMyWishlists();
+  //     console.log('Wishlists:', res.data);
+  //     setWishlists(res.data);
+
+  //     const favSet = new Set<string>();
+  //     res.data.forEach((wl: any) => {
+  //       wl.items.forEach((item: any) => {
+  //         favSet.add(item.itemId._id.toString());
+  //       });
+  //     });
+
+  //     // Check if current property is in favorites
+  //     if (property && favSet.has(property._id)) {
+  //       setIsFavorite(true);
+  //     }
+  //   };
+
+  //   loadWishlists();
+  // }, [user, property?._id]);
+
+
+  useEffect(() => {
+    const loadWishlists = async () => {
+      const res = await apiClient.getMyWishlists();
+      console.log('Wishlists:', res.data);
+      setWishlists(res.data);
+
+      const favSet = new Set<string>();
+      res.data.forEach((wl: any) => {
+        wl.items.forEach((item: any) => {
+          console.log('Item:', item);
+          // Fix this line:
+          favSet.add(item.itemId._id.toString()); // Change from .id to ._id
+        });
+      });
+
+      setFavorites(favSet);
+
+      // Check if current property is in favorites and update isFavorite
+      if (property && favSet.has(property._id)) {
+        setIsFavorite(true);
+      } else {
+        setIsFavorite(false);
+      }
+
+      console.log('Favorites:', favSet);
+    };
+
+    loadWishlists();
+  }, [user, property?._id]); // Add dependencies
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node)) {
-        setShowDatePicker(false);
+      const target = event.target as Node;
+
+      if (
+        datePickerRef.current?.contains(target) ||
+        checkInRef.current?.contains(target) ||
+        checkOutRef.current?.contains(target)
+      ) {
+        return; // ✅ don't close
       }
-      if (guestPickerRef.current && !guestPickerRef.current.contains(event.target as Node)) {
-        setShowGuestPicker(false);
-      }
+
+      setShowDatePicker(false);
     }
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+
+  const createWishlistAndSave = async () => {
+    const wishlist = await apiClient.createWishList({
+      name: wishlistName,
+      isPublic: false
+    });
+
+    await apiClient.addToWishlist(wishlist.data._id, {
+      itemType: 'Property',
+      itemId: selectedStay
+    });
+
+    setFavorites(prev => new Set(prev).add(selectedStay!));
+    setWishlists(prev => [...prev, wishlist.data]);
+    setShowWishlistModal(false);
+    setIsFavorite(true);
+  };
+
 
   const formatPrice = (amount: number, currency: string = 'INR') => {
     return new Intl.NumberFormat('en-IN', {
@@ -568,34 +1166,36 @@ export default function PropertyDetailsPage() {
   const getCalculatedCheckout = () => {
     if (!dateRange.startDate || !dateRange.endDate) return null;
     const [hh, mm] = (checkInTimeStr || '15:00').split(':').map(Number);
-    
+    const checkInHour = isNaN(hh) ? 15 : hh;
+    const checkInMinute = isNaN(mm) ? 0 : mm;
+
     // Use the checkout DATE (endDate) as the base
     const checkOut = new Date(dateRange.endDate);
-    // Set checkout time to check-in time - 1 hour (23-hour stay per night)
-    // So if check-in is 4 PM, checkout is 3 PM on the checkout date
-    checkOut.setHours(hh - 1, mm, 0, 0);
-    
+    // Set checkout time to check-in time - 1 hour (23-hour stay per night) or same time for 24-hour flow
+    const baseCheckoutHour = is24HourBooking ? checkInHour : checkInHour - 1;
+    checkOut.setHours(baseCheckoutHour, checkInMinute, 0, 0);
+
     // Add extension hours if any
     if (hourlyExtension && hourlyExtension > 0) {
       checkOut.setHours(checkOut.getHours() + hourlyExtension);
     }
-    
+
     return checkOut;
   };
 
   // Check availability for selected dates
-  const checkAvailability = async () => {
+  const checkAvailability = async (): Promise<boolean> => {
     if (!id || selectionStep !== 'complete') {
       setAvailabilityError('Please select both check-in and check-out dates');
-      return;
+      return false;
     }
 
     // Validate date range
     if (!dateRange.startDate || isNaN(dateRange.startDate.getTime())) {
       setAvailabilityError('Please select a valid check-in date');
-      return;
+      return false;
     }
-    
+
     const startDate = new Date(dateRange.startDate);
     const endDate = dateRange.endDate && !isNaN(dateRange.endDate.getTime()) ? new Date(dateRange.endDate) : null;
     const today = new Date();
@@ -603,12 +1203,12 @@ export default function PropertyDetailsPage() {
 
     if (startDate < today) {
       setAvailabilityError('Check-in date cannot be in the past');
-      return;
+      return false;
     }
 
     if (!endDate || startDate >= endDate) {
       setAvailabilityError('Check-out date must be after check-in date');
-      return;
+      return false;
     }
 
     // Check minimum nights if property has this requirement (display only)
@@ -620,11 +1220,12 @@ export default function PropertyDetailsPage() {
       const endDay = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
       nights = Math.max(0, Math.round((endDay.getTime() - startDay.getTime()) / (1000 * 60 * 60 * 24)));
     }
-    
+
     // DEBUG: Log nights calculation in detail
     console.log('🌙 DETAILED Nights calculation:', {
       startDateRaw: dateRange.startDate,
       endDateRaw: dateRange.endDate,
+
       startDate: startDate?.toISOString(),
       startDateLocal: startDate?.toLocaleDateString(),
       endDate: endDate?.toISOString(),
@@ -632,55 +1233,64 @@ export default function PropertyDetailsPage() {
       diffMs: endDate && startDate ? (endDate.getTime() - startDate.getTime()) : 'N/A',
       nights: nights,
       propertyMinNights: property?.minNights,
-      propertyMinNightsType: typeof property?.minNights
+      propertyMinNightsType: typeof property?.minNights,
+      checkInTimeStr: checkInTimeStr,
     });
-    
+
     // Only check minNights if property has this requirement set
     const minNightsRequired = property?.minNights ? Number(property.minNights) : 0;
     if (minNightsRequired > 0 && nights < minNightsRequired) {
       console.log(`❌ FAILED: ${nights} nights < ${minNightsRequired} minNights`);
       setAvailabilityError(`Minimum ${minNightsRequired} nights required`);
-      return;
+      return false;
     }
     console.log(`✅ PASSED: ${nights} nights >= ${minNightsRequired || 'no minimum'}`);
-    
+
 
     // Validate check-in time is after maintenance end (if applicable)
     const dateStr = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`;
     const maintenanceInfo = maintenanceByDate.get(dateStr);
-    
+
     if (maintenanceInfo) {
-      const [checkInHour, checkInMinute] = (checkInTimeStr || '15:00').split(':').map(Number);
+      const [checkInHourRaw, checkInMinuteRaw] = (checkInTimeStr || '15:00').split(':').map(Number);
+      const checkInHour = isNaN(checkInHourRaw) ? 15 : checkInHourRaw;
+      const checkInMinute = isNaN(checkInMinuteRaw) ? 0 : checkInMinuteRaw;
       const selectedCheckInTime = new Date(startDate);
       selectedCheckInTime.setHours(checkInHour, checkInMinute, 0, 0);
-      
+
       if (selectedCheckInTime < maintenanceInfo.availableAfter) {
         const maintenanceEndTime = maintenanceInfo.availableAfter.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
         setAvailabilityError(`Check-in time must be after ${maintenanceEndTime} (maintenance period ends)`);
         setAvailabilityLoading(false);
-        return;
+        return false;
       }
     }
 
     setAvailabilityLoading(true);
     setAvailabilityError('');
-    
+
     try {
+      console.log('checkAvailability', { checkInTimeStr });
       // Calculate exact check-in and check-out times based on custom check-in time
-      const [checkInHour, checkInMinute] = (checkInTimeStr || '15:00').split(':').map(Number);
+      const [checkInHourRaw, checkInMinuteRaw] = (checkInTimeStr || '15:00').split(':').map(Number);
+      const checkInHour = isNaN(checkInHourRaw) ? 15 : checkInHourRaw;
+      const checkInMinute = isNaN(checkInMinuteRaw) ? 0 : checkInMinuteRaw;
       const exactCheckIn = new Date(startDate);
+      exactCheckIn.setHours(0, 0, 0, 0);
       exactCheckIn.setHours(checkInHour, checkInMinute, 0, 0);
-      
+
       // Checkout = endDate at (check-in time - 1 hour) + extension
       // Example: Check-in Dec 5 at 4 PM, endDate Dec 7 → Checkout: Dec 7 at 3 PM
       const exactCheckOut = new Date(endDate);
-      exactCheckOut.setHours(checkInHour - 1, checkInMinute, 0, 0); // Check-in time - 1 hour
-      
+      exactCheckOut.setHours(0, 0, 0, 0);
+      const checkoutBaseHour = is24HourBooking ? checkInHour : checkInHour - 1;
+      exactCheckOut.setHours(checkoutBaseHour, checkInMinute, 0, 0); // Check-in time - 1 hour
+
       // Add extension hours if any
       if (hourlyExtension && hourlyExtension > 0) {
         exactCheckOut.setHours(exactCheckOut.getHours() + hourlyExtension);
       }
-      
+
       console.log('⏰ Custom time calculation:', {
         checkInTimeStr,
         exactCheckIn: exactCheckIn.toISOString(),
@@ -698,19 +1308,19 @@ export default function PropertyDetailsPage() {
           exactCheckOut.toISOString(),
           hourlyExtension || 0
         );
-        
+
         if (slotResponse.success && slotResponse.data) {
           if (slotResponse.data.available) {
             console.log('✅ Time slot is available!');
             setAvailabilityChecked(true);
             setAvailabilityError('');
-            
+
             // Get pricing from backend when availability is confirmed
             const pricing = await getSecurePricing();
             if (pricing) {
               console.log('💰 Pricing received from backend:', pricing);
               setPriceBreakdown({
-                basePrice: property?.pricing?.basePrice || 0,
+                basePrice: effectiveBasePrice,
                 baseAmount: pricing.baseAmount,
                 serviceFee: pricing.serviceFee,
                 cleaningFee: pricing.cleaningFee,
@@ -730,42 +1340,40 @@ export default function PropertyDetailsPage() {
               });
             }
             setAvailabilityLoading(false);
-            return;
+            return true;
           } else {
-            // Has conflicts
+            // Has conflicts — use the backend message directly if present.
+            // IMPORTANT: MobileBookingBar uses regex /after\s+([\d:]+\s*[AP]M)/i to extract
+            // the next-available time. The backend message is formatted as:
+            //   "Check-in not available. Available after 7:00 PM (previous guest + 2h buffer)"
+            // which matches that regex, so the nice 'Next Available' card is shown.
             const conflicts = slotResponse.data.conflicts;
-            let errorMsg = 'Selected time slot is not available.';
-            if (conflicts?.dailyConflicts?.length > 0) {
-              const conflictDates = conflicts.dailyConflicts.map((c: any) => 
-                new Date(c.date).toLocaleDateString()
-              ).join(', ');
-              errorMsg = `Dates not available: ${conflictDates}`;
-            }
-            if (slotResponse.data.nextAvailableSlot?.start) {
-              const nextDate = new Date(slotResponse.data.nextAvailableSlot.start);
-              if (!isNaN(nextDate.getTime())) {
-                errorMsg += ` Next available: ${nextDate.toLocaleString()}`;
+            let errorMsg = slotResponse.data.message || 'Selected time slot is not available.';
+            if (!slotResponse.data.message) {
+              if (conflicts?.dailyConflicts?.length > 0) {
+                const firstConflictReason = conflicts.dailyConflicts[0]?.reason;
+                errorMsg = firstConflictReason || `Dates not available: ${conflicts.dailyConflicts.map((c: any) => new Date(c.date).toLocaleDateString()).join(', ')}`;
               }
             }
             setAvailabilityError(errorMsg);
             setAvailabilityChecked(false);
             setAvailabilityLoading(false);
-            return;
+            return false;
           }
         }
       }
 
       // FALLBACK: Traditional daily availability check
       const startDateStr = startDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format
-      
+
       // FIXED: Calculate extended checkout date if hourly extension is selected
       let effectiveEndDate = new Date(endDate);
       let extendedCheckoutDate = new Date(endDate); // The actual day when checkout happens
-      
+
       if (hourlyExtension && hourlyExtension > 0) {
         // Use the already calculated exactCheckOut for the extended date
         extendedCheckoutDate = new Date(exactCheckOut.getFullYear(), exactCheckOut.getMonth(), exactCheckOut.getDate());
-        
+
         console.log('⏰ Extended checkout calculation:', {
           originalCheckout: endDate.toLocaleDateString(),
           extensionHours: hourlyExtension,
@@ -774,19 +1382,19 @@ export default function PropertyDetailsPage() {
           originalEndDate: endDate.toLocaleDateString()
         });
       }
-      
+
       // Check availability up to the day AFTER the extended checkout date
       // (to include the checkout date itself in the check)
       const checkEndDate = new Date(extendedCheckoutDate);
       checkEndDate.setDate(checkEndDate.getDate() + 1);
-      
+
       const endDateStr = checkEndDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format
-      
+
       const response = await apiClient.getAvailability(id as string, startDateStr, endDateStr);
-      
+
       if (response.success && response.data) {
         const availabilityData = response.data.availability || [];
-        
+
         // DEBUG: Log what we received from API
         console.log('📅 Availability API Response:', {
           startDate: startDateStr,
@@ -798,29 +1406,29 @@ export default function PropertyDetailsPage() {
             reason: a.reason
           }))
         });
-        
+
         // Check if all selected dates are available (including extended dates)
         // FIXED: Normalize to midnight to avoid time-based comparison issues
         const currentDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
         let allAvailable = true;
         const conflictingDates: string[] = [];
-        
+
         // FIXED: Check dates up to the extended checkout date (not just original checkout)
         // For 6-hour extension on Dec 5 checkout = still Dec 5, so check Dec 4-5
         // For 18-hour extension on Dec 5 checkout = Dec 6, so check Dec 4-5-6
-        const dateCheckEnd = hourlyExtension && hourlyExtension > 0 ? checkEndDate : 
+        const dateCheckEnd = hourlyExtension && hourlyExtension > 0 ? checkEndDate :
           new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-        
+
         console.log('🔍 Checking availability:', {
           from: currentDate.toLocaleDateString(),
           to: dateCheckEnd.toLocaleDateString(),
           extensionHours: hourlyExtension || 0,
           extendedCheckoutDate: extendedCheckoutDate.toLocaleDateString()
         });
-        
+
         while (currentDate < dateCheckEnd) {
           const dateStr = currentDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format
-          
+
           // Find availability record for this date
           const dateAvailability = availabilityData.find((a: any) => {
             // Handle both string dates and Date objects
@@ -828,12 +1436,12 @@ export default function PropertyDetailsPage() {
             if (typeof a.date === 'string') {
               // Parse the date string and convert to local date string
               try {
-              const parsedDate = new Date(a.date);
+                const parsedDate = new Date(a.date);
                 if (isNaN(parsedDate.getTime())) {
                   console.warn('Invalid date string:', a.date);
                   return false;
                 }
-              availabilityDateStr = parsedDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format
+                availabilityDateStr = parsedDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format
               } catch (error) {
                 console.warn('Error parsing date string:', a.date, error);
                 return false;
@@ -846,12 +1454,12 @@ export default function PropertyDetailsPage() {
               availabilityDateStr = a.date.toLocaleDateString('en-CA'); // YYYY-MM-DD format
             } else {
               try {
-              const parsedDate = new Date(a.date);
+                const parsedDate = new Date(a.date);
                 if (isNaN(parsedDate.getTime())) {
                   console.warn('Invalid date value:', a.date);
                   return false;
                 }
-              availabilityDateStr = parsedDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format
+                availabilityDateStr = parsedDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format
               } catch (error) {
                 console.warn('Error parsing date value:', a.date, error);
                 return false;
@@ -859,8 +1467,8 @@ export default function PropertyDetailsPage() {
             }
             return availabilityDateStr === dateStr;
           });
-          
-          
+
+
           // Check availability status - dates are AVAILABLE by default unless explicitly marked as unavailable
           if (dateAvailability) {
             // Date exists in Availability model - check its status
@@ -888,22 +1496,22 @@ export default function PropertyDetailsPage() {
             console.log(`✅ Date ${dateStr} - no record, defaulting to AVAILABLE`);
           }
           // No record in Availability model = AVAILABLE by default (this is correct behavior)
-          
+
           currentDate.setDate(currentDate.getDate() + 1);
         }
-        
+
         if (allAvailable) {
           setAvailabilityChecked(true);
           setAvailabilityError('');
           setAvailability(availabilityData);
-          
+
           // Get pricing from backend when availability is confirmed
           console.log('✅ Availability confirmed, getting pricing from backend...');
           const pricing = await getSecurePricing();
           if (pricing) {
             console.log('💰 Pricing received from backend:', pricing);
             setPriceBreakdown({
-              basePrice: property?.pricing?.basePrice || 0,
+              basePrice: effectiveBasePrice,
               baseAmount: pricing.baseAmount,
               serviceFee: pricing.serviceFee,
               cleaningFee: pricing.cleaningFee,
@@ -922,38 +1530,122 @@ export default function PropertyDetailsPage() {
               discountAmount: pricing.discountAmount
             });
           }
+          return true;
         } else {
           // Check if the conflict is due to extension hours
           const originalEndStr = endDate.toLocaleDateString('en-CA');
-          const isExtensionConflict = hourlyExtension && hourlyExtension > 0 && 
+          const isExtensionConflict = hourlyExtension && hourlyExtension > 0 &&
             conflictingDates.some(d => d > originalEndStr);
-          
+
           if (isExtensionConflict) {
             setAvailabilityError(`Cannot add ${hourlyExtension}-hour extension: checkout would overlap with booked dates (${conflictingDates.join(', ')}). Try a shorter extension or different dates.`);
-        } else {
-          setAvailabilityError(`Selected dates are not available. Conflicting dates: ${conflictingDates.join(', ')}`);
+          } else {
+            setAvailabilityError(`Selected dates are not available. Conflicting dates: ${conflictingDates.join(', ')}`);
           }
           setAvailabilityChecked(false);
+          return false;
         }
       } else {
         setAvailabilityError('Failed to check availability');
         setAvailabilityChecked(false);
+        return false;
       }
     } catch (error: any) {
       console.error('Availability check error:', error);
       setAvailabilityError(error.message || 'Failed to check availability');
       setAvailabilityChecked(false);
+      return false;
     } finally {
       setAvailabilityLoading(false);
     }
   };
+
+  // Combined: check availability then proceed to booking
+  const handleCompleteBooking = async () => {
+    if (!dateRange.startDate || !dateRange.endDate || selectionStep !== 'complete') {
+      setAvailabilityError('Please select both check-in and check-out dates');
+      return;
+    }
+    const isAvailable = await checkAvailability();
+    if (isAvailable) {
+      handleBooking();
+    }
+    // If not available, checkAvailability() already set the error message
+  };
+
+  function generateTimeOptions() {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const isToday =
+      dateRange.startDate &&
+      dateRange.startDate.toDateString() === now.toDateString();
+
+    const dateStr = dateRange.startDate
+      ? `${dateRange.startDate.getFullYear()}-${String(
+        dateRange.startDate.getMonth() + 1
+      ).padStart(2, '0')}-${String(
+        dateRange.startDate.getDate()
+      ).padStart(2, '0')}`
+      : '';
+
+    const maintenanceInfo = maintenanceByDate.get(dateStr);
+    const hourRestrictions = maintenanceInfo?.availableHours;
+
+    let minHour = isToday ? Math.max(currentHour + 1, 6) : 6;
+
+    if (maintenanceInfo?.availableAfter) {
+      const h = maintenanceInfo.availableAfter.getHours();
+      const m = maintenanceInfo.availableAfter.getMinutes();
+      minHour = Math.max(minHour, m > 0 ? h + 1 : h);
+    }
+
+    const times: string[] = [];
+
+    if (hourRestrictions && hourRestrictions.length > 0) {
+      for (const range of hourRestrictions) {
+        const [startH] = range.startTime.split(':').map(Number);
+        const [endH] = range.endTime.split(':').map(Number);
+
+        for (let h = startH; h < endH; h++) {
+          times.push(`${h.toString().padStart(2, '0')}:00`);
+        }
+      }
+    } else {
+      for (let h = minHour; h <= 23; h++) {
+        times.push(`${h.toString().padStart(2, '0')}:00`);
+      }
+      if (minHour > 5) {
+        for (let h = 0; h <= 5; h++) {
+          times.push(`${h.toString().padStart(2, '0')}:00`);
+        }
+      }
+    }
+
+    return times;
+  }
+
+  const saveToExistingWishlist = async (wishlistId: string) => {
+    const res = await apiClient.addToWishlist(wishlistId, {
+      itemType: 'Property',
+      itemId: selectedStay
+    });
+
+    setWishlists(prev =>
+      prev.map(wl => wl._id === wishlistId ? res.data : wl)
+    );
+
+    setFavorites(prev => new Set(prev).add(selectedStay!));
+    setShowWishlistPicker(false);
+  };
+
+
 
   // Date validation function
   const validateDateRange = (startDate: Date | null, endDate: Date | null) => {
     if (!startDate || !endDate || isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       return false;
     }
-    
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -987,34 +1679,35 @@ export default function PropertyDetailsPage() {
   };
 
   const getAmenityIcon = (amenity: string) => {
+    const iconClass = "w-5 h-5 sm:w-6 sm:h-6 text-[#4285f4]";
     const iconMap: Record<string, any> = {
-      'wifi': <WifiIcon className="w-5 h-5" />,
-      'tv': <Tv className="w-5 h-5" />,
-      'kitchen': <ChefHat className="w-5 h-5" />,
-      'washer': <Droplets className="w-5 h-5" />,
-      'dryer': <Droplets className="w-5 h-5" />,
-      'ac': <Snowflake className="w-5 h-5" />,
-      'heating': <Flame className="w-5 h-5" />,
-      'workspace': <Monitor className="w-5 h-5" />,
-      'pool': <PoolIcon className="w-5 h-5" />,
-      'parking': <CarIcon className="w-5 h-5" />,
-      'gym': <GymIcon className="w-5 h-5" />,
-      'breakfast': <CoffeeIcon className="w-5 h-5" />,
-      'smoke-alarm': <Bell className="w-5 h-5" />,
-      'first-aid-kit': <Stethoscope className="w-5 h-5" />,
-      'fire-extinguisher': <Flame className="w-5 h-5" />,
-      'essentials': <Package className="w-5 h-5" />,
-      'mountain-view': <ViewIcon className="w-5 h-5" />,
-      'city-view': <Building2 className="w-5 h-5" />,
-      'garden': <Trees className="w-5 h-5" />,
-      'balcony': <Home className="w-5 h-5" />,
-      'terrace': <Home className="w-5 h-5" />,
-      'fireplace': <FireplaceIcon className="w-5 h-5" />,
-      'pet-friendly': <PetIcon className="w-5 h-5" />,
-      'smoking-allowed': <SmokingIcon className="w-5 h-5" />,
-      'long-term-stays': <ClockIcon className="w-5 h-5" />
+      'wifi': <WifiIcon className={iconClass} />,
+      'tv': <Tv className={iconClass} />,
+      'kitchen': <ChefHat className={iconClass} />,
+      'washer': <Droplets className={iconClass} />,
+      'dryer': <Droplets className={iconClass} />,
+      'ac': <Snowflake className={iconClass} />,
+      'heating': <Flame className={iconClass} />,
+      'workspace': <Monitor className={iconClass} />,
+      'pool': <PoolIcon className={iconClass} />,
+      'parking': <CarIcon className={iconClass} />,
+      'gym': <GymIcon className={iconClass} />,
+      'breakfast': <CoffeeIcon className={iconClass} />,
+      'smoke-alarm': <Bell className={iconClass} />,
+      'first-aid-kit': <Stethoscope className={iconClass} />,
+      'fire-extinguisher': <Flame className={iconClass} />,
+      'essentials': <Package className={iconClass} />,
+      'mountain-view': <ViewIcon className={iconClass} />,
+      'city-view': <Building2 className={iconClass} />,
+      'garden': <Trees className={iconClass} />,
+      'balcony': <Home className={iconClass} />,
+      'terrace': <Home className={iconClass} />,
+      'fireplace': <FireplaceIcon className={iconClass} />,
+      'pet-friendly': <PetIcon className={iconClass} />,
+      'smoking-allowed': <SmokingIcon className={iconClass} />,
+      'long-term-stays': <ClockIcon className={iconClass} />
     };
-    return iconMap[amenity] || <CheckCircle className="w-5 h-5" />;
+    return iconMap[amenity] || <CheckCircle className={iconClass} />;
   };
 
   const calculateTotalNights = () => {
@@ -1028,27 +1721,36 @@ export default function PropertyDetailsPage() {
   // Manual test function removed
 
   const getSecurePricing = async () => {
-    console.log('🔍 getSecurePricing called with:', { 
-      property: !!property, 
-      startDate: dateRange.startDate, 
-      endDate: dateRange.endDate 
+    console.log('🔍 getSecurePricing called with:', {
+      property: !!property,
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate
     });
-    
+
     if (!property || !dateRange.startDate || !dateRange.endDate) {
       console.log('⏳ Waiting for required data to load...', { property: !!property, startDate: !!dateRange.startDate, endDate: !!dateRange.endDate });
       return null;
     }
-    
+
     try {
+      const bookingType = is24HourBooking ? '24hour' : 'daily';
+      const [checkInHour, checkInMinute] = (checkInTimeStr || property.checkInTime || '15:00').split(':').map(Number);
+      const checkInDateTime = new Date(dateRange.startDate);
+      checkInDateTime.setHours(isNaN(checkInHour) ? 15 : checkInHour, isNaN(checkInMinute) ? 0 : checkInMinute, 0, 0);
+
       // Request pricing from backend - NO CALCULATIONS ON FRONTEND
       const pricingRequest = {
         propertyId: property._id,
         checkIn: dateRange.startDate.toLocaleDateString('en-CA'),
         checkOut: dateRange.endDate.toLocaleDateString('en-CA'),
         guests: { adults: guests, children: 0 },
-        hourlyExtension: hourlyExtension || 0,
-        // Always request daily pricing unless explicitly switching to 24-hour mode
-        bookingType: 'daily'
+        hourlyExtension: bookingType === 'daily' ? (hourlyExtension || 0) : 0,
+        bookingType: bookingType as 'daily' | '24hour',
+        checkInDateTime: bookingType === '24hour' ? checkInDateTime.toISOString() : undefined,
+        extensionHours: bookingType === '24hour' ? (hourlyExtension || 0) : undefined,
+        // Always send checkInTime so backend can compute isLateCheckIn authoritatively
+        checkInTime: checkInTimeStr || property.checkInTime || '15:00',
+        isLateCheckIn: isLateCheckIn ? true : undefined
       };
 
       // Basic validation only - comprehensive validation on backend
@@ -1058,21 +1760,21 @@ export default function PropertyDetailsPage() {
       }
 
       console.log('🔒 Requesting pricing from secure backend API...', pricingRequest);
-      
+
       const response = await securePricingAPI.calculatePricing(pricingRequest);
-      
+
       if (!response.success) {
         console.error('❌ Secure pricing request failed:', response);
         return null;
       }
-      
+
       const pricing = response.data.pricing;
       console.log('✅ Secure pricing received from backend:', {
         nights: pricing.nights,
         totalAmount: pricing.totalAmount,
         token: response.data.security.pricingToken.substring(0, 8) + '...'
       });
-      
+
       // Return pricing data as received from backend
       return {
         ...pricing,
@@ -1087,16 +1789,17 @@ export default function PropertyDetailsPage() {
   };
 
   const handleBooking = async () => {
-    if (!isAuthenticated) {
-      router.push('/auth/login');
-      return;
-    }
-
+    console.log("WHn called", checkInTimeStr);
+    
     // Check if dates are selected
     if (!dateRange.startDate || !dateRange.endDate) {
       setAvailabilityError('Please select check-in and check-out dates');
       return;
     }
+
+    const [checkInHour, checkInMinute] = (checkInTimeStr || property?.checkInTime || '15:00').split(':').map(Number);
+    const checkInDateTime = new Date(dateRange.startDate);
+    checkInDateTime.setHours(isNaN(checkInHour) ? 15 : checkInHour, isNaN(checkInMinute) ? 0 : checkInMinute, 0, 0);
 
     // Update booking context with current selection (including custom check-in time)
     updateBookingData({
@@ -1105,17 +1808,22 @@ export default function PropertyDetailsPage() {
       endDate: dateRange.endDate,
       guests: { adults: guests, children: 0, infants: 0 },
       hourlyExtension: hourlyExtension,
+      is24Hour: is24HourBooking,
+      checkInDateTime,
+      extensionHours: is24HourBooking ? (hourlyExtension || 0) : 0,
       specialRequests: specialRequests,
       // NEW: Include custom check-in time for 23-hour checkout calculation
       checkInTime: checkInTimeStr || '15:00',
       pricing: {
-        basePrice: property?.pricing?.basePrice || 0,
+        basePrice: effectiveBasePrice,
         cleaningFee: property?.pricing?.cleaningFee || 0,
         serviceFee: property?.pricing?.serviceFee || 0,
         securityDeposit: property?.pricing?.securityDeposit || 0,
         totalPrice: 0 // Will be calculated by backend
       }
     });
+
+    console.log("check in str", checkInTimeStr);
 
     // Navigate to booking page with clean URL (only property ID)
     router.push(`/book/${id}`);
@@ -1126,7 +1834,7 @@ export default function PropertyDetailsPage() {
     try {
       setAvailabilityLoading(true);
       const response = await apiClient.getAvailability(id as string);
-      
+
       if (response.success && response.data) {
         const availabilityData = response.data.availability || [];
         setAvailability(availabilityData);
@@ -1165,7 +1873,10 @@ export default function PropertyDetailsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        <Header />
+        <Header
+          searchExpanded={searchExpanded}
+          onSearchToggle={setSearchExpanded}
+        />
         <div className="pt-40 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-gray-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-6"></div>
@@ -1199,7 +1910,7 @@ export default function PropertyDetailsPage() {
 
   const pricing = priceBreakdown; // Use the state instead of calling async function
   const nights = pricing?.nights || 0; // Use nights from backend pricing data
-  
+
   // Debug pricing state
   console.log('🔍 Pricing debug:', {
     pricing,
@@ -1208,437 +1919,547 @@ export default function PropertyDetailsPage() {
     total: pricing?.total,
     totalAmount: pricing?.totalAmount
   });
-  
+
   // Check if current user is the host of this property (safe for unauthenticated users)
-  const isOwnProperty = isAuthenticated && user && property?.host && (
-    typeof property.host === 'string' 
-      ? property.host === user.id || property.host === user._id
-      : property.host._id?.toString() === user.id?.toString() || 
-        property.host._id?.toString() === user._id?.toString() || 
-        property.host.id === user.id || 
-        property.host.id === user._id
-  );
+
 
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      <Header />
-      
+      <Header visibleShare={true}
+        visibleWishlist={true}
+        onShareClick={handleShare}
+        onWishlistClick={() => handleFavorite(property._id)}
+        isFavorited={isFavorite}
+        checkAvailability={showHeaderCheckBtn}
+        pricing={String(priceBreakdown.total)}
+        night={priceBreakdown.nights}
+        onCheckAvailability={handleCompleteBooking}
+        showBookingButton={showBookingButton}
+        onHandleBooking={handleBooking}
+        rating={property.rating || 0}
+        isOwenProperty={isOwnProperty}
+
+      />
+
       {/* Main Content */}
-      <main className="pt-40 font-['Inter',system-ui,-apple-system,sans-serif]">
-        {/* Image Gallery */}
-        <div className="relative">
-          <div className="grid grid-cols-4 gap-2 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Main large image */}
-            <div className="col-span-4 lg:col-span-2 row-span-2">
-              <img
-                src={property.images?.[selectedImage] || '/logo.png'}
-                alt={property.title}
-                className="w-full h-[400px] lg:h-[500px] object-cover rounded-2xl"
-              />
-            </div>
-            {/* Smaller images */}
-            {property.images?.slice(1, 5).map((img: string, index: number) => (
-              <div key={index} className="col-span-2 lg:col-span-1">
-                <img
-                  src={img}
-                  alt={property.title}
-                  className="w-full h-[200px] lg:h-[245px] object-cover rounded-2xl cursor-pointer hover:opacity-90 transition-opacity"
-                  onClick={() => setSelectedImage(index + 1)}
-                />
+      <main className={` ${hideHeader ? "pt-0 " : "pt-40"}  overflow-hidden`}>
+        {/* Sticky Section Tab Navigation */}
+        {showStickyNav && (
+          <div
+            className="fixed top-0 left-0 right-0 z-[60] bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm transition-all duration-300"
+            style={{ top: hideHeader ? 0 : undefined }}
+          >
+            <div className="max-w-7xl mx-auto px-4 sm:px-2 lg:px-8">
+              <div className="flex items-center gap-1 overflow-x-auto" style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
+                {([
+                  { key: 'photos', label: 'Photos' },
+                  { key: 'amenities', label: 'Amenities' },
+                  { key: 'reviews', label: 'Reviews' },
+                  { key: 'location', label: 'Location' },
+                ] as const).map(({ key, label }) => (
+                  <button
+                    key={key}
+                    onClick={() => {
+                      const refMap = {
+                        photos: photosRef,
+                        amenities: amenitiesRef,
+                        reviews: reviewsRef,
+                        location: locationRef,
+                      };
+                      const el = refMap[key].current;
+                      if (el) {
+                        const offset = 80;
+                        const top = el.getBoundingClientRect().top + window.scrollY - offset;
+                        window.scrollTo({ top, behavior: 'smooth' });
+                      }
+                      setActiveTab(key);
+                    }}
+                    className={`relative flex-shrink-0 px-2 md:px-4 py-4 md:py-6 text-xs md:text-sm font-medium transition-colors duration-200 whitespace-nowrap border-b-2 ${
+                      activeTab === key
+                        ? 'border-gray-900 text-gray-900'
+                        : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
+        )}
+
+        {/* Image Gallery */}
+        <div className="relative" ref={photosRef}>
+          {/* MOBILE – HORIZONTAL SWIPE */}
+
+
+          <ImageGallery images={property.propertyImages || []} title={property.title} />
         </div>
 
         {/* Content Container */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div ref={bookingSentinelRef} className="h-px w-full" aria-hidden="true" />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Left Column - Main Content */}
             <div className="lg:col-span-2 space-y-8">
               {/* Header Section */}
               <div className="mb-8">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-2 font-['Inter',system-ui,-apple-system,sans-serif] tracking-tight">
-                      {property.title}
-                    </h1>
-                    
-                    {/* Place Type Badge */}
-                    <div className="mb-4">
-                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-cyan-100 border border-blue-200 rounded-full text-blue-700 font-semibold text-sm">
-                        <Home className="w-4 h-4" />
-                        {property.placeType === 'entire' ? 'Entire place' : 
-                         property.placeType === 'room' ? 'A room' : 
-                         property.placeType === 'shared' ? 'A shared room' : 'Entire place'}
-                      </div>
+                <div className="mb-2">
+
+                  {/* TOP ROW — TITLE + ACTIONS */}
+
+                  <div className="flex items-start justify-between gap-3">
+
+                    {/* LEFT CONTENT */}
+                    <div className="flex-1">
+                      <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
+                        {property.title}
+                      </h1>
+
+                      {/* SUBTITLE (Airbnb mobile style) */}
+                      <p className="mt-2 text-gray-600 text-sm sm:text-base">
+                        {property.placeType === "entire"
+                          ? "Entire apartment"
+                          : property.placeType === "room"
+                            ? "A room"
+                            : "Shared room"}{" "}
+                        in {property.location?.city}, {property.location?.country || "India"}
+                      </p>
+
+
                     </div>
-                    
-                    {/* Your Property Badge */}
-                    {isOwnProperty && (
-                      <div className="mb-4">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 border border-indigo-200 rounded-full text-indigo-700 font-semibold text-sm">
-                          <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
-                          Your Property
+
+                    {/* RIGHT ACTIONS — MOBILE AIRBNB STYLE */}
+                    <div className="hidden md:flex items-center gap-1 sm:gap-2">
+                      <button
+                        onClick={handleShare}
+                        className="p-2 rounded-full hover:bg-gray-100 transition"
+                      >
+                        <Share2 className="w-5 h-5 text-gray-700" />
+                      </button>
+
+                      <button
+                        onClick={() => handleFavorite(property._id)}
+                        className="p-2 rounded-full hover:bg-gray-100 transition"
+                      >
+                        <Heart
+                          className={`w-5 h-5 ${isFavorite
+                            ? "fill-red-500 text-red-500"
+                            : "text-gray-700"
+                            }`}
+                        />
+                      </button>
+                    </div>
+                  </div>
+
+
+
+                  {/* AIRBNB RATING STRIP */}
+                  <div
+                    onClick={() => setIsOpen(true)}
+                    className="cursor-pointer bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-4 sm:p-6 mt-5 flex items-center justify-between gap-3 sm:gap-8"
+                  >
+                    {/* LEFT SECTION */}
+                    <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                      <span className="text-green-500 text-lg sm:text-2xl">
+                        {heroBadge.icon}
+                      </span>
+                      <div className="text-left">
+                        <p className="text-sm sm:text-2xl font-bold text-gray-900 leading-tight">
+                          {heroBadge.label}
+                        </p>
+                      </div>
+                      <span className="hidden sm:inline text-green-500 text-2xl">
+                        {heroBadge.icon}
+                      </span>
+                    </div>
+
+                    {/* DESCRIPTION */}
+                    <div className="hidden md:block flex-1 min-w-[180px]">
+                      <p className="text-sm text-gray-600 leading-snug">
+                        {heroBadge.description || "One of the most loved properties by guests"}
+                      </p>
+                    </div>
+
+                    {/* STATS */}
+                    <div className="flex items-center gap-5 sm:gap-8 flex-shrink-0">
+                      <div className="flex flex-col items-start text-xs sm:text-sm">
+                        <p className="text-xs sm:text-xl font-semibold text-gray-900">
+                          {property.rating ? Number(property.rating).toFixed(1) : "New"}
+                        </p>
+                        <div className="flex gap-[1px] mt-1">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star
+                              key={s}
+                              className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${
+                                s <= Math.round(property.rating || 0)
+                                  ? "fill-black text-black"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
                         </div>
                       </div>
-                    )}
-                    
-                    <div className="flex items-center gap-4 text-gray-600 mb-4">
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-medium">{property.rating || 4.5}</span>
-                        <span className="text-gray-500">({property.reviewCount || 0} reviews)</span>
-                      </div>
-                      <span>•</span>
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        <span>{property.location?.city}, {property.location?.state}</span>
+
+                      <div className="hidden sm:block w-px h-10 bg-gray-200" />
+
+                      <div className="flex flex-col items-start text-xs sm:text-sm">
+                        <p className="text-base sm:text-xl font-semibold text-gray-900">
+                          {property.reviewCount || 0}
+                        </p>
+                        <p className="text-[10px] sm:text-xs text-gray-500">Reviews</p>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    {isOwnProperty && (
-                      <div className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium">
-                        Your Property
-                      </div>
-                    )}
-                    <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                      <Share2 className="w-5 h-5 text-gray-600" />
-                    </button>
-                    <button 
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                      onClick={() => setIsFavorite(!isFavorite)}
-                    >
-                      <Heart className={`w-5 h-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-                    </button>
-                  </div>
+
                 </div>
+
               </div>
 
               {/* Property Highlights */}
-              <div className="mb-8">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-6 bg-gray-50 rounded-2xl">
-                  <div className="text-center">
-                    <div className="text-2xl mb-2">👥</div>
-                    <div className="text-sm font-medium text-gray-900">Up to {property.maxGuests} guests</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl mb-2">🛏️</div>
-                    <div className="text-sm font-medium text-gray-900">{property.bedrooms} bedroom{property.bedrooms > 1 ? 's' : ''}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl mb-2">🛌</div>
-                    <div className="text-sm font-medium text-gray-900">{property.beds} bed{property.beds > 1 ? 's' : ''}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl mb-2">🚿</div>
-                    <div className="text-sm font-medium text-gray-900">{property.bathrooms} bathroom{property.bathrooms > 1 ? 's' : ''}</div>
-                  </div>
-                </div>
-              </div>
+            <div className="mb-8 bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-2 sm:p-6 mt-5">
+  <div className="flex flex-row items-center justify-between w-full gap-1 sm:gap-4">
+    
+    {/* Guests */}
+    <div className="flex-1 text-center">
+      <div className="flex justify-center mb-1">
+        <Users className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
+      </div>
+      <div className="text-[10px] sm:text-sm font-medium text-gray-900 leading-tight">
+        {property.maxGuests} guests
+      </div>
+    </div>
+
+    {/* Bedrooms */}
+    <div className="flex-1 text-center">
+      <div className="flex justify-center mb-1">
+        <BedDouble className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
+      </div>
+      <div className="text-[10px] sm:text-sm font-medium text-gray-900 leading-tight">
+        {property.bedrooms} {property.bedrooms > 1 ? 'bedrooms' : 'bedroom' }
+      </div>
+    </div>
+
+    {/* Beds */}
+    <div className="flex-1 text-center">
+      <div className="flex justify-center mb-1">
+        <Bed className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
+      </div>
+      <div className="text-[10px] sm:text-sm font-medium text-gray-900 leading-tight">
+        {property.beds} {property.beds > 1 ? 'beds' : 'bed'}
+      </div>
+    </div>
+
+    {/* Bathrooms */}
+    <div className="flex-1 text-center">
+      <div className="flex justify-center mb-1">
+        <Bath className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
+      </div>
+      <div className="text-[10px] sm:text-sm font-medium text-gray-900 leading-tight">
+        {property.bathrooms} bath
+      </div>
+    </div>
+
+  </div>
+            </div>
+
+            
+               <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-5 sm:p-8">
+            <HostCard host={property.host} />
+          </div>
+
 
               {/* Overview Section */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
-                    <Home className="w-5 h-5 text-white" />
-                </div>
-                  <h2 className="text-3xl font-bold text-gray-900 font-['Inter',system-ui,-apple-system,sans-serif] tracking-tight">About this place</h2>
-              </div>
-                    <div className="text-gray-700 leading-relaxed">
-                      {showFullDescription ? (
-                        <div>
-                          <p className="whitespace-pre-line">{property.description}</p>
-                          <button
-                            onClick={() => setShowFullDescription(false)}
-                            className="text-indigo-600 font-medium mt-2 hover:underline"
-                          >
-                            Show less
-                          </button>
-                        </div>
-                      ) : (
-                        <div>
-                          <p className="whitespace-pre-line">
-                            {property.description?.length > 300 
-                              ? `${property.description.substring(0, 300)}...`
-                              : property.description
-                            }
-                          </p>
-                          {property.description?.length > 300 && (
-                            <button
-                              onClick={() => setShowFullDescription(true)}
-                              className="text-indigo-600 font-medium mt-2 hover:underline"
-                            >
-                              Show more
-                            </button>
-                          )}
-                        </div>
-                      )}
-                    </div>
+
+
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-5 sm:p-8">
+
+                {/* HEADER */}
+
+                <div className="flex items-center gap-3 sm:gap-3 mb-4 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-10 sm:h-10  rounded-lg sm:rounded-xl flex items-center justify-center">
+                    <Home className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]"  />
                   </div>
 
-              {/* Amenities Section */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-green-500 rounded-xl flex items-center justify-center">
-                    <CheckCircle className="w-5 h-5 text-white" />
-                  </div>
-                  <h2 className="text-3xl font-bold text-gray-900 font-['Inter',system-ui,-apple-system,sans-serif] tracking-tight">What this place offers</h2>
+                  <h2 className="text-xl sm:text-2xl md:text-2xl font-bold text-gray-900 tracking-tight">
+                    About this place
+                  </h2>
                 </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {(showAllAmenities ? property.amenities : property.amenities?.slice(0, 8))?.map((amenity: string) => (
-                        <div key={amenity} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+
+                {/* DESCRIPTION */}
+                <div className="text-gray-700 leading-relaxed text-sm sm:text-base break-words">
+
+                  {showFullDescription ? (
+                    <div>
+                      <p className="whitespace-pre-line break-words">
+                        {property.description}
+                      </p>
+
+                      <button
+                        onClick={() => setShowFullDescription(false)}
+                        className="text-indigo-600 font-medium mt-3 hover:underline"
+                      >
+                        Show less
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="whitespace-pre-line break-words">
+                        {property.description?.length > 300
+                          ? `${property.description.substring(0, 300)}...`
+                          : property.description}
+                      </p>
+
+                      {property.description?.length > 300 && (
+                        <button
+                          onClick={() => setShowFullDescription(true)}
+                          className="text-indigo-600 font-medium mt-3 hover:underline"
+                        >
+                          Show more
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+              </div>
+
+
+
+
+
+              {/* Amenities Section */}
+
+              <div ref={amenitiesRef} className="bg-white rounded-2xl shadow-md  p-5 md:p-8">
+                {/* HEADER */}
+                <div className="flex items-center gap-3 sm:gap-3 mb-4 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-10 sm:h-10 flex items-center justify-center shrink-0">
+                    <CheckCircle className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
+                  </div>
+                  <h2 className="text-xl md:text-2xl sm:text-2xl font-semibold text-gray-900">
+                    What this place offers
+                  </h2>
+                </div>
+
+                {/* AMENITIES GRID */}
+                <div className="grid grid-cols-2 md:grid-cols-2 gap-3">
+                  {(property.amenities
+                    ?.slice(0, isMobile ? 4 : showAllAmenities ? property.amenities.length : 8)
+                  )?.map((amenity: string) => (
+                    <div
+                      key={amenity}
+                      className="flex items-center gap-3"
+                    >
+                      {getAmenityIcon(amenity)}
+                      <span className="text-sm md:text-base text-gray-700 capitalize">
+                        {amenity.replace(/-/g, " ")}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* SHOW ALL BUTTON */}
+                {property.amenities?.length > 4 && (
+                  <button
+                    onClick={() => setShowAllAmenities(true)}
+                    className="mt-5 w-full md:w-auto text-center border border-gray-300 rounded-xl px-6 py-3 text-sm font-medium hover:bg-gray-100 transition"
+                  >
+                    Show all {property.amenities.length} amenities
+                  </button>
+                )}
+              </div>
+
+              {/* MOBILE BOTTOM SHEET */}
+              {showAllAmenities && isMobile && (
+                <div className="fixed inset-0 z-[80] bg-black/40">
+                  <div className="absolute bottom-0 w-full bg-white rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto animate-slideUp shadow-2xl">
+                    {/* HEADER */}
+                    <div className="flex items-center justify-between mb-5">
+                      <h3 className="text-lg font-semibold">
+                        What this place offers
+                      </h3>
+                      <button onClick={() => setShowAllAmenities(false)}>
+                        <X className="w-6 h-6" />
+                      </button>
+                    </div>
+
+                    {/* FULL AMENITIES LIST */}
+                    <div className="grid grid-cols-1 gap-4">
+                      {property.amenities?.map((amenity: string) => (
+                        <div
+                          key={amenity}
+                          className="flex items-center gap-3"
+                        >
                           {getAmenityIcon(amenity)}
-                          <span className="text-gray-700 capitalize">{amenity.replace(/-/g, ' ')}</span>
+                          <span className="capitalize text-gray-700">
+                            {amenity.replace(/-/g, " ")}
+                          </span>
                         </div>
                       ))}
                     </div>
-                    {property.amenities?.length > 8 && (
-                      <button
-                        onClick={() => setShowAllAmenities(!showAllAmenities)}
-                        className="text-indigo-600 font-medium mt-4 hover:underline"
-                      >
-                        {showAllAmenities ? 'Show less' : `Show all ${property.amenities.length} amenities`}
-                      </button>
-                    )}
                   </div>
+                </div>
+              )}
+
+
 
               {/* Availability Calendar Section */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8">
-                <PropertyAvailabilityCalendar 
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 ">
+                <PropertyAvailabilityCalendar
                   propertyId={id as string}
                   checkInDate={dateRange.startDate}
                   checkOutDate={dateRange.endDate}
                   selectionStep={selectionStep}
+                  // onDateSelect={(date) => {
+                  //   console.log('Selected date from calendar:', date);
+
+                  //   if (selectionStep === 'checkin') {
+                  //     // Select check-in date
+                  //     const newDateRange = {
+                  //       ...dateRange,
+                  //       startDate: new Date(date),
+                  //       endDate: null,
+                  //       key: 'selection'
+                  //     };
+                  //     setDateRange(newDateRange);
+                  //     setSelectionStep('checkout');
+                  //   } else if (selectionStep === 'checkout') {
+                  //     // Select check-out date
+                  //     if (date > dateRange.startDate) {
+                  //       const newDateRange = {
+                  //         ...dateRange,
+                  //         endDate: new Date(date),
+                  //         key: 'selection'
+                  //       };
+                  //       setDateRange(newDateRange);
+                  //       setSelectionStep('complete');
+                  //     } else if (date < dateRange.startDate) {
+                  //       // New date is before start date, make it new start date
+                  //       setDateRange({
+                  //         startDate: new Date(date),
+                  //         endDate: null,
+                  //         key: 'selection'
+                  //       });
+                  //       setSelectionStep('checkout');
+                  //     }
+                  //   } else {
+                  //     // Both dates selected, start over with new check-in date
+                  //     setDateRange({
+                  //       startDate: new Date(date),
+                  //       endDate: null,
+                  //       key: 'selection'
+                  //     });
+                  //     setSelectionStep('checkin');
+                  //   }
+                  // }}
                   onDateSelect={(date) => {
-                    console.log('Selected date from calendar:', date);
-                    
-                    if (selectionStep === 'checkin') {
-                      // Select check-in date
-                      const newDateRange = {
-                        ...dateRange,
-                        startDate: new Date(date),
-                        endDate: null,
-                        key: 'selection'
-                      };
-                      setDateRange(newDateRange);
-                      setSelectionStep('checkout');
-                    } else if (selectionStep === 'checkout') {
-                      // Select check-out date
-                      if (date > dateRange.startDate) {
-                        const newDateRange = {
-                          ...dateRange,
-                          endDate: new Date(date),
-                          key: 'selection'
-                        };
-                        setDateRange(newDateRange);
-                        setSelectionStep('complete');
-                      } else if (date < dateRange.startDate) {
-                        // New date is before start date, make it new start date
-                        setDateRange({
-                          startDate: new Date(date),
+                    const clicked = new Date(
+                      date.getFullYear(),
+                      date.getMonth(),
+                      date.getDate()
+                    );
+
+                    setDateRange(prev => {
+                      const start = prev.startDate
+                        ? new Date(
+                          prev.startDate.getFullYear(),
+                          prev.startDate.getMonth(),
+                          prev.startDate.getDate()
+                        )
+                        : null;
+
+                      // CHECK-IN
+                      if (selectionStep === "checkin" || !start) {
+                        setSelectionStep("checkout");
+
+                        return {
+                          ...prev,
+                          startDate: clicked,
                           endDate: null,
-                          key: 'selection'
-                        });
-                        setSelectionStep('checkin');
+                          key: "selection",
+                        };
                       }
-                    } else {
-                      // Both dates selected, start over with new check-in date
-                      setDateRange({
-                        startDate: new Date(date),
+
+                      // CHECK-OUT
+                      if (selectionStep === "checkout") {
+                        if (clicked > start) {
+                          setSelectionStep("complete");
+
+                          return {
+                            ...prev,
+                            endDate: clicked,
+                            key: "selection",
+                          };
+                        }
+
+                        // clicked before start → restart
+                        setSelectionStep("checkout");
+
+                        return {
+                          startDate: clicked,
+                          endDate: null,
+                          key: "selection",
+                        };
+                      }
+
+                      // COMPLETE → restart
+                      setSelectionStep("checkout");
+
+                      return {
+                        startDate: clicked,
                         endDate: null,
-                        key: 'selection'
-                      });
-                      setSelectionStep('checkin');
-                    }
+                        key: "selection",
+                      };
+                    });
                   }}
+
                   isHostView={isOwnProperty} // Show booking details only for property owner
                 />
               </div>
 
-              {/* Reviews Section */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8">
-                    <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center">
-                      <Star className="w-5 h-5 text-white" />
-                    </div>
-                      <h2 className="text-3xl font-bold text-gray-900 font-['Inter',system-ui,-apple-system,sans-serif] tracking-tight">Reviews</h2>
-                  </div>
-                      <div className="flex items-center gap-2">
-                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                        <span className="font-medium">{property.rating || 4.5}</span>
-                        <span className="text-gray-500">({property.reviewCount || 0} reviews)</span>
-                      </div>
-                    </div>
-                    <div className="text-center py-12">
-                      <div className="text-6xl mb-4">⭐</div>
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">No reviews yet</h3>
-                      <p className="text-gray-600">Be the first to review this property!</p>
-                    </div>
-                  </div>
+              {/* house rules  */}
 
-              {/* Location Section with Map */}
-              <div className="mb-12">
-                {console.log('Property location data:', {
-                  location: property.location,
-                  coordinates: property.location?.coordinates,
-                  address: property.location?.address,
-                  city: property.location?.city,
-                  state: property.location?.state
-                })}
-                <PropertyMap
-                  address={property.location?.address || 'Address not specified'}
-                  city={property.location?.city || 'City not specified'}
-                  state={property.location?.state || 'State not specified'}
-                  country={property.location?.country || 'India'}
-                  coordinates={property.location?.coordinates}
-                />
-              </div>
-
-              {/* Host Section */}
-              <div className="mb-12">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                    <Users className="w-5 h-5 text-white" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-gray-900 font-display">About the host</h2>
-                </div>
-                    <div className="bg-gray-50 rounded-2xl p-6">
-                      <div className="flex items-start gap-4 mb-6">
-                        <div className="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center overflow-hidden">
-                          {property.host?.profileImage ? (
-                            <img 
-                              src={property.host.profileImage} 
-                              alt={property.host.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <Users className="w-10 h-10 text-indigo-600" />
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold text-gray-900 mb-1">
-                            Hosted by {property.host?.name || 'TripMe Host'}
-                          </h3>
-                          <div className="flex items-center gap-2 mb-2">
-                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span className="text-sm font-medium text-gray-700">
-                              {property.host?.rating || 4.5} • {property.host?.reviewCount || 0} reviews
-                            </span>
-                          </div>
-                          <p className="text-sm text-gray-600 mb-3">
-                        Member since {property.host?.createdAt ? (() => {
-                          try {
-                            const date = new Date(property.host.createdAt);
-                            return isNaN(date.getTime()) ? '2024' : date.getFullYear();
-                          } catch (error) {
-                            console.warn('Error parsing host creation date:', property.host.createdAt, error);
-                            return '2024';
-                          }
-                        })() : '2024'}
-                          </p>
-                          {property.host?.bio && (
-                            <p className="text-gray-700 text-sm leading-relaxed mb-4">
-                              {property.host.bio}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Host Details Grid */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        {property.host?.location?.city && (
-                          <div className="flex items-center gap-3 p-3 bg-white rounded-lg">
-                            <MapPin className="w-5 h-5 text-gray-500" />
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">Location</div>
-                              <div className="text-sm text-gray-600">
-                                {property.host.location.city}, {property.host.location.state}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                        
-                        {property.host?.languages && property.host.languages.length > 0 && (
-                          <div className="flex items-center gap-3 p-3 bg-white rounded-lg">
-                            <Globe className="w-5 h-5 text-gray-500" />
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">Languages</div>
-                              <div className="text-sm text-gray-600">
-                                {property.host.languages.join(', ')}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {property.host?.phone && (
-                          <div className="flex items-center gap-3 p-3 bg-white rounded-lg">
-                            <Phone className="w-5 h-5 text-gray-500" />
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">Phone</div>
-                              <div className="text-sm text-gray-600">{property.host.phone}</div>
-                            </div>
-                          </div>
-                        )}
-
-                        {property.host?.email && (
-                          <div className="flex items-center gap-3 p-3 bg-white rounded-lg">
-                            <Mail className="w-5 h-5 text-gray-500" />
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">Email</div>
-                              <div className="text-sm text-gray-600">{property.host.email}</div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Contact Actions */}
-                      <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
-                        <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-                          <MessageCircle className="w-4 h-4" />
-                          Contact host
-                        </button>
-                        <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                          <Phone className="w-4 h-4" />
-                          Call host
-                        </button>
-                      </div>
-                    </div>
-              </div>
-
-              {/* House Rules */}
-              {property.houseRules?.length > 0 && (
-                <div className="mb-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6 font-display">House rules</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {property.houseRules.map((rule: string) => (
-                      <div key={rule} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
-                        <Shield className="w-5 h-5 text-gray-500" />
-                        <span className="text-gray-700 capitalize">{rule.replace(/-/g, ' ')}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              {property?.houseRules && (<HouseRules
+                houseRules={property.houseRules}
+                checkInTime={property.checkInTime}
+                checkOutTime={property.checkOutTime}
+              />
               )}
+
+              {/* cancellation policy */}
+              <CancellationPolicy
+                cancellationPolicy={property.cancellationPolicy}
+              />
+
             </div>
+            
 
             {/* Right Column - Booking Card */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-24">
-                <div ref={bookingCardRef} className="bg-white border border-gray-200 rounded-2xl shadow-xl p-6">
+
+            <div className="hidden lg:col-span-1 lg:block">
+                 {insightBadges.length > 0 && (
+  <div className="space-y-3 mt-4 mb-4">
+    {insightBadges.map((badge, i) => (
+      <PricingBadge key={i} badge={badge} />
+    ))}
+  </div>
+)}
+
+              <div className="sticky top-2">
+                
+                <div className="bg-white border border-gray-200 rounded-2xl shadow-xl p-6">
                   {/* Price */}
                   <div className="mb-6">
                     <div className="flex items-baseline gap-2 mb-2">
                       <span className="text-2xl font-bold text-gray-900">
-                        {formatPrice(property.pricing?.basePrice || 0, property.pricing?.currency || 'INR')}
+                        {formatPrice(effectiveBasePrice, property.pricing?.currency || 'INR')}
                       </span>
-                      <span className="text-gray-600">night</span>
+                      <span className="text-gray-600">{property.minNights ? `${property.minNights} night` : 'No minimum stay'}</span>
                     </div>
                     <div className="flex items-center gap-1 text-sm text-gray-600 mb-4">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span>{property.rating || 4.5}</span>
+                      <span>{property.rating || 0}</span>
                       <span>•</span>
                       <span>{property.reviewCount || 0} reviews</span>
                     </div>
@@ -1649,56 +2470,56 @@ export default function PropertyDetailsPage() {
                   {!isOwnProperty && (
                     <div className="mb-4 relative">
                       <div className="grid grid-cols-2 gap-2">
-                        <div 
-                          className={`border rounded-lg p-3 cursor-pointer transition-all duration-300 ${
-                            selectionStep === 'checkin' 
-                              ? 'border-indigo-500 bg-indigo-50 shadow-md' 
-                              : availabilityError && availabilityError.includes('Check-in')
-                              ? 'border-red-300 bg-red-50' 
+                        <div
+                          ref={checkInRef}
+                          className={`border rounded-lg p-3 cursor-pointer transition-all duration-300 ${selectionStep === 'checkin'
+                            ? 'border-indigo-500 bg-indigo-50 shadow-md'
+                            : availabilityError && availabilityError.includes('Check-in')
+                              ? 'border-red-300 bg-red-50'
                               : 'border-gray-300 hover:border-gray-400'
-                          }`}
+                            }`}
                           onClick={() => {
+                            // ref={checkInRef}
                             setShowDatePicker(true);
+                            setCalendarAnchor('checkin');
                             setSelectionStep('checkin');
                           }}
                         >
-                          <div className={`text-xs font-medium mb-1 ${
-                            selectionStep === 'checkin' ? 'text-indigo-700' : 'text-gray-700'
-                          }`}>
+                          <div className={`text-xs font-medium mb-1 ${selectionStep === 'checkin' ? 'text-indigo-700' : 'text-gray-700'
+                            }`}>
                             {selectionStep === 'checkin' ? '🔄 Selecting Check-in' : 'Check-in'}
                           </div>
-                          <div className={`text-sm ${
-                            selectionStep === 'checkin' ? 'text-indigo-900' : 'text-gray-900'
-                          }`}>
+                          <div className={`text-sm ${selectionStep === 'checkin' ? 'text-indigo-900' : 'text-gray-900'
+                            }`}>
                             {formatDate(dateRange.startDate)}
                           </div>
                         </div>
-                        <div 
-                          className={`border rounded-lg p-3 cursor-pointer transition-all duration-300 ${
-                            selectionStep === 'checkout' 
-                              ? 'border-indigo-500 bg-indigo-50 shadow-md' 
-                              : availabilityError && availabilityError.includes('Check-out')
-                              ? 'border-red-300 bg-red-50' 
+                        <div
+                          ref={checkOutRef}
+                          className={`border rounded-lg p-3 cursor-pointer transition-all duration-300 ${selectionStep === 'checkout'
+                            ? 'border-indigo-500 bg-indigo-50 shadow-md'
+                            : availabilityError && availabilityError.includes('Check-out')
+                              ? 'border-red-300 bg-red-50'
                               : 'border-gray-300 hover:border-gray-400'
-                          }`}
+                            }`}
                           onClick={() => {
+                            ref = { checkOutRef }
                             setShowDatePicker(true);
+                            setCalendarAnchor('checkout');
                             setSelectionStep('checkout');
                           }}
                         >
-                          <div className={`text-xs font-medium mb-1 ${
-                            selectionStep === 'checkout' ? 'text-indigo-700' : 'text-gray-700'
-                          }`}>
+                          <div className={`text-xs font-medium mb-1 ${selectionStep === 'checkout' ? 'text-indigo-700' : 'text-gray-700'
+                            }`}>
                             {selectionStep === 'checkout' ? '🔄 Selecting Check-out' : 'Check-out'}
                           </div>
-                          <div className={`text-sm ${
-                            selectionStep === 'checkout' ? 'text-indigo-900' : 'text-gray-900'
-                          }`}>
+                          <div className={`text-sm ${selectionStep === 'checkout' ? 'text-indigo-900' : 'text-gray-900'
+                            }`}>
                             {dateRange.endDate ? formatDate(dateRange.endDate) : 'Select date'}
                           </div>
                         </div>
                       </div>
-                      
+
                       {/* Date validation error display */}
                       {availabilityError && (
                         <div className="mt-2 text-sm text-red-600">
@@ -1720,151 +2541,15 @@ export default function PropertyDetailsPage() {
                             <Clock className="w-4 h-4 text-blue-600" />
                             <label className="text-sm font-semibold text-gray-800">Check-in Time</label>
                           </div>
-                          <select 
+                          <TimeSpinner
                             value={checkInTimeStr}
-                            onChange={(e) => {
-                              const newTime = e.target.value;
-                              const [selectedHour] = newTime.split(':').map(Number);
-                              
-                              // If time is after 12:00 AM (0-5 AM), move check-in date to next day
-                              if (selectedHour >= 0 && selectedHour <= 5 && dateRange.startDate) {
-                                const nextDay = new Date(dateRange.startDate);
-                                nextDay.setDate(nextDay.getDate() + 1);
-                                
-                                console.log(`📅 Adjusting check-in date to ${nextDay.toDateString()} (time is ${newTime})`);
-                                setDateRange(prev => ({
-                                  ...prev,
-                                  startDate: nextDay,
-                                  endDate: prev.endDate ? new Date(prev.endDate.getTime() + 24 * 60 * 60 * 1000) : null
-                                }));
-                                // Reset adjustment flag for new date
-                                lastAutoAdjustedDate.current = null;
-                              }
-                              
+                            onChange={(newTime) => {
                               setCheckInTimeStr(newTime);
-                              // Clear availability when time changes
-                              setAvailabilityError('');
                               setAvailabilityChecked(false);
-                              // Clear auto-adjustment flag so user can manually select any time
-                              lastAutoAdjustedDate.current = null;
                             }}
-                            className="w-full p-3 border border-blue-200 rounded-lg bg-white text-gray-900 font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
-                          >
-                            {/* Generate time options - filter out past hours if check-in date is today */}
-                            {(() => {
-                              const now = new Date();
-                              const currentHour = now.getHours();
-                              const isToday = dateRange.startDate && 
-                                dateRange.startDate.toDateString() === now.toDateString();
-                              
-                              // Check for maintenance restriction and hour restrictions
-                              const dateStr = dateRange.startDate ? 
-                                `${dateRange.startDate.getFullYear()}-${String(dateRange.startDate.getMonth() + 1).padStart(2, '0')}-${String(dateRange.startDate.getDate()).padStart(2, '0')}` : '';
-                              const maintenanceInfo = maintenanceByDate.get(dateStr);
-                              const hourRestrictions = maintenanceInfo?.availableHours;
-                              
-                              // Minimum hour: current hour + 1 if today, otherwise 6 AM
-                              let minHour = isToday ? Math.max(currentHour + 1, 6) : 6;
-                              
-                              // If maintenance restriction exists, ensure minHour is after maintenance end
-                              if (maintenanceInfo?.availableAfter) {
-                                const maintenanceEndHour = maintenanceInfo.availableAfter.getHours();
-                                const maintenanceEndMinute = maintenanceInfo.availableAfter.getMinutes();
-                                // If maintenance ends mid-hour (e.g., 6:30 PM), allow that hour (6 PM) but user must select after 6:30
-                                // For simplicity, round up to next hour if maintenance ends mid-hour
-                                const requiredHour = maintenanceEndMinute > 0 ? maintenanceEndHour + 1 : maintenanceEndHour;
-                                minHour = Math.max(minHour, requiredHour);
-                                console.log(`🔧 Maintenance restriction: available after ${maintenanceInfo.availableAfter.toLocaleTimeString()}, minHour set to ${minHour}`);
-                              }
-                              
-                              // Generate options: filter by hour restrictions if they exist
-                              const options = [];
-                              
-                              // If hour restrictions exist, only show times within allowed ranges
-                              if (hourRestrictions && hourRestrictions.length > 0) {
-                                const allowedTimes = new Set<string>();
-                                
-                                for (const range of hourRestrictions) {
-                                  const [startH, startM] = range.startTime.split(':').map(Number);
-                                  const [endH, endM] = range.endTime.split(':').map(Number);
-                                  
-                                  let currentH = startH;
-                                  let currentM = startM;
-                                  
-                                  while (currentH < endH || (currentH === endH && currentM < endM)) {
-                                    const timeStr = `${currentH.toString().padStart(2, '0')}:${currentM.toString().padStart(2, '0')}`;
-                                    
-                                    // Only include if it's not in the past (if today) and after maintenance end
-                                    if (!isToday || currentH > currentHour || (currentH === currentHour && currentM > now.getMinutes())) {
-                                      if (!maintenanceInfo?.availableAfter || 
-                                          currentH > maintenanceInfo.availableAfter.getHours() ||
-                                          (currentH === maintenanceInfo.availableAfter.getHours() && currentM >= maintenanceInfo.availableAfter.getMinutes())) {
-                                        allowedTimes.add(timeStr);
-                                      }
-                                    }
-                                    
-                                    // Move to next hour
-                                    currentM += 60;
-                                    if (currentM >= 60) {
-                                      currentM = 0;
-                                      currentH++;
-                                    }
-                                  }
-                                }
-                                
-                                // Convert allowed times to option elements
-                                Array.from(allowedTimes).sort().forEach(timeStr => {
-                                  const [h] = timeStr.split(':').map(Number);
-                                  options.push(
-                                    <option key={timeStr} value={timeStr}>
-                                      {formatTimeHour(h)}
-                                    </option>
-                                  );
-                                });
-                                
-                                console.log(`⏰ Filtered time options based on hour restrictions:`, Array.from(allowedTimes));
-                              } else {
-                                // No hour restrictions - generate all times as before
-                                // First: from minHour to 11 PM
-                                for (let hour = minHour; hour <= 23; hour++) {
-                                  const value = `${hour.toString().padStart(2, '0')}:00`;
-                                  options.push(
-                                    <option key={value} value={value}>
-                                      {formatTimeHour(hour)}
-                                    </option>
-                                  );
-                                }
-                                
-                                // Then: from 12 AM (0) to 5 AM (5) - only if minHour doesn't already cover these
-                                if (minHour > 5) {
-                                  for (let hour = 0; hour <= 5; hour++) {
-                                    const value = `${hour.toString().padStart(2, '0')}:00`;
-                                    options.push(
-                                      <option key={value} value={value}>
-                                        {formatTimeHour(hour)}
-                                      </option>
-                                    );
-                                  }
-                                }
-                              }
-                              
-                              // If no options available (too late, maintenance restriction, or hour restrictions), show message
-                              if (options.length === 0) {
-                                return (
-                                  <option value="" disabled>
-                                    {hourRestrictions && hourRestrictions.length > 0
-                                      ? `No times available - outside available hours (${hourRestrictions.map(r => `${r.startTime}-${r.endTime}`).join(', ')})`
-                                      : maintenanceInfo?.availableAfter
-                                      ? `No times available - maintenance until ${maintenanceInfo.availableAfter.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}`
-                                      : 'No times available today - select tomorrow'}
-                                  </option>
-                                );
-                              }
-                              
-                              return options;
-                            })()}
-                          </select>
-                          
+                          />
+
+
                           {/* Show warning if today's time options are limited */}
                           {dateRange.startDate && dateRange.startDate.toDateString() === new Date().toDateString() && (
                             <div className="mt-2 text-xs text-amber-600 flex items-center gap-1">
@@ -1872,7 +2557,7 @@ export default function PropertyDetailsPage() {
                               <span>Showing available times for today (past hours hidden)</span>
                             </div>
                           )}
-                          
+
                           {/* Show maintenance restriction message for checkout dates */}
                           {dateRange.startDate && (() => {
                             const dateStr = `${dateRange.startDate.getFullYear()}-${String(dateRange.startDate.getMonth() + 1).padStart(2, '0')}-${String(dateRange.startDate.getDate()).padStart(2, '0')}`;
@@ -1889,7 +2574,7 @@ export default function PropertyDetailsPage() {
                             }
                             return null;
                           })()}
-                          
+
                           {/* Calculated checkout display */}
                           {dateRange.startDate && (
                             <div className="mt-3 p-3 bg-white rounded-lg border border-blue-100">
@@ -1916,290 +2601,560 @@ export default function PropertyDetailsPage() {
                           )}
                         </div>
                       )}
-                    
+
                       {/* Fresh Working Calendar */}
-                      {showDatePicker && (
-                        <div 
-                          ref={datePickerRef}
-                          className="absolute top-full left-0 right-0 z-50 mt-3 bg-white rounded-xl shadow-xl border border-gray-200 p-4"
-                        >
-                          <div className="w-full max-w-sm mx-auto">
-                            {/* Header */}
-                            <div className="flex items-center justify-between mb-4">
-                              <button
-                                onClick={() => {
-                                  const newMonth = new Date(currentMonth);
-                                  newMonth.setMonth(newMonth.getMonth() - 1);
-                                  setCurrentMonth(newMonth);
-                                }}
-                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                              >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                </svg>
-                              </button>
-                              
-                              <h3 className="text-lg font-semibold text-gray-900">
-                                {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                              </h3>
-                              
-                              <button
-                                onClick={() => {
-                                  const newMonth = new Date(currentMonth);
-                                  newMonth.setMonth(newMonth.getMonth() + 1);
-                                  setCurrentMonth(newMonth);
-                                }}
-                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                              >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                </svg>
-                              </button>
-                            </div>
 
-                            {/* Step Indicator */}
-                            <div className="text-center mb-4 text-sm">
-                              {selectionStep === 'checkin' && (
-                                <span className="text-blue-600 font-medium">Select Check-in Date</span>
-                              )}
-                              {selectionStep === 'checkout' && (
-                                <span className="text-blue-600 font-medium">Select Check-out Date</span>
-                              )}
-                              {selectionStep === 'complete' && (
-                                <span className="text-green-600 font-medium">Dates Selected!</span>
-                              )}
-                            </div>
+                      {showDatePicker &&
+                        createPortal(
+                          (() => {
+                            const pos = getCalendarPosition();
 
-                            {/* Calendar Grid */}
-                            <div className="grid grid-cols-7 gap-1">
-                              {/* Day Headers */}
-                              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
-                                <div key={day} className="text-center text-xs font-medium text-gray-500 py-2">
-                                  {day}
-                                </div>
-                              ))}
-
-                              {/* Calendar Days */}
-                              {(() => {
-                                const year = currentMonth.getFullYear();
-                                const month = currentMonth.getMonth();
-                                const firstDay = new Date(year, month, 1);
-                                const lastDay = new Date(year, month + 1, 0);
-                                const startDate = new Date(firstDay);
-                                startDate.setDate(startDate.getDate() - firstDay.getDay());
-                                
-                                const days = [];
-                                
-                                // Generate all days for the calendar grid (6 weeks x 7 days = 42)
-                                for (let i = 0; i < 42; i++) {
-                                  const date = new Date(startDate);
-                                  date.setDate(startDate.getDate() + i);
-                                  
-                                  const isCurrentMonth = date.getMonth() === month;
-                                  const isToday = date.toDateString() === new Date().toDateString();
-                                  const isPast = date < new Date();
-                                  
-                                  // Check if this date is booked/unavailable
-                                  // FIXED: Use local date format to match bookedDates format
-                                  const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-                                  const isBooked = bookedDates.has(dateStr);
-                                  
-                                  const isStartDate = dateRange.startDate && 
-                                    dateRange.startDate.toDateString() === date.toDateString();
-                                  const isEndDate = dateRange.endDate && 
-                                    dateRange.endDate.toDateString() === date.toDateString();
-                                  const isInRange = dateRange.startDate && dateRange.endDate &&
-                                    date > dateRange.startDate && date < dateRange.endDate;
-                                  
-                                  // Booked dates are not selectable
-                                  const isSelectable = isCurrentMonth && !isPast && !isBooked;
-                                  
-                                  let className = 'text-center py-2 text-sm rounded-lg transition-colors relative ';
-                                  
-                                  if (!isCurrentMonth) {
-                                    className += 'text-gray-300';
-                                  } else if (isBooked) {
-                                    // Red styling for booked dates
-                                    className += 'bg-red-100 text-red-400 cursor-not-allowed line-through';
-                                  } else if (!isSelectable) {
-                                    className += 'text-gray-400 bg-gray-100';
-                                  } else if (isStartDate || isEndDate) {
-                                    className += 'bg-blue-600 text-white font-semibold';
-                                  } else if (isInRange) {
-                                    className += 'bg-blue-200 text-blue-800';
-                                  } else if (isToday) {
-                                    className += 'bg-blue-100 text-blue-800 font-medium';
-                                  } else {
-                                    className += 'hover:bg-gray-100 cursor-pointer';
-                                  }
-                                  
-                                  days.push(
+                            if (isMobile) {
+                              return (
+                                <div className="fixed inset-0 z-[1000] bg-white">
+                                  {/* Mobile Bottom Sheet */}
+                                  <div className="fixed inset-0 z-[1000]">
+                                    {/* Backdrop */}
                                     <div
-                                      key={date.getTime()}
-                                      className={className}
-                                      title={isBooked ? 'This date is already booked' : undefined}
-                                      onClick={() => {
-                                        if (!isSelectable) return;
-                                        
-                                        console.log('Date clicked:', date.toDateString());
-                                        console.log('Current selectionStep:', selectionStep);
-                                        
-                                        if (selectionStep === 'checkin') {
-                                          // Select check-in date
-                                          console.log('Setting check-in date:', date.toDateString());
-                                          const newDateRange = {
-                                            ...dateRange,
-                                            startDate: new Date(date),
-                                            endDate: null,
-                                            key: 'selection'
-                                          };
-                                          console.log('📅 New date range:', newDateRange);
-                                          console.log('📅 Setting dateRange state...');
-                                          setDateRange(newDateRange);
-                                          console.log('📅 DateRange state updated');
-                                          setSelectionStep('checkout');
-                                        } else if (selectionStep === 'checkout') {
-                                          // Select check-out date
-                                          if (date > dateRange.startDate) {
-                                            console.log('Setting check-out date:', date.toDateString());
-                                            console.log('🔍 Original date:', date);
-                                            console.log('🔍 New Date(date):', new Date(date));
-                                            console.log('🔍 Start date:', dateRange.startDate);
-                                            const newDateRange = {
-                                              ...dateRange,
-                                              endDate: new Date(date),
-                                              key: 'selection'
-                                            };
-                                            console.log('📅 Complete date range:', newDateRange);
-                                            console.log('🔍 Final endDate:', newDateRange.endDate);
-                                            console.log('📅 Setting complete dateRange state...');
-                                            setDateRange(newDateRange);
-                                            console.log('📅 Complete dateRange state updated');
-                                            setSelectionStep('complete');
-                                            setTimeout(() => setShowDatePicker(false), 300);
-                                          } else if (date < dateRange.startDate) {
-                                            // New date is before start date, make it new start date
-                                            console.log('New date before start, making it new start date');
-                                            setDateRange({
-                                              startDate: new Date(date),
-                                              endDate: null,
-                                              key: 'selection'
-                                            });
-                                            setSelectionStep('checkin');
-                                          }
-                                        } else {
-                                          // Both dates selected, start over
-                                          console.log('Starting over with new check-in date');
-                                          setDateRange({
-                                            startDate: new Date(date),
-                                            endDate: null,
-                                            key: 'selection'
-                                          });
-                                          setSelectionStep('checkin');
-                                        }
-                                      }}
-                                    >
-                                      <span>{date.getDate()}</span>
-                                      {/* Red dot indicator for booked dates */}
-                                      {isBooked && isCurrentMonth && (
-                                        <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                                      )}
+                                      className="absolute inset-0 bg-black/40"
+                                      onClick={() => setShowDatePicker(false)}
+                                    />
+
+                                    {/* Bottom Sheet */}
+                                    <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl max-h-[90vh] flex flex-col animate-slide-up">
+
+                                      {/* Drag Handle */}
+                                      <div className="flex justify-center pt-3">
+                                        <div className="w-10 h-1.5 bg-gray-300 rounded-full" />
+                                      </div>
+
+                                      {/* Header */}
+                                      <div className="flex items-center justify-between px-4 py-3 border-b">
+                                        <h3 className="text-base font-semibold">
+                                          {selectionStep === 'checkin'
+                                            ? 'Select check-in date'
+                                            : selectionStep === 'checkout'
+                                              ? 'Select check-out date'
+                                              : 'Select dates'}
+                                        </h3>
+
+                                        <button
+                                          onClick={() => setShowDatePicker(false)}
+                                          className="p-2 rounded-full hover:bg-gray-100"
+                                        >
+                                          ✕
+                                        </button>
+                                      </div>
+
+                                      {/* Calendar Content (Scrollable) */}
+                                      <div
+                                        ref={datePickerRef}
+                                        className="overflow-y-auto px-4 py-4 flex-1"
+                                      >
+                                        <div className="flex items-center justify-between mb-4">
+                                          <button
+                                            onClick={() => {
+                                              const newMonth = new Date(currentMonth);
+                                              newMonth.setMonth(newMonth.getMonth() - 1);
+                                              setCurrentMonth(newMonth);
+                                            }}
+                                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                          >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                            </svg>
+                                          </button>
+
+                                          <h3 className="text-lg font-semibold text-gray-900">
+                                            {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                                          </h3>
+
+                                          <button
+                                            onClick={() => {
+                                              const newMonth = new Date(currentMonth);
+                                              newMonth.setMonth(newMonth.getMonth() + 1);
+                                              setCurrentMonth(newMonth);
+                                            }}
+                                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                          >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                            </svg>
+                                          </button>
+                                        </div>
+
+                                        {/* Step Indicator */}
+                                        <div className="text-center mb-4 text-sm">
+                                          {selectionStep === 'checkin' && (
+                                            <span className="text-blue-600 font-medium">Select Check-in Date</span>
+                                          )}
+                                          {selectionStep === 'checkout' && (
+                                            <span className="text-blue-600 font-medium">Select Check-out Date</span>
+                                          )}
+                                          {selectionStep === 'complete' && (
+                                            <span className="text-green-600 font-medium">Dates Selected!</span>
+                                          )}
+                                        </div>
+
+                                        {/* Calendar Grid */}
+                                        <div className="grid grid-cols-7 gap-1">
+                                          {/* Day Headers */}
+                                          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
+                                            <div key={day} className="text-center text-xs font-medium text-gray-500 py-2">
+                                              {day}
+                                            </div>
+                                          ))}
+
+                                          {/* Calendar Days */}
+                                          {(() => {
+                                            const year = currentMonth.getFullYear();
+                                            const month = currentMonth.getMonth();
+                                            const firstDay = new Date(year, month, 1);
+                                            const lastDay = new Date(year, month + 1, 0);
+                                            const startDate = new Date(firstDay);
+                                            startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+                                            const days = [];
+
+                                            // Generate all days for the calendar grid (6 weeks x 7 days = 42)
+                                            for (let i = 0; i < 42; i++) {
+                                              const date = new Date(startDate);
+                                              date.setDate(startDate.getDate() + i);
+
+                                              const isCurrentMonth = date.getMonth() === month;
+                                              const isToday = date.toDateString() === new Date().toDateString();
+                                              // const isPast = date < new Date();
+                                              const today = new Date();
+                                              today.setHours(0, 0, 0, 0);
+
+                                              const isPast = date < today;
+
+
+                                              // Check if this date is booked/unavailable
+                                              // FIXED: Use local date format to match bookedDates format
+                                              const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                                              const isBooked = bookedDates.has(dateStr);
+
+                                              const isStartDate = dateRange.startDate &&
+                                                dateRange.startDate.toDateString() === date.toDateString();
+                                              const isEndDate = dateRange.endDate &&
+                                                dateRange.endDate.toDateString() === date.toDateString();
+                                              const isInRange = dateRange.startDate && dateRange.endDate &&
+                                                date > dateRange.startDate && date < dateRange.endDate;
+
+                                              // Booked dates are not selectable
+                                              const isSelectable = isCurrentMonth && !isPast && !isBooked;
+
+
+                                              // Add 'text-gray-700' (for light mode) or 'text-white' (for dark mode)
+                                              // 1. Initialize with a base text color to ensure nothing is ever 'invisible'
+                                              let className = 'text-center py-2 text-sm rounded-lg transition-colors relative ';
+                                              if (!isCurrentMonth) {
+                                                className += 'text-gray-300';
+                                              } else if (isBooked) {
+                                                className += 'bg-red-50 text-red-600 cursor-not-allowed line-through';
+                                              } else if (isStartDate || isEndDate) {
+                                                className += 'bg-blue-600 text-white font-semibold';
+                                              } else if (isInRange) {
+                                                className += 'bg-blue-100 text-blue-800';
+                                              } else if (!isSelectable) {
+                                                className += 'text-gray-400 cursor-default';
+                                              } else if (isToday) {
+                                                className += 'bg-blue-50 text-blue-700 font-bold underline';
+                                              } else {
+                                                className += 'text-black hover:bg-gray-100 cursor-pointer';
+                                              }
+
+                                              days.push(
+                                                <div
+                                                  key={date.getTime()}
+                                                  className={className}
+                                                  title={isBooked ? 'This date is already booked' : undefined}
+                                                  onClick={() => {
+                                                    if (!isSelectable) return;
+
+                                                    console.log('Date clicked:', date.toDateString());
+                                                    console.log('Current selectionStep:', selectionStep);
+
+                                                    if (selectionStep === 'checkin') {
+                                                      // Select check-in date
+                                                      console.log('Setting check-in date:', date.toDateString());
+                                                      const newDateRange = {
+                                                        ...dateRange,
+                                                        startDate: new Date(date),
+                                                        endDate: null,
+                                                        key: 'selection'
+                                                      };
+                                                      console.log('📅 New date range:', newDateRange);
+                                                      console.log('📅 Setting dateRange state...');
+                                                      setDateRange(newDateRange);
+                                                      console.log('📅 DateRange state updated');
+                                                      setSelectionStep('checkout');
+                                                    } else if (selectionStep === 'checkout') {
+                                                      // Select check-out date
+                                                      if (date > dateRange.startDate) {
+                                                        console.log('Setting check-out date:', date.toDateString());
+                                                        console.log('🔍 Original date:', date);
+                                                        console.log('🔍 New Date(date):', new Date(date));
+                                                        console.log('🔍 Start date:', dateRange.startDate);
+                                                        const newDateRange = {
+                                                          ...dateRange,
+                                                          endDate: new Date(date),
+                                                          key: 'selection'
+                                                        };
+                                                        console.log('📅 Complete date range:', newDateRange);
+                                                        console.log('🔍 Final endDate:', newDateRange.endDate);
+                                                        console.log('📅 Setting complete dateRange state...');
+                                                        setDateRange(newDateRange);
+                                                        console.log('📅 Complete dateRange state updated');
+                                                        setSelectionStep('complete');
+                                                        setTimeout(() => setShowDatePicker(false), 300);
+                                                      } else if (date < dateRange.startDate) {
+                                                        // New date is before start date, make it new start date
+                                                        console.log('New date before start, making it new start date');
+                                                        setDateRange({
+                                                          startDate: new Date(date),
+                                                          endDate: null,
+                                                          key: 'selection'
+                                                        });
+                                                        setSelectionStep('checkin');
+                                                      }
+                                                    } else {
+                                                      // Both dates selected, start over
+                                                      console.log('Starting over with new check-in date');
+                                                      setDateRange({
+                                                        startDate: new Date(date),
+                                                        endDate: null,
+                                                        key: 'selection'
+                                                      });
+                                                      setSelectionStep('checkin');
+                                                    }
+                                                  }}
+                                                >
+                                                  <span>{date.getDate()}</span>
+                                                  {/* Red dot indicator for booked dates */}
+                                                  {isBooked && isCurrentMonth && (
+                                                    <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                                                  )}
+                                                </div>
+                                              );
+                                            }
+
+                                            return days;
+                                          })()}
+                                        </div>
+
+                                        {/* Legend for booked dates */}
+                                        <div className="mt-3 flex items-center justify-center gap-4 text-xs text-gray-500">
+                                          <div className="flex items-center gap-1">
+                                            <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                                            <span>Booked</span>
+                                          </div>
+                                          <div className="flex items-center gap-1">
+                                            <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                                            <span>Selected</span>
+                                          </div>
+                                        </div>
+
+                                        {/* Reset Button */}
+                                        <div className="mt-4 text-center">
+                                          <button
+                                            onClick={() => {
+                                              const today = new Date();
+                                              const tomorrow = new Date();
+                                              tomorrow.setDate(tomorrow.getDate() + 1);
+
+                                              setDateRange({
+                                                startDate: today,
+                                                endDate: tomorrow,
+                                                key: 'selection'
+                                              });
+                                              setSelectionStep('checkin');
+                                              setAvailabilityChecked(false);
+                                              setAvailabilityError('');
+                                              setAvailability([]);
+                                            }}
+                                            className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                                          >
+                                            Reset to Today & Tomorrow
+                                          </button>
+                                        </div>
+                                      </div>
+
                                     </div>
-                                  );
-                                }
-                                
-                                return days;
-                              })()}
-                            </div>
 
-                            {/* Legend for booked dates */}
-                            <div className="mt-3 flex items-center justify-center gap-4 text-xs text-gray-500">
-                              <div className="flex items-center gap-1">
-                                <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                                <span>Booked</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                                <span>Selected</span>
-                              </div>
-                            </div>
+                                    {/* Footer (Optional CTA like Airbnb) */}
+                                    <div className="px-4 py-3 border-t flex gap-3">
+                                      <button
+                                        onClick={() => {
+                                          setSelectionStep('checkin');
+                                          setDateRange({ startDate: new Date(), endDate: null, key: 'selection' });
+                                        }}
+                                        className="flex-1 py-2 text-sm rounded-lg border border-gray-300"
+                                      >
+                                        Clear
+                                      </button>
 
-                            {/* Reset Button */}
-                            <div className="mt-4 text-center">
-                              <button
-                                onClick={() => {
-                                  const today = new Date();
-                                  const tomorrow = new Date();
-                                  tomorrow.setDate(tomorrow.getDate() + 1);
-                                  
-                                  setDateRange({
-                                    startDate: today,
-                                    endDate: tomorrow,
-                                    key: 'selection'
-                                  });
-                                  setSelectionStep('checkin');
-                                  setAvailabilityChecked(false);
-                                  setAvailabilityError('');
-                                  setAvailability([]);
+                                      <button
+                                        onClick={() => setShowDatePicker(false)}
+                                        className="flex-1 py-2 text-sm rounded-lg bg-indigo-600 text-white"
+                                      >
+                                        Done
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+
+                              );
+                            }
+
+                            return (
+                              <div
+                                ref={datePickerRef}
+                                style={{
+                                  position: 'absolute',
+                                  top: pos.top,
+                                  left: pos.left,
+                                  zIndex: 1000,
                                 }}
-                                className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                              >
-                                Reset to Today & Tomorrow
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    
+                                className="bg-white rounded-xl shadow-xl border p-4 w-[360px]"
+                              >    <div className="flex items-center justify-between mb-4">
+                                  <button
+                                    onClick={() => {
+                                      const newMonth = new Date(currentMonth);
+                                      newMonth.setMonth(newMonth.getMonth() - 1);
+                                      setCurrentMonth(newMonth);
+                                    }}
+                                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                  >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                  </button>
+
+                                  <h3 className="text-lg font-semibold text-gray-900">
+                                    {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                                  </h3>
+
+                                  <button
+                                    onClick={() => {
+                                      const newMonth = new Date(currentMonth);
+                                      newMonth.setMonth(newMonth.getMonth() + 1);
+                                      setCurrentMonth(newMonth);
+                                    }}
+                                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                  >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                  </button>
+                                </div>
+
+                                {/* Step Indicator */}
+                                <div className="text-center mb-4 text-sm">
+                                  {selectionStep === 'checkin' && (
+                                    <span className="text-blue-600 font-medium">Select Check-in Date</span>
+                                  )}
+                                  {selectionStep === 'checkout' && (
+                                    <span className="text-blue-600 font-medium">Select Check-out Date</span>
+                                  )}
+                                  {selectionStep === 'complete' && (
+                                    <span className="text-green-600 font-medium">Dates Selected!</span>
+                                  )}
+                                </div>
+
+                                {/* Calendar Grid */}
+                                <div className="grid grid-cols-7 gap-1">
+                                  {/* Day Headers */}
+                                  {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
+                                    <div key={day} className="text-center text-xs font-medium text-gray-500 py-2">
+                                      {day}
+                                    </div>
+                                  ))}
+
+                                  {/* Calendar Days */}
+                                  {(() => {
+                                    const year = currentMonth.getFullYear();
+                                    const month = currentMonth.getMonth();
+                                    const firstDay = new Date(year, month, 1);
+                                    const lastDay = new Date(year, month + 1, 0);
+                                    const startDate = new Date(firstDay);
+                                    startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+                                    const days = [];
+
+                                    // Generate all days for the calendar grid (6 weeks x 7 days = 42)
+                                    for (let i = 0; i < 42; i++) {
+                                      const date = new Date(startDate);
+                                      date.setDate(startDate.getDate() + i);
+
+                                      const isCurrentMonth = date.getMonth() === month;
+                                      const isToday = date.toDateString() === new Date().toDateString();
+                                      // const isPast = date < new Date();
+                                      const today = new Date();
+                                      today.setHours(0, 0, 0, 0);
+
+                                      const isPast = date < today;
+
+                                      // Check if this date is booked/unavailable
+                                      // FIXED: Use local date format to match bookedDates format
+                                      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                                      const isBooked = bookedDates.has(dateStr);
+
+                                      const isStartDate = dateRange.startDate &&
+                                        dateRange.startDate.toDateString() === date.toDateString();
+                                      const isEndDate = dateRange.endDate &&
+                                        dateRange.endDate.toDateString() === date.toDateString();
+                                      const isInRange = dateRange.startDate && dateRange.endDate &&
+                                        date > dateRange.startDate && date < dateRange.endDate;
+
+                                      // Booked dates are not selectable
+                                      const isSelectable = isCurrentMonth && !isPast && !isBooked;
+
+                                      let className = 'text-center py-2 text-sm rounded-lg transition-colors relative ';
+
+                                      if (!isCurrentMonth) {
+                                        className += 'text-gray-300';
+                                      } else if (isBooked) {
+                                        // Red styling for booked dates
+                                        className += 'bg-red-100 text-red-400 cursor-not-allowed line-through';
+                                      } else if (!isSelectable) {
+                                        className += 'text-gray-400 bg-gray-100';
+                                      } else if (isStartDate || isEndDate) {
+                                        className += 'bg-blue-600 text-white font-semibold';
+                                      } else if (isInRange) {
+                                        className += 'bg-blue-200 text-blue-800';
+                                      } else if (isToday) {
+                                        className += 'bg-blue-100 text-blue-800 font-medium';
+                                      } else {
+                                        className += 'hover:bg-gray-100 cursor-pointer';
+                                      }
+
+                                      days.push(
+                                        <div
+                                          key={date.getTime()}
+                                          className={className}
+                                          title={isBooked ? 'This date is already booked' : undefined}
+                                          onClick={() => {
+                                            if (!isSelectable) return;
+
+                                            console.log('Date clicked:', date.toDateString());
+                                            console.log('Current selectionStep:', selectionStep);
+
+                                            if (selectionStep === 'checkin') {
+                                              // Select check-in date
+                                              console.log('Setting check-in date:', date.toDateString());
+                                              const newDateRange = {
+                                                ...dateRange,
+                                                startDate: new Date(date),
+                                                endDate: null,
+                                                key: 'selection'
+                                              };
+                                              console.log('📅 New date range:', newDateRange);
+                                              console.log('📅 Setting dateRange state...');
+                                              setDateRange(newDateRange);
+                                              console.log('📅 DateRange state updated');
+                                              setSelectionStep('checkout');
+                                            } else if (selectionStep === 'checkout') {
+                                              // Select check-out date
+                                              if (date > dateRange.startDate) {
+                                                console.log('Setting check-out date:', date.toDateString());
+                                                console.log('🔍 Original date:', date);
+                                                console.log('🔍 New Date(date):', new Date(date));
+                                                console.log('🔍 Start date:', dateRange.startDate);
+                                                const newDateRange = {
+                                                  ...dateRange,
+                                                  endDate: new Date(date),
+                                                  key: 'selection'
+                                                };
+                                                console.log('📅 Complete date range:', newDateRange);
+                                                console.log('🔍 Final endDate:', newDateRange.endDate);
+                                                console.log('📅 Setting complete dateRange state...');
+                                                setDateRange(newDateRange);
+                                                console.log('📅 Complete dateRange state updated');
+                                                setSelectionStep('complete');
+                                                setTimeout(() => setShowDatePicker(false), 300);
+                                              } else if (date < dateRange.startDate) {
+                                                // New date is before start date, make it new start date
+                                                console.log('New date before start, making it new start date');
+                                                setDateRange({
+                                                  startDate: new Date(date),
+                                                  endDate: null,
+                                                  key: 'selection'
+                                                });
+                                                setSelectionStep('checkin');
+                                              }
+                                            } else {
+                                              // Both dates selected, start over
+                                              console.log('Starting over with new check-in date');
+                                              setDateRange({
+                                                startDate: new Date(date),
+                                                endDate: null,
+                                                key: 'selection'
+                                              });
+                                              setSelectionStep('checkin');
+                                            }
+                                          }}
+                                        >
+                                          <span>{date.getDate()}</span>
+                                          {/* Red dot indicator for booked dates */}
+                                          {isBooked && isCurrentMonth && (
+                                            <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                                          )}
+                                        </div>
+                                      );
+                                    }
+
+                                    return days;
+                                  })()}
+                                </div>
+
+                                {/* Legend for booked dates */}
+                                <div className="mt-3 flex items-center justify-center gap-4 text-xs text-gray-500">
+                                  <div className="flex items-center gap-1">
+                                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                                    <span>Booked</span>
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                                    <span>Selected</span>
+                                  </div>
+                                </div>
+
+                                {/* Reset Button */}
+                                <div className="mt-4 text-center">
+                                  <button
+                                    onClick={() => {
+                                      const today = new Date();
+                                      const tomorrow = new Date();
+                                      tomorrow.setDate(tomorrow.getDate() + 1);
+
+                                      setDateRange({
+                                        startDate: today,
+                                        endDate: tomorrow,
+                                        key: 'selection'
+                                      });
+                                      setSelectionStep('checkin');
+                                      setAvailabilityChecked(false);
+                                      setAvailabilityError('');
+                                      setAvailability([]);
+                                    }}
+                                    className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                                  >
+                                    Reset to Today & Tomorrow
+                                  </button>
+                                </div>
+
+                                {/* calendar content */}
+                              </div>
+                            );
+                          })(),
+                          document.body
+                        )
+                      }
                       {/* Test Pricing Button removed */}
 
-                      {/* Check Availability Button */}
-                      <div className="mt-4">
-                        <Button
-                          onClick={checkAvailability}
-                          disabled={availabilityLoading || selectionStep !== 'complete' || !!availabilityError}
-                          className={`w-full font-semibold py-3 rounded-xl transition-all duration-200 ${
-                            availabilityLoading || selectionStep !== 'complete' || !!availabilityError
-                              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                              : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white'
-                          }`}
-                        >
-                          {availabilityLoading ? (
-                            <>
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                              Checking Availability...
-                            </>
-                          ) : selectionStep !== 'complete' ? (
-                            selectionStep === 'checkin' ? 'Select Check-in Date' : 'Select Check-out Date'
-                          ) : availabilityError ? (
-                            'Dates unavailable'
-                          ) : (
-                            <>
-                              <CheckCircle className="w-4 h-4 mr-2" />
-                              Check Availability
-                            </>
-                          )}
-                        </Button>
-                      
-                        {/* Availability Status */}
-                        {availabilityChecked && (
-                          <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                            <div className="flex items-center gap-2 text-green-700">
-                              <CheckCircle className="w-4 h-4" />
-                              <span className="text-sm font-medium">Available! {pricing?.nights || 0} night{(pricing?.nights || 0) > 1 ? 's' : ''} • {pricing?.total && !isNaN(pricing.total) ? formatPrice(pricing.total) : 'Calculating...'}</span>
-                            </div>
-                          </div>
-                        )}
-                      
-                        {availabilityError && !availabilityError.includes('Check-in') && !availabilityError.includes('Check-out') && (
-                          <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                            <div className="flex items-center gap-2 text-red-700">
-                              <AlertCircle className="w-4 h-4" />
-                              <span className="text-sm font-medium">Dates not available</span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                      {/* Availability check is now done inside Complete Booking button */}
                     </div>
                   )}
 
@@ -2268,17 +3223,30 @@ export default function PropertyDetailsPage() {
                   {/* Hourly Booking Extension - Modern Design */}
                   {!isOwnProperty && property?.hourlyBooking?.enabled && nights >= (property?.hourlyBooking?.minStayDays || 1) && (
                     <div className="mb-6">
-                      <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-6 border border-purple-200">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
-                            <Clock className="w-5 h-5 text-white" />
-                        </div>
+
+                      {/* MOBILE ACCORDION HEADER */}
+                      <button
+                        onClick={() => setShowExtras((prev) => !prev)}
+                        className="lg:hidden w-full flex items-center justify-between px-4 py-3 mb-3
+                                          bg-blue-50 border border-blue-200 rounded-xl font-semibold"
+                      >
+                        <span>Add extra hours</span>
+                        <ChevronDown
+                          className={`transition-transform duration-300 ${showExtras ? "rotate-180" : ""
+                            }`}
+                        />
+                      </button>
+                      <div className="bg-white rounded-3xl p-6 border border-gray-100 mb-8">
+                        <div className="flex items-center gap-4 mb-6">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
+                            <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-[#4285f4]" />
+                          </div>
                           <div>
                             <h3 className="text-lg font-bold text-gray-900">Extend Your Stay</h3>
                             <p className="text-sm text-gray-600">Add extra hours at a discounted rate</p>
                           </div>
                         </div>
-                        
+
                         <div className="grid grid-cols-3 gap-3">
                           {[
                             { hours: 6, rate: property.hourlyBooking.sixHours || 0.3, label: '6 Hours', icon: '⏰' },
@@ -2287,11 +3255,10 @@ export default function PropertyDetailsPage() {
                           ].map((option) => (
                             <div
                               key={option.hours}
-                              className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
-                                hourlyExtension === option.hours
-                                  ? 'border-purple-500 bg-purple-100 shadow-lg scale-105'
-                                  : 'border-gray-200 hover:border-purple-300 hover:shadow-md'
-                              }`}
+                              className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${hourlyExtension === option.hours
+                                ? 'border-[#4285F4] bg-blue-100 shadow-lg scale-105'
+                                : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
+                                }`}
                               onClick={() => setHourlyExtension(hourlyExtension === option.hours ? null : option.hours)}
                             >
                               <div className="text-center">
@@ -2306,7 +3273,7 @@ export default function PropertyDetailsPage() {
                         </div>
 
                         {hourlyExtension && (
-                          <div className="mt-4 p-4 bg-white rounded-xl border border-purple-200">
+                          <div className="mt-4 p-4 bg-white rounded-xl border border-blue-200">
                             <div className="flex items-center justify-between">
                               <div>
                                 <div className="font-semibold text-gray-900">{hourlyExtension} hours selected</div>
@@ -2317,10 +3284,10 @@ export default function PropertyDetailsPage() {
                                     if (!checkout) return 'Select dates first';
                                     return checkout.toLocaleString('en-US', {
                                       month: 'short',
-                                      day: 'numeric', 
-                                      hour: 'numeric', 
+                                      day: 'numeric',
+                                      hour: 'numeric',
                                       minute: '2-digit',
-                                      hour12: true 
+                                      hour12: true
                                     });
                                   })()}
                                 </div>
@@ -2335,23 +3302,23 @@ export default function PropertyDetailsPage() {
                           </div>
                         )}
                       </div>
-                          </div>
-                        )}
+                    </div>
+                  )}
 
                   {/* Pricing Breakdown - Modern Design */}
                   {!isOwnProperty && nights > 0 && (
                     <div className="mb-6">
-                      <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl p-6 border border-emerald-200">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-green-500 rounded-xl flex items-center justify-center">
-                            <Receipt className="w-5 h-5 text-white" />
-                        </div>
+                    <div className="bg-white rounded-3xl p-6 border border-gray-100 mb-8">
+                        <div className="flex items-center gap-4 mb-6">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
+                            <Receipt className="w-6 h-6 sm:w-8 sm:h-8 text-[#4285f4]" />
+                          </div>
                           <div>
                             <h3 className="text-lg font-bold text-gray-900">Price Breakdown</h3>
                             <p className="text-sm text-gray-600">{pricing?.nights || 0} night{(pricing?.nights || 0) > 1 ? 's' : ''} stay</p>
                           </div>
                         </div>
-                        
+
                         <PricingBreakdown
                           pricing={priceBreakdown}
                           showPlatformFees={true}
@@ -2361,38 +3328,7 @@ export default function PropertyDetailsPage() {
                     </div>
                   )}
 
-                  {/* Special Requests - Modern Design */}
-                  {!isOwnProperty && (
-                    <div className="mb-6">
-                      <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-200">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
-                            <MessageCircle className="w-5 h-5 text-white" />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-900">Special Requests</h3>
-                            <p className="text-sm text-gray-600">Let us know your preferences</p>
-                          </div>
-                        </div>
-                      <textarea
-                        value={specialRequests}
-                        onChange={(e) => setSpecialRequests(e.target.value)}
-                        placeholder="Any special requests or requirements..."
-                          className="w-full px-4 py-3 border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none bg-white"
-                        rows={3}
-                        maxLength={500}
-                      />
-                        <div className="flex justify-between items-center mt-2">
-                          <div className="text-xs text-gray-500">
-                            We'll do our best to accommodate your requests
-                          </div>
-                          <div className="text-xs text-gray-500">
-                        {specialRequests.length}/500
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+
 
                   {/* Booking Button - Modern Design */}
                   {isOwnProperty ? (
@@ -2404,9 +3340,9 @@ export default function PropertyDetailsPage() {
                       <p className="text-gray-600 mb-6">
                         You cannot book your own property. This is a preview of how guests see your listing.
                       </p>
-                      <Button 
-                        className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
-                        onClick={() => router.push(`/host/property/${id}/edit`)}
+                      <Button
+                        className="bg-[#4285f4] hover:bg-[#1A73E8] text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                        onClick={() => router.push(`/host/property/${id}`)}
                       >
                         <Home className="w-4 h-4 mr-2" />
                         Edit Property
@@ -2414,51 +3350,111 @@ export default function PropertyDetailsPage() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                    <Button 
-                        className={`w-full py-4 rounded-2xl font-bold text-lg shadow-xl transition-all duration-300 transform ${
-                        availabilityChecked && nights > 0
-                            ? 'bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white hover:shadow-2xl hover:scale-105' 
+                      <Button
+                        className={`w-full py-4 rounded-2xl font-bold text-lg shadow-xl transition-all duration-300 transform ${selectionStep === 'complete' && nights > 0
+                          ? 'bg-gradient-to-r from-[#4285f4] to-[#4285f4] hover:from-emerald-600 hover:to-green-700 text-white hover:shadow-2xl hover:scale-105'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      }`}
-                      onClick={handleBooking}
-                      disabled={bookingLoading || !availabilityChecked || nights === 0}
-                    >
-                      {bookingLoading ? (
+                          }`}
+                        onClick={handleCompleteBooking}
+                        disabled={bookingLoading || availabilityLoading || selectionStep !== 'complete' || nights === 0}
+                      >
+                        {bookingLoading || availabilityLoading ? (
                           <div className="flex items-center justify-center gap-3">
                             <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                            <span>Processing...</span>
-                        </div>
-                      ) : !availabilityChecked ? (
-                          <div className="flex items-center justify-center gap-3">
-                            <CheckCircle className="w-6 h-6" />
-                            <span>Check Availability First</span>
+                            <span>{availabilityLoading ? 'Checking availability...' : 'Processing...'}</span>
                           </div>
-                      ) : nights === 0 ? (
+                        ) : selectionStep !== 'complete' ? (
+                          <div className="flex items-center justify-center gap-3">
+                            <Calendar className="w-6 h-6" />
+                            <span>{selectionStep === 'checkin' ? 'Select Check-in Date' : 'Select Check-out Date'}</span>
+                          </div>
+                        ) : nights === 0 ? (
                           <div className="flex items-center justify-center gap-3">
                             <Calendar className="w-6 h-6" />
                             <span>Select Valid Dates</span>
                           </div>
-                      ) : (
+                        ) : (
                           <div className="flex items-center justify-center gap-3">
                             <Zap className="w-6 h-6" />
-                            <span>Continue to Book • {nights} night{nights > 1 ? 's' : ''}</span>
+                            <span>Complete Booking • {nights} night{nights > 1 ? 's' : ''}</span>
                           </div>
+                        )}
+                      </Button>
+
+                      {/* Availability Error UI - shown when booking check fails */}
+                      {availabilityError && !availabilityError.includes('Please select') && selectionStep === 'complete' && (
+                        <div className="rounded-2xl overflow-hidden border border-orange-200 shadow-sm">
+                          <div className="bg-gradient-to-r from-orange-50 to-amber-50 px-4 py-3 flex items-center gap-2 border-b border-orange-100">
+                            <div className="w-7 h-7 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                              <AlertCircle className="w-4 h-4 text-orange-500" />
+                            </div>
+                            <span className="text-sm font-semibold text-orange-800">Not Available at Selected Time</span>
+                          </div>
+                          <div className="bg-white px-4 py-3">
+                            {/* Parse maintenance time from error message */}
+                            {(() => {
+                              const match = availabilityError.match(/after\s+([\d:]+\s*[AP]M)/i);
+                              if (match) {
+                                return (
+                                  <div className="space-y-3">
+                                    <p className="text-sm text-gray-600">
+                                      This property is under maintenance. Your selected check-in time conflicts with the maintenance window.
+                                    </p>
+                                    <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3">
+                                      <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <CheckCircle className="w-4 h-4 text-emerald-600" />
+                                      </div>
+                                      <div>
+                                        <p className="text-xs text-emerald-700 font-medium uppercase tracking-wide">Next Available Check-in</p>
+                                        <p className="text-base font-bold text-emerald-800">After {match[1]}</p>
+                                      </div>
+                                    </div>
+                                    <p className="text-xs text-gray-500 flex items-center gap-1">
+                                      <Clock className="w-3 h-3" />
+                                      Please select a check-in time after {match[1]} to proceed.
+                                    </p>
+                                  </div>
+                                );
+                              }
+                              // Generic unavailability error
+                              return (
+                                <div className="space-y-2">
+                                  <p className="text-sm text-gray-600">{availabilityError}</p>
+                                  <p className="text-xs text-gray-400">Please choose different dates or adjust your check-in time.</p>
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        </div>
                       )}
-                    </Button>
-                      
-                      <div className="text-center">
+
+                      {/* Success status */}
+                      {availabilityChecked && !availabilityError && (
+                        <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl">
+                          <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                          <span className="text-sm font-medium text-green-700">
+                            Available! {pricing?.nights || 0} night{(pricing?.nights || 0) > 1 ? 's' : ''} • {pricing?.total && !isNaN(pricing.total) ? formatPrice(pricing.total) : 'Calculating...'}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Charge Information */}
+                      {/* <div className="text-center">
                         <p className="text-sm text-gray-500 flex items-center justify-center gap-2">
                           <Lock className="w-4 h-4" />
                           You won't be charged yet
                         </p>
-                      </div>
+                      </div> */}
                     </div>
                   )}
 
                   {/* Additional Info */}
                   {!isOwnProperty && (
                     <div className="mt-4 text-center">
-                      <p className="text-sm text-gray-600">You won't be charged yet</p>
+                     <p className="text-sm text-gray-500 flex items-center justify-center gap-2">
+                          <Lock className="w-4 h-4" />
+                          You won't be charged yet
+                        </p>
                     </div>
                   )}
 
@@ -2477,21 +3473,265 @@ export default function PropertyDetailsPage() {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <div className="font-medium text-gray-900 mb-1">Check-in</div>
-                        <div className="text-gray-600">{property.checkInTime || '15:00'}</div>
+                        <div className="text-gray-600">{property.checkInTime }</div>
                       </div>
                       <div>
                         <div className="font-medium text-gray-900 mb-1">Check-out</div>
-                        <div className="text-gray-600">{property.checkOutTime || '11:00'}</div>
+                        <div className="text-gray-600">{property.checkOutTime }</div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+
+
+
+            {!(showAllAmenities && isMobile) && (
+              <MobileBookingBar
+                ownerProperty={isOwnProperty}
+                property={property}
+                dateRange={dateRange}
+                nights={nights}
+                pricing={pricing}
+                availabilityChecked={availabilityChecked}
+                availabilityLoading={availabilityLoading}
+                availabilityError={availabilityError}
+                selectionStep={selectionStep}
+                formatPrice={formatPrice}
+                formatDate={formatDate}
+                setShowDatePicker={setShowDatePicker}
+                setSelectionStep={setSelectionStep}
+                checkAvailability={checkAvailability}
+                handleBooking={handleCompleteBooking}
+                setShowTimePrompt={setShowTimePrompt}
+                setTimeConfirmed={setTimeConfirmed}
+                checkInTimeStr={checkInTimeStr}
+                setCheckInTimeStr={setCheckInTimeStr}
+                timeOptions={generateTimeOptions()}
+                formatTimeHour={formatTimeHour}
+                isHourlyProperty={!!(property?.hourlyBooking?.enabled)}
+              />
+            )}
+
+            <FloatingInsightBadge badge={property?.badges?.insights?.[0]} />
+
+            
+            {showTimePrompt && (
+              <div className="fixed inset-0 z-[100] bg-black/40 flex items-end">
+                <div className="bg-white w-full rounded-t-2xl p-5">
+
+                  <h3 className="text-lg font-semibold mb-2">
+                    Prefer a check-in time?
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    You can choose a time or skip to use the default.
+                  </p>
+
+                  <div className="flex gap-3">
+                    <Button
+                      className="flex-1 border"
+                      onClick={() => {
+                        setShowTimePrompt(false);
+                        checkAvailability();
+                      }}
+                    >
+                      Skip
+                    </Button>
+
+                    <Button
+                      className="flex-1 bg-indigo-600 text-white"
+                      onClick={() => {
+                        setShowTimePrompt(false);
+                        setShowTimeSelector(true);
+                      }}
+                    >
+                      Choose time
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {showTimeSelector && (
+              <div className="fixed inset-0 z-[101] bg-black/40 flex items-end">
+                <div className="bg-white w-full rounded-t-2xl p-5">
+                  <h3 className="font-semibold mb-3">Select check-in time</h3>
+                  timeOptions = generateTimeOptions();
+
+                  <TimeStepper
+                    value={checkInTimeStr}
+                    options={timeOptions}
+                    formatTimeHour={formatTimeHour}
+                    onChange={(newTime) => {
+                      const [selectedHour] = newTime.split(':').map(Number);
+
+                      if (selectedHour >= 0 && selectedHour <= 5 && dateRange.startDate) {
+                        const nextDay = new Date(dateRange.startDate);
+                        nextDay.setDate(nextDay.getDate() + 1);
+
+                        setDateRange(prev => ({
+                          ...prev,
+                          startDate: nextDay,
+                          endDate: prev.endDate
+                            ? new Date(prev.endDate.getTime() + 86400000)
+                            : null
+                        }));
+                      }
+
+                      setCheckInTimeStr(newTime);
+                      setAvailabilityChecked(false);
+                    }}
+                  />
+
+
+
+
+                  <Button
+                    className="w-full mt-4 bg-indigo-600 text-white"
+                    onClick={() => {
+                      setTimeConfirmed(true);
+                      setShowTimeSelector(false);
+                      checkAvailability();
+                    }}
+                  >
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            )}
+
+
+          </div>
+{isOpen && (
+  <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center">
+    
+    {/* Overlay */}
+    <div
+      className="absolute inset-0 bg-black/40"
+      onClick={() => setIsOpen(false)}
+    />
+
+    {/* Modal */}
+    <div className="
+      absolute bg-white shadow-2xl animate-fadeIn
+
+      /* 📱 MOBILE (full screen) */
+      w-full h-full rounded-none
+
+      /* 💻 DESKTOP */
+      md:w-[75%] md:max-w-3xl md:h-[70vh] md:rounded-3xl
+      md:flex md:flex-col
+    ">
+
+      {/* Close button */}
+      <button
+        onClick={() => setIsOpen(false)}
+        className="absolute top-4 right-4 z-10 text-gray-500 hover:text-black"
+      >
+        ✕
+      </button>
+
+      {/* 🔥 SCROLLABLE CONTENT */}
+      <div className="h-full overflow-y-auto scrollbar-hide p-5 sm:p-10">
+       
+       
+
+        {/* Reviews */}
+        <div className="mt-10">
+          <ReviewsSection property={property} />
+        </div>
+
+      </div>
+    </div>
+  </div>
+)}
+          <div className="mb-10 mt-10" ref={reviewsRef}>
+            <ReviewsSection property={property} />
+          </div>
+          {/* Location Section with Map */}
+
+          <div className="mb-10" ref={locationRef}>
+
+            <PropertyMap
+              address={property.location?.address || 'Address not specified'}
+              city={property.location?.city || 'City not specified'}
+              state={property.location?.state || 'State not specified'}
+              country={property.location?.country || 'India'}
+              coordinates={property.location?.coordinates}
+              price={property.pricing.basePrice}
+            />
+          </div>
+
+          {/* Host Section */}
+          <div className="mb-20  bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-5 sm:p-8">
+            <HostCard host={property.host} />
           </div>
         </div>
+
+
+        {showWishlistModal && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl p-6 w-[400px]">
+              <h3 className="text-lg font-semibold mb-3">Create new list</h3>
+              <input
+                className="border w-full p-2 rounded mb-4"
+                placeholder="My dream stays"
+                value={wishlistName}
+                onChange={e => setWishlistName(e.target.value)}
+              />
+              <div className="flex justify-end gap-2">
+                <button onClick={() => setShowWishlistModal(false)
+                  // setIsFavorite(false)
+                }>
+                  Cancel
+                </button>
+                <button
+                  className="bg-red-500 text-white px-4 py-2 rounded"
+                  onClick={createWishlistAndSave}
+                >
+                  Create & Save
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+
+        {showShare && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+
+            {/* Backdrop */}
+            <div
+              onClick={() => setShowShare(false)}
+              className="absolute inset-0 bg-black/40"
+            />
+
+            {/* Modal */}
+            <div className="relative bg-white w-full sm:w-[420px] rounded-t-2xl sm:rounded-2xl p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Share this place</h3>
+                <button
+                  onClick={() => setShowShare(false)}
+                  className="p-2 rounded-full hover:bg-gray-100"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <ShareOption label="Copy link" onClick={handleCopyLink} />
+                <ShareOption label="WhatsApp" onClick={handleWhatsApp} />
+                <ShareOption label="Facebook" onClick={handleFacebook} />
+                <ShareOption label="Email" onClick={handleEmail} />
+              </div>
+            </div>
+          </div>
+        )}
+
+
       </main>
-      
+
       <Footer />
     </div>
   );
