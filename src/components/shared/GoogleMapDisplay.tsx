@@ -33,6 +33,11 @@ interface GoogleMapDisplayProps {
   onCenterChange?: (center: [number, number]) => void;
   height?: string;
   className?: string;
+  searchParams?: {
+    checkIn?: string | null;
+    checkOut?: string | null;
+    guests?: string | number | null;
+  };
 }
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -50,7 +55,8 @@ const GoogleMapDisplay: React.FC<GoogleMapDisplayProps> = ({
   onBoundsChange,
   onCenterChange,
   height = '400px',
-  className = ''
+  className = '',
+  searchParams
 }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
@@ -108,9 +114,24 @@ const GoogleMapDisplay: React.FC<GoogleMapDisplayProps> = ({
 
   // Handle View Details button click
   const handleViewDetails = () => {
-    if (selectedProperty?._id) {
-      window.open(`/rooms/${selectedProperty._id}`, '_blank');
+    const propertyId = selectedProperty?._id || selectedProperty?.id;
+    if (!propertyId) {
+      return;
     }
+
+    const params = new URLSearchParams();
+    if (searchParams?.guests) {
+      params.set('guests', String(searchParams.guests));
+    }
+    if (searchParams?.checkIn) {
+      params.set('checkIn', searchParams.checkIn);
+    }
+    if (searchParams?.checkOut) {
+      params.set('checkOut', searchParams.checkOut);
+    }
+
+    const queryString = params.toString();
+    router.push(queryString ? `/rooms/${propertyId}?${queryString}` : `/rooms/${propertyId}`);
   };
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -67,6 +67,7 @@ export default function Home() {
   const { isAuthenticated, user, isLoading, refreshUser } = useAuth();
   const [featuredStays, setFeaturedStays] = useState<Array<{
     id: string;
+    _id?: string;
     title: string;
     description: string;
     price: { amount: number; currency: string };
@@ -1554,7 +1555,11 @@ export default function Home() {
             </div>
             <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
               {featuredStays.map((stay) => {
-                const stayId = stay._id;
+                const rawId = stay.id ?? (stay as any)._id;
+                if (!rawId) {
+                  return null;
+                }
+                const stayId = String(rawId);
                 const isFav = favorites.has(stayId);
                 return (
                   <div key={stayId} className="min-w-[78%] snap-center flex-shrink-0">

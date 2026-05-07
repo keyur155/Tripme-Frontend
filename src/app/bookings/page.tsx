@@ -7,6 +7,7 @@ import Footer from '@/components/shared/Footer';
 import { apiClient } from '@/infrastructure/api/clients/api-client';
 import { useAuth } from '@/core/store/auth-context';
 import Button from '@/components/ui/Button';
+import { motion } from "framer-motion";
 import ReviewForm from '@/components/rooms/reviews/ReviewForm';
 interface Booking {
   _id: string;

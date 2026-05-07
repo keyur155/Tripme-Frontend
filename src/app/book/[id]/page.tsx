@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
+import { addDays, addMonths, differenceInCalendarDays, format, isAfter, isBefore, isSameDay, startOfDay, startOfMonth } from "date-fns";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { apiClient } from "@/infrastructure/api/clients/api-client";
 import { useAuth } from "@/core/store/auth-context";
@@ -60,7 +61,7 @@ import {
   Info,
   MessageCircle
 } from "lucide-react";
-import { start } from "repl";
+import { AnimatePresence, motion } from "framer-motion";
 import { useUI } from "@/core/store/uiContext";
 import UserHeader from "@/components/shared/UserHeader";
 import { TimeSpinner } from "@/components/rooms/timeSelection/TimeSpinner";
@@ -500,6 +501,113 @@ export default function BookingPage() {
   const [couponData, setCouponData] = useState<any>(null);
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState('');
+
+  const calendarDayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const [hasMounted, setHasMounted] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    const base = bookingData.checkIn instanceof Date ? bookingData.checkIn : new Date(bookingData.checkIn);
+    return startOfMonth(startOfDay(base));
+  });
+  const [pendingRange, setPendingRange] = useState<{ checkIn: Date | null; checkOut: Date | null }>({ checkIn: null, checkOut: null });
+  const calendarTriggerRef = useRef<HTMLDivElement | null>(null);
+  const datePickerRef = useRef<HTMLDivElement | null>(null);
+
+  const committedCheckIn = useMemo(() => {
+    const value = bookingData.checkIn instanceof Date ? bookingData.checkIn : new Date(bookingData.checkIn);
+    return startOfDay(value);
+  }, [bookingData.checkIn]);
+
+  const committedCheckOut = useMemo(() => {
+    if (!bookingData.checkOut) return null;
+    const value = bookingData.checkOut instanceof Date ? bookingData.checkOut : new Date(bookingData.checkOut);
+    return startOfDay(value);
+  }, [bookingData.checkOut]);
+
+  const pendingNights = useMemo(() => {
+    if (!pendingRange.checkIn || !pendingRange.checkOut) return 0;
+    return Math.max(0, differenceInCalendarDays(pendingRange.checkOut, pendingRange.checkIn));
+  }, [pendingRange.checkIn, pendingRange.checkOut]);
+
+  const selectionStep = useMemo<'checkin' | 'checkout' | 'complete'>(() => {
+    if (!pendingRange.checkIn) return 'checkin';
+    if (pendingRange.checkIn && !pendingRange.checkOut) return 'checkout';
+    return 'complete';
+  }, [pendingRange]);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hasMounted) return;
+    const mediaQuery = window.matchMedia('(max-width: 640px)');
+    const handleViewportChange = (event: MediaQueryListEvent) => {
+      setIsMobileViewport(event.matches);
+    };
+
+    setIsMobileViewport(mediaQuery.matches);
+    mediaQuery.addEventListener('change', handleViewportChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleViewportChange);
+    };
+  }, [hasMounted]);
+
+  useEffect(() => {
+    if (!showDatePicker) return;
+
+    setPendingRange({
+      checkIn: committedCheckIn,
+      checkOut: committedCheckOut
+    });
+    setCurrentMonth(startOfMonth(committedCheckIn));
+  }, [showDatePicker, committedCheckIn, committedCheckOut]);
+
+  useEffect(() => {
+    if (!showDatePicker) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (datePickerRef.current?.contains(target)) return;
+      if (calendarTriggerRef.current?.contains(target)) return;
+      setShowDatePicker(false);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowDatePicker(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showDatePicker]);
+
+  const availabilityStatusMap = useMemo(() => {
+    const map = new Map<string, string>();
+    availability.forEach((item: any) => {
+      if (!item?.date) return;
+      const dateObj = item.date instanceof Date ? item.date : new Date(item.date);
+      const key = startOfDay(dateObj).toLocaleDateString('en-CA');
+      map.set(key, item.status);
+    });
+    return map;
+  }, [availability]);
+
+  const blockedDateSet = useMemo(() => new Set(blockedDates), [blockedDates]);
+
+  const getStatusForDate = (date: Date) => {
+    const key = startOfDay(date).toLocaleDateString('en-CA');
+    if (blockedDateSet.has(key)) return 'blocked-self';
+    return availabilityStatusMap.get(key) || null;
+  };
 
   // Debug logging for booking data changes
   useEffect(() => {
@@ -1522,6 +1630,219 @@ export default function BookingPage() {
     }
   };
 
+  const goToPrevMonth = () => {
+    setCurrentMonth(prev => startOfMonth(addMonths(prev, -1)));
+  };
+
+  const goToNextMonth = () => {
+    setCurrentMonth(prev => startOfMonth(addMonths(prev, 1)));
+  };
+
+  const getCalendarDays = (month: Date) => {
+    const start = startOfMonth(month);
+    const firstDay = start.getDay();
+    const gridStart = new Date(start);
+    gridStart.setDate(start.getDate() - firstDay);
+
+    const days: Date[] = [];
+    for (let i = 0; i < 42; i += 1) {
+      const day = new Date(gridStart);
+      day.setDate(gridStart.getDate() + i);
+      days.push(day);
+    }
+
+    return days;
+  };
+
+  const renderCalendarMonth = (month: Date) => {
+    const days = getCalendarDays(month);
+
+    return (
+      <div className="space-y-2">
+        <div className={`grid grid-cols-7 font-semibold text-gray-400 ${isMobileViewport ? 'text-[11px]' : 'text-xs'}`}>
+          {calendarDayLabels.map((day, index) => (
+            <span key={`${day}-${index}`} className="text-center uppercase tracking-wider py-1">
+              {day}
+            </span>
+          ))}
+        </div>
+        <div className={`grid grid-cols-7 ${isMobileViewport ? 'gap-1.5' : 'gap-1.5'}`}>
+          {days.map(date => {
+            const normalized = startOfDay(date);
+            const isInCurrentMonth = normalized.getMonth() === month.getMonth();
+            const selectionState = getSelectionState(normalized);
+            const isBetween = selectionState === 'between';
+            const status = getStatusForDate(normalized);
+            const isHardBlocked = status ? ['booked', 'maintenance', 'unavailable', 'blocked', 'partially-available'].includes(status) && status !== 'blocked-self' : false;
+            const isBlockedSelf = status === 'blocked-self';
+            const isSelectedBoundary = selectionState === 'start' || selectionState === 'end';
+
+            let isSelectableDay = isDateSelectable(normalized);
+            if (!isInCurrentMonth && !isSelectedBoundary && !isBetween) {
+              isSelectableDay = false;
+            }
+            if (isHardBlocked) {
+              isSelectableDay = false;
+            }
+
+            const baseSize = isMobileViewport ? 'h-10 w-10 text-sm' : 'h-11 w-11 text-base';
+            let cellClass = `relative flex items-center justify-center ${baseSize} mx-auto rounded-full font-semibold transition-colors duration-150 `;
+
+            if (isSelectedBoundary) {
+              cellClass += 'bg-[#4285F4] text-white shadow-lg shadow-[#4285F4]/30';
+            } else if (isBetween) {
+              cellClass += 'bg-[#E7F0FF] text-[#1D4ED8]';
+            } else if (!isInCurrentMonth) {
+              cellClass += 'text-gray-300';
+            } else if (isHardBlocked) {
+              cellClass += 'bg-red-100 text-red-400 line-through cursor-not-allowed';
+            } else if (!isSelectableDay) {
+              cellClass += 'text-gray-300 cursor-not-allowed';
+            } else if (isBlockedSelf) {
+              cellClass += 'border border-dashed border-[#4285F4] text-[#4285F4] bg-[#F6FAFF]';
+            } else {
+              cellClass += 'text-gray-700 hover:bg-[#EEF4FF]';
+            }
+
+            const actionable = isSelectableDay || isSelectedBoundary || isBetween;
+            const showBookedDot = isHardBlocked && isInCurrentMonth;
+
+            return (
+              <button
+                key={normalized.toISOString()}
+                type="button"
+                className={cellClass}
+                onClick={() => actionable && handleDateSelection(normalized)}
+                disabled={!actionable}
+                aria-label={format(normalized, 'PPP')}
+              >
+                <span>{normalized.getDate()}</span>
+                {showBookedDot && (
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-red-500 rounded-full" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const isDateSelectable = (date: Date) => {
+    const normalized = startOfDay(date);
+    const today = startOfDay(new Date());
+    if (isBefore(normalized, today)) return false;
+
+    if (pendingRange.checkIn && isSameDay(normalized, pendingRange.checkIn)) return true;
+    if (pendingRange.checkOut && isSameDay(normalized, pendingRange.checkOut)) return true;
+    if (committedCheckIn && isSameDay(normalized, committedCheckIn)) return true;
+    if (committedCheckOut && committedCheckOut && isSameDay(normalized, committedCheckOut)) return true;
+
+    if (!availability || availability.length === 0) return true;
+
+    const status = getStatusForDate(normalized);
+    if (!status) return true;
+
+    if (status === 'available') return true;
+    if (status === 'blocked-self') return true;
+    return false;
+  };
+
+  const isRangeSelectable = (start: Date, end: Date) => {
+    if (!isAfter(end, start)) return false;
+
+    const cursor = startOfDay(new Date(start));
+    const checkout = startOfDay(end);
+
+    while (cursor < checkout) {
+      if (!isDateSelectable(cursor)) {
+        const status = getStatusForDate(cursor);
+        const matchesCommitted = (committedCheckIn && isSameDay(cursor, committedCheckIn)) ||
+          (committedCheckOut && isSameDay(cursor, committedCheckOut));
+        if (!matchesCommitted && status !== 'blocked-self') {
+          return false;
+        }
+      }
+      cursor.setDate(cursor.getDate() + 1);
+    }
+
+    return true;
+  };
+
+  const getSelectionState = (date: Date) => {
+    const normalized = startOfDay(date);
+    if (pendingRange.checkIn && isSameDay(normalized, pendingRange.checkIn)) return 'start';
+    if (pendingRange.checkOut && isSameDay(normalized, pendingRange.checkOut)) return 'end';
+    if (pendingRange.checkIn && pendingRange.checkOut && isAfter(normalized, pendingRange.checkIn) && isBefore(normalized, pendingRange.checkOut)) {
+      return 'between';
+    }
+    return 'none';
+  };
+
+  const handleDateSelection = (date: Date) => {
+    const normalized = startOfDay(date);
+    const status = getStatusForDate(normalized);
+
+    const isBaseSelectable = isDateSelectable(normalized) || status === 'available' || status === 'blocked-self';
+    const isCheckoutCandidate = pendingRange.checkIn && !pendingRange.checkOut && isAfter(normalized, pendingRange.checkIn) && (status === 'available' || status === 'blocked-self');
+
+    if (!isBaseSelectable && !isCheckoutCandidate) return;
+
+    setPendingRange(prev => {
+      if (!prev.checkIn || (prev.checkIn && prev.checkOut)) {
+        return { checkIn: normalized, checkOut: null };
+      }
+
+      if (!isAfter(normalized, prev.checkIn)) {
+        return { checkIn: normalized, checkOut: null };
+      }
+
+      if (!isRangeSelectable(prev.checkIn, normalized)) {
+        return { checkIn: normalized, checkOut: null };
+      }
+
+      return { checkIn: prev.checkIn, checkOut: normalized };
+    });
+  };
+
+  const handleClearPendingRange = () => {
+    setPendingRange({ checkIn: null, checkOut: null });
+  };
+
+  const handleApplyPendingRange = () => {
+    if (!pendingRange.checkIn || !pendingRange.checkOut) return;
+
+    const [ciH, ciM] = (bookingData.checkInTime || property?.checkInTime || '15:00').split(':').map(Number);
+    const newCheckInDate = new Date(pendingRange.checkIn);
+    newCheckInDate.setHours(isNaN(ciH) ? 15 : ciH, isNaN(ciM) ? 0 : ciM, 0, 0);
+
+    updateLocalBookingData({
+      checkIn: pendingRange.checkIn,
+      checkOut: pendingRange.checkOut,
+      checkInDateTime: newCheckInDate
+    });
+    setShowDatePicker(false);
+  };
+
+  const handleResetToDefaultRange = () => {
+    let candidateCheckIn = startOfDay(new Date());
+    let attempts = 0;
+    while (!isDateSelectable(candidateCheckIn) && attempts < 365) {
+      candidateCheckIn = startOfDay(addDays(candidateCheckIn, 1));
+      attempts += 1;
+    }
+
+    let candidateCheckOut = startOfDay(addDays(candidateCheckIn, 1));
+    attempts = 0;
+    while (!isRangeSelectable(candidateCheckIn, candidateCheckOut) && attempts < 365) {
+      candidateCheckOut = startOfDay(addDays(candidateCheckOut, 1));
+      attempts += 1;
+    }
+
+    setPendingRange({ checkIn: candidateCheckIn, checkOut: candidateCheckOut });
+    setCurrentMonth(startOfMonth(candidateCheckIn));
+  };
+
   // Helper function to ensure dates are Date objects
   const ensureDateObject = (date: any): Date => {
     if (date instanceof Date) {
@@ -2132,8 +2453,6 @@ export default function BookingPage() {
   // Clear availability state and invalidate old pricing token when dates or extension change
   useEffect(() => {
     setBookingError('');
-    setAvailability([]);
-
     // Clear pricing token when dates/extension change to force fresh price calculation
     // This ensures we don't use stale pricing tokens from previous date selections
     setPriceBreakdown(prev => ({
@@ -2345,69 +2664,240 @@ export default function BookingPage() {
                     </div>
 
                   {/* ── Date Row ─── */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                    {/* Check-in date */}
-                    <div className="bg-white rounded-xl p-3 border border-gray-200">
-                      <label className="block text-xs font-semibold text-[#4285f4] mb-1 uppercase tracking-wide">
-                        Check-in Date
-                      </label>
-                      <input
-                        type="date"
-                        value={bookingData.checkIn instanceof Date
-                          ? bookingData.checkIn.toLocaleDateString('en-CA')
-                          : new Date(bookingData.checkIn).toLocaleDateString('en-CA')}
-                        min={new Date().toLocaleDateString('en-CA')}
-                        onChange={(e) => {
-                          if (!e.target.value) return;
-                          const [y, m, d] = e.target.value.split('-').map(Number);
-                          const newCheckIn = new Date(y, m - 1, d);
-                          // Keep check-out at least 1 day after new check-in
-                          const currentCheckOut = bookingData.checkOut instanceof Date
-                            ? bookingData.checkOut : new Date(bookingData.checkOut);
-                          const minCheckOut = new Date(newCheckIn);
-                          minCheckOut.setDate(minCheckOut.getDate() + 1);
-                          const newCheckOut = currentCheckOut > minCheckOut ? currentCheckOut : minCheckOut;
-                          // Rebuild checkInDateTime with the new date + same time
-                          const [ciH, ciM] = (bookingData.checkInTime || '15:00').split(':').map(Number);
-                          const newCIDT = new Date(newCheckIn);
-                          newCIDT.setHours(ciH, ciM, 0, 0);
-                          setBookingData(prev => ({
-                            ...prev,
-                            checkIn: newCheckIn,
-                            checkOut: newCheckOut,
-                            checkInDateTime: newCIDT,
-                          }));
-                        }}
-                        className="w-full text-sm font-semibold text-gray-900 border-0 bg-transparent focus:outline-none focus:ring-0 cursor-pointer"
-                      />
+                  <div className="mb-4">
+                    <div
+                      ref={calendarTriggerRef}
+                      onClick={() => {
+                        setPendingRange({ checkIn: committedCheckIn, checkOut: committedCheckOut });
+                        setShowDatePicker(true);
+                      }}
+                      className="bg-white border border-gray-200 rounded-2xl px-4 py-3 transition hover:shadow-md cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-xs font-semibold text-[#4285f4] uppercase tracking-wide">Stay Dates</span>
+                          <div className="mt-1 flex items-center gap-2 text-sm font-semibold text-gray-900">
+                            <span>{format(committedCheckIn, 'EEE, MMM d')}</span>
+                            <span className="text-gray-400">→</span>
+                            <span>{committedCheckOut ? format(committedCheckOut, 'EEE, MMM d') : 'Select checkout'}</span>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {committedCheckOut
+                              ? `${Math.max(1, differenceInCalendarDays(committedCheckOut, committedCheckIn))} night${differenceInCalendarDays(committedCheckOut, committedCheckIn) === 1 ? '' : 's'} selected`
+                              : 'Choose your check-in and check-out dates'}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs font-semibold text-[#4285f4]">
+                          <span>Change</span>
+                          <Calendar className="w-4 h-4" />
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Check-out date */}
-                    <div className="bg-white rounded-xl p-3 border border-gray-200">
-                      <label className="block text-xs font-semibold text-[#4285f4] mb-1 uppercase tracking-wide">
-                        Check-out Date
-                      </label>
-                      <input
-                        type="date"
-                        value={bookingData.checkOut instanceof Date
-                          ? bookingData.checkOut.toLocaleDateString('en-CA')
-                          : new Date(bookingData.checkOut).toLocaleDateString('en-CA')}
-                        min={(() => {
-                          const ciDate = bookingData.checkIn instanceof Date
-                            ? bookingData.checkIn : new Date(bookingData.checkIn);
-                          const minCO = new Date(ciDate);
-                          minCO.setDate(minCO.getDate() + 1);
-                          return minCO.toLocaleDateString('en-CA');
-                        })()}
-                        onChange={(e) => {
-                          if (!e.target.value) return;
-                          const [y, m, d] = e.target.value.split('-').map(Number);
-                          const newCheckOut = new Date(y, m - 1, d);
-                          setBookingData(prev => ({ ...prev, checkOut: newCheckOut }));
-                        }}
-                        className="w-full text-sm font-semibold text-gray-900 border-0 bg-transparent focus:outline-none focus:ring-0 cursor-pointer"
-                      />
-                    </div>
+                    <AnimatePresence>
+                      {hasMounted && showDatePicker && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className={`fixed inset-0 z-[1200] flex bg-black/40 backdrop-blur-sm ${isMobileViewport ? 'items-end' : 'items-center justify-center'} ${isMobileViewport ? 'px-0' : 'px-4'}`}
+                        >
+                          <motion.div
+                            ref={datePickerRef}
+                            initial={{ scale: 0.92, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.92, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className={`bg-white shadow-2xl overflow-hidden flex flex-col ${isMobileViewport ? 'w-full max-w-none rounded-t-3xl max-h-[90vh]' : 'w-full max-w-xl rounded-3xl'}`}
+                          >
+                            {isMobileViewport ? (
+                              <>
+                                <div className="flex justify-center pt-3">
+                                  <div className="w-10 h-1.5 bg-gray-300 rounded-full" />
+                                </div>
+                                <div className="flex items-center justify-between px-5 py-3 border-b">
+                                  <h3 className="text-base font-semibold text-gray-900">
+                                    {selectionStep === 'checkin'
+                                      ? 'Select check-in date'
+                                      : selectionStep === 'checkout'
+                                        ? 'Select check-out date'
+                                        : 'Review your dates'}
+                                  </h3>
+                                  <button
+                                    onClick={() => setShowDatePicker(false)}
+                                    className="p-2 rounded-full hover:bg-gray-100"
+                                    aria-label="Close calendar"
+                                  >
+                                    <X className="w-5 h-5 text-gray-500" />
+                                  </button>
+                                </div>
+
+                                <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
+                                  <div className="flex items-center justify-between">
+                                    <button
+                                      onClick={goToPrevMonth}
+                                      className="p-2 rounded-full hover:bg-gray-100"
+                                      aria-label="Previous month"
+                                    >
+                                      <ArrowLeft className="w-4 h-4" />
+                                    </button>
+                                    <h4 className="text-lg font-semibold text-gray-900">
+                                      {format(currentMonth, 'MMMM yyyy')}
+                                    </h4>
+                                    <button
+                                      onClick={goToNextMonth}
+                                      className="p-2 rounded-full hover:bg-gray-100"
+                                      aria-label="Next month"
+                                    >
+                                      <ArrowRight className="w-4 h-4" />
+                                    </button>
+                                  </div>
+
+                                  <div className="text-center text-sm font-medium text-[#4285F4]">
+                                    {selectionStep === 'checkin'
+                                      ? 'Select Check-in Date'
+                                      : selectionStep === 'checkout'
+                                        ? 'Select Check-out Date'
+                                        : 'Dates Selected'}
+                                  </div>
+
+                                  {renderCalendarMonth(currentMonth)}
+
+                                  <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
+                                    <div className="flex items-center gap-1">
+                                      <span className="w-2 h-2 bg-red-500 rounded-full" />
+                                      <span>Booked</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <span className="w-2 h-2 bg-[#4285F4] rounded-full" />
+                                      <span>Selected</span>
+                                    </div>
+                                  </div>
+
+                                  <div className="pt-2">
+                                    <button
+                                      onClick={handleResetToDefaultRange}
+                                      className="w-full rounded-xl bg-gray-100 py-3 text-sm font-semibold text-gray-600 hover:bg-gray-200 transition"
+                                    >
+                                      Reset to Today & Tomorrow
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div className="px-5 py-4 border-t flex gap-3">
+                                  <button
+                                    onClick={handleClearPendingRange}
+                                    className="flex-1 rounded-xl border border-gray-300 py-3 text-sm font-semibold text-gray-600 hover:bg-gray-100 transition"
+                                  >
+                                    Clear
+                                  </button>
+                                  <button
+                                    onClick={handleApplyPendingRange}
+                                    disabled={!pendingRange.checkIn || !pendingRange.checkOut}
+                                    className={`flex-1 rounded-xl py-3 text-sm font-semibold text-white transition ${pendingRange.checkIn && pendingRange.checkOut ? 'bg-[#4285F4] hover:bg-[#2f6de0]' : 'bg-gray-300 cursor-not-allowed'}`}
+                                  >
+                                    Save
+                                  </button>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className="flex items-start justify-between px-6 pt-6 pb-4 border-b border-gray-100">
+                                  <div>
+                                    <h3 className="text-lg font-semibold text-gray-900">
+                                      {selectionStep === 'checkin'
+                                        ? 'Select check-in date'
+                                        : selectionStep === 'checkout'
+                                          ? 'Select check-out date'
+                                          : 'Review your dates'}
+                                    </h3>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                      {pendingRange.checkIn && pendingRange.checkOut
+                                        ? `${format(pendingRange.checkIn, 'EEE, MMM d')} → ${format(pendingRange.checkOut, 'EEE, MMM d')} • ${pendingNights} night${pendingNights === 1 ? '' : 's'}`
+                                        : 'Pick any available check-in date to start.'}
+                                    </p>
+                                  </div>
+                                  <button
+                                    onClick={() => setShowDatePicker(false)}
+                                    className="p-2 rounded-full hover:bg-gray-100"
+                                    aria-label="Close calendar"
+                                  >
+                                    <X className="w-5 h-5 text-gray-500" />
+                                  </button>
+                                </div>
+
+                                <div className="px-6 py-5 space-y-6">
+                                  <div className="flex items-center justify-between">
+                                    <button
+                                      onClick={goToPrevMonth}
+                                      className="p-2 rounded-full hover:bg-gray-100"
+                                      aria-label="Previous month"
+                                    >
+                                      <ArrowLeft className="w-4 h-4" />
+                                    </button>
+                                    <div className="text-lg font-semibold text-gray-900">
+                                      {format(currentMonth, 'MMMM yyyy')}
+                                    </div>
+                                    <button
+                                      onClick={goToNextMonth}
+                                      className="p-2 rounded-full hover:bg-gray-100"
+                                      aria-label="Next month"
+                                    >
+                                      <ArrowRight className="w-4 h-4" />
+                                    </button>
+                                  </div>
+
+                                  <div className="text-center text-sm font-medium text-[#4285F4]">
+                                    {selectionStep === 'checkin'
+                                      ? 'Select Check-in Date'
+                                      : selectionStep === 'checkout'
+                                        ? 'Select Check-out Date'
+                                        : 'Dates Selected'}
+                                  </div>
+
+                                  {renderCalendarMonth(currentMonth)}
+
+                                  <div className="flex items-center justify-between text-xs text-gray-500">
+                                    <div className="flex items-center gap-3">
+                                      <div className="flex items-center gap-1">
+                                        <span className="w-2 h-2 bg-red-500 rounded-full" />
+                                        <span>Booked</span>
+                                      </div>
+                                      <div className="flex items-center gap-1">
+                                        <span className="w-2 h-2 bg-[#4285F4] rounded-full" />
+                                        <span>Selected</span>
+                                      </div>
+                                    </div>
+                                    <button
+                                      onClick={handleResetToDefaultRange}
+                                      className="px-4 py-2 rounded-full bg-gray-100 text-xs font-semibold text-gray-600 hover:bg-gray-200 transition"
+                                    >
+                                      Reset to Today & Tomorrow
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-3">
+                                  <button
+                                    onClick={handleClearPendingRange}
+                                    className="px-4 py-2 rounded-full border border-gray-300 text-sm font-semibold text-gray-600 hover:bg-gray-100 transition"
+                                  >
+                                    Clear
+                                  </button>
+                                  <button
+                                    onClick={handleApplyPendingRange}
+                                    disabled={!pendingRange.checkIn || !pendingRange.checkOut}
+                                    className={`px-5 py-2 rounded-full text-sm font-semibold text-white transition ${pendingRange.checkIn && pendingRange.checkOut ? 'bg-[#4285F4] hover:bg-[#2f6de0]' : 'bg-gray-300 cursor-not-allowed'}`}
+                                  >
+                                    Save
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </motion.div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
                   {/* ── Check-in Time ─── */}

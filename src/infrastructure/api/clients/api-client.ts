@@ -1230,6 +1230,63 @@ class ApiClient {
       method: 'PATCH',
     });
   }
+
+  // ─── Badge Management ──────────────────────────────────────────────────
+
+  /** Get available badge types */
+  async getAvailableBadges(): Promise<ApiResponse<any>> {
+    return this.request('/admin/badges/available');
+  }
+
+  /** Get property badges (admin and dynamic) */
+  async getPropertyBadges(propertyId: string): Promise<ApiResponse<any>> {
+    return this.request(`/admin/properties/${propertyId}/badges`);
+  }
+
+  /** Update all badges for a property */
+  async updatePropertyBadges(propertyId: string, data: {
+    badges?: {
+      highlight?: Array<{ type: string; label: string; priority?: number }>;
+      details?: Array<{ type: string; label: string; priority?: number }>;
+      insights?: Array<{ type: string; label: string; priority?: number }>;
+      urgency?: Array<{ type: string; label: string; priority?: number }>;
+    };
+    useAdminBadges?: boolean;
+  }): Promise<ApiResponse<any>> {
+    return this.request(`/admin/properties/${propertyId}/badges`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  /** Add a single badge to a property */
+  async addPropertyBadge(propertyId: string, data: {
+    category: 'highlight' | 'details' | 'insights' | 'urgency';
+    badge: { type: string; label: string; priority?: number };
+  }): Promise<ApiResponse<any>> {
+    return this.request(`/admin/properties/${propertyId}/badges`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  /** Remove a badge from a property */
+  async removePropertyBadge(propertyId: string, data: {
+    category: 'highlight' | 'details' | 'insights' | 'urgency';
+    badgeType: string;
+  }): Promise<ApiResponse<any>> {
+    return this.request(`/admin/properties/${propertyId}/badges`, {
+      method: 'DELETE',
+      body: JSON.stringify(data),
+    });
+  }
+
+  /** Toggle admin badges on/off for a property */
+  async toggleAdminBadges(propertyId: string): Promise<ApiResponse<any>> {
+    return this.request(`/admin/properties/${propertyId}/badges/toggle`, {
+      method: 'PATCH',
+    });
+  }
 }
 
 export const apiClient = new ApiClient(); 
