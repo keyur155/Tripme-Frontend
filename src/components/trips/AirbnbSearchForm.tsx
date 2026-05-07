@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { searchCalendarStyles } from '@/styles/calendars';
 
 // Google Maps API configuration
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'AIzaSyB9JgH59f8fK3xzaBfFB6T19u4qGEUeLOM';
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
 const formatDate = (date: Date) => format(date, 'dd MMM');
 

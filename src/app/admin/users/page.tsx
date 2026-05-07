@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import AdminLayout from '@/components/layouts/AdminLayout';
 import { useAuth } from '@/core/store/auth-context';
 import { apiClient } from '@/infrastructure/api/clients/api-client';
-import { fixAdminToken } from '@/utils/admin-login';
 import { 
   Users, 
   Search, 
@@ -470,12 +469,6 @@ export default function AdminUsersPage() {
                 className="px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm"
               >
                 Debug Auth
-              </button>
-              <button
-                onClick={fixAdminToken}
-                className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-              >
-                Fix Token
               </button>
             </div>
           </div>

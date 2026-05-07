@@ -4,7 +4,7 @@ import React, { useState, useRef,useEffect,useCallback  } from "react";
 import { useSearchState } from '@/hooks/useSearchState';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AsyncSelect from 'react-select/async';
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'AIzaSyB9JgH59f8fK3xzaBfFB6T19u4qGEUeLOM';
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
 function CategoryTabs({ onClose, activeCategory, setActiveCategory }: { 
   onClose: () => void;

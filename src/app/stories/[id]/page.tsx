@@ -310,10 +310,9 @@ const StoryPage = () => {
           {/* Main Content */}
           <div className="lg:col-span-2">
             <Card className="p-8 bg-white/80 backdrop-blur-sm border-0 shadow-xl rounded-2xl">
-              <div 
-                className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: story.content.replace(/\n/g, '<br>') }}
-              />
+              <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed whitespace-pre-line">
+                {story.content}
+              </div>
               
               {/* Tags */}
               {story.tags.length > 0 && (

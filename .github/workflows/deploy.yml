@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DO_HOST }}
-          username: root
+          username: ${{ secrets.DO_USER }}
           key: ${{ secrets.DO_SSH_KEY }}
           script: |
             set -e
@@ -29,6 +29,9 @@ jobs:
             npm run build
             echo "--- Restarting server ---"
             pm2 reload frontend --update-env
+            echo "--- Health check ---"
+            sleep 5
+            curl -sf http://localhost:3000 || (echo "Frontend health check failed!" && pm2 logs frontend --lines 20 && exit 1)
             pm2 save
             echo "--- Production deploy complete ---"
 
@@ -38,10 +41,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DO_HOST }}
-          username: root
+          username: ${{ secrets.DO_USER }}
           key: ${{ secrets.DO_SSH_KEY }}
           script: |
             set -e
@@ -49,7 +52,7 @@ jobs:
             cd /var/www/tripme/Tripme-Frontend-Beta
             git pull origin beta
             echo "--- Installing dependencies ---"
-            npm install
+            npm ci
             echo "--- Building Next.js app ---"
             npm run build
             echo "--- Restarting beta server ---"

@@ -72,7 +72,7 @@ const getDefaultCoordinates = (cityName: string) => {
   return cityCoords[cityName] || { lat: 28.6139, lng: 77.2090 }; // Default to Delhi
 };
 
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'AIzaSyB9JgH59f8fK3xzaBfFB6T19u4qGEUeLOM';
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
 export default function PropertyMap({ 
   address, 
