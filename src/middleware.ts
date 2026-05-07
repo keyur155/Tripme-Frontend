@@ -11,18 +11,9 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  const protectedPaths = ['/bookings', '/profile', '/account', '/wishlist', '/host'];
-  const isProtected = protectedPaths.some(path => pathname.startsWith(path));
-  if (isProtected) {
-    const token = request.cookies.get('token')?.value;
-    if (!token) {
-      return NextResponse.redirect(new URL('/auth/login', request.url));
-    }
-  }
-
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/bookings/:path*', '/profile/:path*', '/account/:path*', '/wishlist/:path*', '/host/:path*']
+  matcher: ['/admin/:path*']
 };
