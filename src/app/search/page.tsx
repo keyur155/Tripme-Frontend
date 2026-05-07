@@ -1143,13 +1143,17 @@ function SearchPageContent() {
   const SHEET_HEIGHTS = {
     peek: '12vh',
     half: '60vh',
-    full: '92vh'
+    full: '96vh'
   };
 
   const handleListScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const scrollTop = e.currentTarget.scrollTop;
+
+    if ((sheetState === 'half' || sheetState === 'peek') && scrollTop > 12) {
+      setSheetState(prev => (prev === 'full' ? prev : 'full'));
+    }
+
     setShowStickyMapButton(scrollTop > 100);
-    setHideBottomNav(scrollTop > 100);
   };
 
   // ─── Drag helpers ────────────────────────────────────────────────────────────
@@ -1242,7 +1246,7 @@ function SearchPageContent() {
     resetDragOffset();
 
     const deltaY = dragCurrentY.current - dragStartY.current;
-    const threshold = 80;
+    const threshold = 60;
 
     if (deltaY < -threshold) {
       // Swiped UP
@@ -1255,6 +1259,10 @@ function SearchPageContent() {
     }
     dragDirectionLocked.current = 'none';
   };
+
+  useEffect(() => {
+    setHideBottomNav(sheetState === 'full');
+  }, [sheetState, setHideBottomNav]);
 
   const applyFilters = async (filters: any) => {
     try {
@@ -1740,6 +1748,11 @@ function SearchPageContent() {
                 onMapClick={() => setSelectedProperty(null)}
                 height="100%"
                 className="w-full h-full rounded-2xl"
+                searchParams={{
+                  checkIn,
+                  checkOut,
+                  guests
+                }}
               />
             </div>
           </div>
@@ -1758,6 +1771,11 @@ function SearchPageContent() {
             onMapClick={() => setSelectedProperty(null)}
             height="100%"
             className="w-full h-full"
+            searchParams={{
+              checkIn,
+              checkOut,
+              guests
+            }}
           />
 
           <div className="absolute top-20 left-0 right-0 z-10 flex justify-center pointer-events-none">

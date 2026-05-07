@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Image from 'next/image';
 import { Heart, Star, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Stay } from '@/types';
 import { formatCurrency } from '@/shared/constants/pricing.constants';
+import { CardBadge, getPrimaryBadge, type BadgeData } from '@/components/ui/Badge';
 
 interface StayCardProps {
   stay: Stay;
@@ -43,24 +44,8 @@ const StayCard: React.FC<StayCardProps> = ({
     }
   };
 
-  // Enhanced badge logic
-  const isSuperhost = stay.tags?.includes('superhost') || stay.host?.isSuperhost;
-  const isGuestFavorite = stay.tags?.includes('favourite') || stay.tags?.includes('top-rated') || (stay as any).isTopRated;
-  const isFeatured = stay.tags?.includes('featured') || (stay as any).isFeatured;
-  const isWeekendDeal = stay.tags?.includes('weekend-deal');
-  const isNew = stay.tags?.includes('new') || (stay.createdAt && (new Date().getTime() - new Date(stay.createdAt).getTime()) < 14 * 24 * 60 * 60 * 1000);
-
-  const badge = isSuperhost
-    ? { text: 'Superhost', color: 'bg-gradient-to-r from-purple-600 to-pink-600' }
-    : isGuestFavorite
-    ? { text: 'Guest favorite', color: 'bg-gradient-to-r from-orange-500 to-red-500' }
-    : isWeekendDeal
-    ? { text: 'Weekend Deal', color: 'bg-gradient-to-r from-orange-400 to-amber-600' }
-    : isFeatured
-    ? { text: 'Featured', color: 'bg-gradient-to-r from-blue-600 to-cyan-600' }
-    : isNew
-    ? { text: 'New', color: 'bg-gradient-to-r from-green-500 to-emerald-500' }
-    : null;
+  // Get primary badge using centralized badge system
+  const primaryBadge = useMemo(() => getPrimaryBadge(stay), [stay]);
 
   const totalImages = stay.images.length;
   const showArrows = totalImages > 1;
@@ -200,11 +185,13 @@ const currency =
             />
           </button>
           
-          {/* Badge */}
-          {badge && (
-            <div className={`absolute top-4 left-4 ${badge.color} text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg z-20`}>
-              {badge.text}
-            </div>
+          {/* Badge - Only render if badge exists */}
+          {primaryBadge && (
+            <CardBadge
+              type={primaryBadge.type}
+              label={primaryBadge.label}
+              position="top-left"
+            />
           )}
         </div>
 

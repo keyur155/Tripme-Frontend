@@ -33,6 +33,20 @@ export interface User {
   updatedAt: Date;
 }
 
+// Badge types for frontend display
+export interface BadgeData {
+  type: string;
+  label: string;
+  priority?: number;
+}
+
+export interface PropertyBadges {
+  highlight?: BadgeData[];
+  details?: BadgeData[];
+  insights?: BadgeData[];
+  urgency?: BadgeData[];
+}
+
 // Stay/Property types (for frontend display)
 export interface Stay {
   id: string;
@@ -62,8 +76,14 @@ export interface Stay {
     id: string;
     name: string;
     avatar?: string;
-    isSuperhost: boolean;
+    isSuperhost?: boolean;
   };
+  // Badge-related fields
+  badges?: PropertyBadges;
+  adminBadges?: PropertyBadges;
+  isFeatured?: boolean;
+  isSponsored?: boolean;
+  isTopRated?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
