@@ -12,14 +12,14 @@ export default function NotFound() {
       title: "Go Home",
       description: "Return to the main page",
       action: () => router.push('/'),
-      color: "from-blue-500 to-blue-600"
+      color: "from-[#C45D3E] to-[#A84B32]"
     },
     {
       icon: <Search className="w-6 h-6" />,
       title: "Search Stays",
       description: "Find amazing accommodations",
       action: () => router.push('/search'),
-      color: "from-purple-500 to-purple-600"
+      color: "from-[#C45D3E] to-[#A84B32]"
     },
     {
       icon: <MapPin className="w-6 h-6" />,
@@ -38,15 +38,15 @@ export default function NotFound() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-[#FDF8F3] flex items-center justify-center p-4">
       <div className="max-w-4xl w-full text-center">
         {/* 404 Illustration */}
         <div className="relative mb-8">
           <div className="text-9xl font-bold text-gray-200 select-none">404</div>
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-32 h-32 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-2xl">
+            <div className="w-32 h-32 bg-gradient-to-br from-[#C45D3E] to-[#A84B32] rounded-full flex items-center justify-center shadow-2xl">
               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-red-400 to-pink-500 rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-red-400 to-[#A84B32] rounded-full flex items-center justify-center">
                   <span className="text-white text-2xl font-bold">!</span>
                 </div>
               </div>
@@ -103,7 +103,7 @@ export default function NotFound() {
           
           <Button
             onClick={() => router.push('/')}
-            className="flex items-center px-8 py-4 bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-200 rounded-xl shadow-lg shadow-purple-500/25"
+            className="flex items-center px-8 py-4 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] text-white hover:from-[#A84B32] hover:to-[#A84B32] transition-all duration-200 rounded-xl shadow-lg shadow-[#C45D3E]/25"
           >
             <Home className="w-5 h-5 mr-2" />
             Back to Home
@@ -121,7 +121,7 @@ export default function NotFound() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button
               onClick={() => router.push('/support')}
-              className="px-6 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors rounded-lg"
+              className="px-6 py-2 bg-[#F5E6D3] text-[#C45D3E] hover:bg-[#F5E6D3] transition-colors rounded-lg"
             >
               Contact Support
             </Button>

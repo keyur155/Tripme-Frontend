@@ -189,10 +189,10 @@ export default function Footer() {
                 find your perfect home away from home.
               </p>
               {/* <div className="flex space-x-3">
-                <a href="#" className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-2 rounded-full hover:scale-110 transition-transform duration-300 shadow-lg">
+                <a href="#" className="bg-[#C45D3E] text-white p-2 rounded-full hover:scale-110 transition-transform duration-300 shadow-lg">
                   <span className="text-sm">📱</span>
                 </a>
-                <a href="#" className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-2 rounded-full hover:scale-110 transition-transform duration-300 shadow-lg">
+                <a href="#" className="bg-[#2D5F3A] text-white p-2 rounded-full hover:scale-110 transition-transform duration-300 shadow-lg">
                   <span className="text-sm">📘</span>
                 </a>
                 <a href="#" className="bg-gradient-to-r from-pink-500 to-rose-500 text-white p-2 rounded-full hover:scale-110 transition-transform duration-300 shadow-lg">
@@ -325,7 +325,7 @@ export default function Footer() {
                     placeholder="Enter your email"
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent text-sm"
                   />
-                  <button className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-r-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-lg">
+                  <button className="bg-[#C45D3E] text-white px-4 py-2 rounded-r-lg hover:bg-[#A84B32] transition-all duration-200 shadow-lg">
                     ✈️
                   </button>
                 </div>

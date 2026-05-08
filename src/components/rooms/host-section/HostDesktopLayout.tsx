@@ -205,8 +205,8 @@ export default function HostDesktopLayout({ host, hostListings }: HostDesktopLay
                     </div>
                   )}
                   <div className="flex items-start gap-4 p-4 rounded-2xl bg-gray-50">
-                    <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center flex-shrink-0">
-                      <Home className="w-5 h-5 text-purple-600" />
+                    <div className="w-10 h-10 rounded-full bg-[#FDF8F3] flex items-center justify-center flex-shrink-0">
+                      <Home className="w-5 h-5 text-[#C45D3E]" />
                     </div>
                     <div>
                       <h4 className="font-semibold text-gray-900 text-sm">

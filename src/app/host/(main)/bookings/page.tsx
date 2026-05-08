@@ -186,7 +186,7 @@ const HostBookingsPage: React.FC = () => {
       case 'cancelled':
         return 'bg-red-100 text-red-800 border-red-200';
       case 'completed':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-[#F5E6D3] text-[#1A1A1A] border-[#F5E6D3]';
       case 'expired':
         return 'bg-gray-100 text-gray-800 border-gray-200';
       default:
@@ -336,8 +336,8 @@ const HostBookingsPage: React.FC = () => {
   <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
     <div className="flex items-center justify-between mb-3">
       <span className="text-sm font-medium text-gray-500">Total</span>
-      <div className="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center">
-        <Receipt className="w-4 h-4 text-blue-600" />
+      <div className="w-9 h-9 bg-[#FDF8F3] rounded-xl flex items-center justify-center">
+        <Receipt className="w-4 h-4 text-[#C45D3E]" />
       </div>
     </div>
     <div className="text-2xl font-bold text-gray-900">{bookings.length}</div>
@@ -477,12 +477,12 @@ const HostBookingsPage: React.FC = () => {
               
               {(booking.checkInTime || booking.checkOutTime) && (
                 <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-gray-200 pt-2 sm:pt-0 sm:pl-3">
-                  <Clock className="w-4 h-4 text-blue-500" />
+                  <Clock className="w-4 h-4 text-[#C45D3E]" />
                   <div className="text-xs flex gap-3">
                     {booking.checkInTime && (
                       <div>
                         <p className="text-gray-400 font-medium uppercase tracking-tighter">In</p>
-                        <p className="font-semibold text-blue-600">{booking.checkInTime}</p>
+                        <p className="font-semibold text-[#C45D3E]">{booking.checkInTime}</p>
                       </div>
                     )}
                     {booking.checkOutTime && (
@@ -508,9 +508,9 @@ const HostBookingsPage: React.FC = () => {
               )}
 
               {booking.hostFee && booking.hostFee > 0 && (
-                <div className="flex justify-between items-center p-3 bg-blue-50 text-blue-700 rounded-xl border border-blue-100 text-sm">
+                <div className="flex justify-between items-center p-3 bg-[#FDF8F3] text-[#C45D3E] rounded-xl border border-[#F5E6D3] text-sm">
                   <span className="font-medium">Your Payout:</span>
-                  <span className="font-black text-blue-800">{formatPrice(booking.hostFee)}</span>
+                  <span className="font-black text-[#1A1A1A]">{formatPrice(booking.hostFee)}</span>
                 </div>
               )}
             </div>

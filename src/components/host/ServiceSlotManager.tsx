@@ -269,7 +269,7 @@ export default function ServiceSlotManager({ serviceId }: Props) {
 
   /* ─── Render ─────────────────────────────────────────────── */
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#FDF8F3] to-[#F5E6D3]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
 
         {/* Header */}
@@ -299,7 +299,7 @@ export default function ServiceSlotManager({ serviceId }: Props) {
 
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <Loader2 size={36} className="animate-spin text-purple-400" />
+            <Loader2 size={36} className="animate-spin text-[#C45D3E]" />
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
@@ -349,7 +349,7 @@ export default function ServiceSlotManager({ serviceId }: Props) {
                         className={`
                           flex flex-col items-center py-2 rounded-xl transition-all text-sm
                           ${isPast ? "text-slate-300 cursor-not-allowed" : isActive ? "bg-slate-900 text-white shadow-md" : "hover:bg-slate-100 text-slate-700 cursor-pointer"}
-                          ${isToday && !isActive ? "ring-2 ring-purple-500" : ""}
+                          ${isToday && !isActive ? "ring-2 ring-[#C45D3E]" : ""}
                         `}
                       >
                         <span className="font-semibold text-base leading-none">{format(date, "d")}</span>
@@ -372,7 +372,7 @@ export default function ServiceSlotManager({ serviceId }: Props) {
                   {/* Panel header */}
                   <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                     <h3 className="font-bold text-slate-800 flex items-center gap-2 text-sm">
-                      <Clock size={15} className="text-purple-500" />
+                      <Clock size={15} className="text-[#C45D3E]" />
                       {format(activeDate, "EEEE, MMMM d")}
                     </h3>
                     {activeSlots.length > 0 && (
@@ -383,8 +383,8 @@ export default function ServiceSlotManager({ serviceId }: Props) {
                   </div>
 
                   {/* Generator section */}
-                  <div className="px-5 py-4 bg-purple-50/50 border-b border-purple-100">
-                    <p className="text-xs font-semibold text-purple-700 mb-3 flex items-center gap-1.5">
+                  <div className="px-5 py-4 bg-[#FDF8F3]/50 border-b border-[#F5E6D3]">
+                    <p className="text-xs font-semibold text-[#C45D3E] mb-3 flex items-center gap-1.5">
                       <RefreshCw size={12} /> Auto-Generate Slots
                     </p>
                     <div className="flex items-end gap-3">
@@ -394,7 +394,7 @@ export default function ServiceSlotManager({ serviceId }: Props) {
                           type="time"
                           value={winStart}
                           onChange={e => setWinStart(e.target.value)}
-                          className="w-full px-3 py-2 border border-purple-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-400 bg-white"
+                          className="w-full px-3 py-2 border border-[#F5E6D3] rounded-lg text-sm focus:ring-2 focus:ring-[#C45D3E] bg-white"
                         />
                       </div>
                       <div className="flex-1">
@@ -403,17 +403,17 @@ export default function ServiceSlotManager({ serviceId }: Props) {
                           type="time"
                           value={winEnd}
                           onChange={e => setWinEnd(e.target.value)}
-                          className="w-full px-3 py-2 border border-purple-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-400 bg-white"
+                          className="w-full px-3 py-2 border border-[#F5E6D3] rounded-lg text-sm focus:ring-2 focus:ring-[#C45D3E] bg-white"
                         />
                       </div>
                       <button
                         onClick={handleGenerate}
-                        className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition"
+                        className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-[#C45D3E] hover:bg-[#A84B32] text-white text-xs font-bold rounded-lg transition"
                       >
                         <RefreshCw size={13} /> Generate
                       </button>
                     </div>
-                    <p className="text-[10px] text-purple-600 mt-2 opacity-70">
+                    <p className="text-[10px] text-[#C45D3E] mt-2 opacity-70">
                       Will create {serviceDuration.value}-{serviceDuration.unit} slots · tap each slot to toggle status
                     </p>
                   </div>
@@ -484,7 +484,7 @@ export default function ServiceSlotManager({ serviceId }: Props) {
               {/* Save card */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sticky top-24">
                 <div className="flex items-center gap-2 mb-4">
-                  <Save size={16} className="text-purple-600" />
+                  <Save size={16} className="text-[#C45D3E]" />
                   <h3 className="font-bold text-slate-800 text-sm">Summary</h3>
                   {hasChanges && (
                     <span className="ml-auto flex items-center gap-1 text-amber-500 text-[10px] font-bold">
@@ -513,7 +513,7 @@ export default function ServiceSlotManager({ serviceId }: Props) {
                   disabled={saving || !hasChanges}
                   className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${saving || !hasChanges
                     ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                    : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg"
+                    : "bg-gradient-to-r from-[#C45D3E] to-[#A84B32] hover:from-[#A84B32] hover:to-[#A84B32] text-white shadow-md hover:shadow-lg"
                     }`}
                 >
                   {saving ? <><Loader2 size={14} className="animate-spin" /> Saving…</> : <><Save size={14} /> Save All Slots</>}
@@ -555,7 +555,7 @@ export default function ServiceSlotManager({ serviceId }: Props) {
                         <div
                           key={ds}
                           onClick={() => { setActiveDate(date); setWeekStart(startOfDay(date)); }}
-                          className={`flex items-center justify-between p-2.5 rounded-xl border cursor-pointer transition-all ${isActive ? "border-purple-200 bg-purple-50" : "border-slate-100 hover:bg-slate-50"}`}
+                          className={`flex items-center justify-between p-2.5 rounded-xl border cursor-pointer transition-all ${isActive ? "border-[#F5E6D3] bg-[#FDF8F3]" : "border-slate-100 hover:bg-slate-50"}`}
                         >
                           <div>
                             <p className="text-xs font-semibold text-slate-700">{format(date, "EEE, MMM d")}</p>
@@ -575,10 +575,10 @@ export default function ServiceSlotManager({ serviceId }: Props) {
               )}
 
               {/* Info tip */}
-              <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
+              <div className="bg-[#FDF8F3] border border-[#F5E6D3] rounded-xl p-4">
                 <div className="flex gap-2">
-                  <Info size={14} className="text-blue-400 shrink-0 mt-0.5" />
-                  <div className="text-[11px] text-blue-600 space-y-1">
+                  <Info size={14} className="text-[#C45D3E] shrink-0 mt-0.5" />
+                  <div className="text-[11px] text-[#C45D3E] space-y-1">
                     <p className="font-semibold">How it works</p>
                     <p>Enter your working hours → click <strong>Generate</strong> → slots split automatically by service duration.</p>
                     <p>Click any slot to mark it <strong>Unavailable</strong> (lunch break, break time) or <strong>On Hold</strong>.</p>

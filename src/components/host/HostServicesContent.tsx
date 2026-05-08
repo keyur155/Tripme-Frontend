@@ -234,7 +234,7 @@ const HostServicesContent: React.FC = () => {
           //         <p className="text-sm font-medium text-gray-600">Total Services</p>
           //         <p className="text-3xl font-bold text-gray-900">{services.length}</p>
           //       </div>
-          //       <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
+          //       <div className="w-16 h-16 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
           //         <Briefcase className="w-8 h-8 text-white" />
           //       </div>
           //     </div>
@@ -269,11 +269,11 @@ const HostServicesContent: React.FC = () => {
           //     <div className="flex items-center justify-between">
           //       <div className="space-y-2">
           //         <p className="text-sm font-medium text-gray-600">Active Services</p>
-          //         <p className="text-3xl font-bold text-indigo-600">
+          //         <p className="text-3xl font-bold text-[#C45D3E]">
           //           {services.filter(s => s.status === 'published').length}
           //         </p>
           //       </div>
-          //       <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
+          //       <div className="w-16 h-16 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
           //         <Users className="w-8 h-8 text-white" />
           //       </div>
           //     </div>
@@ -283,8 +283,8 @@ const HostServicesContent: React.FC = () => {
   <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
     <div className="flex items-center justify-between mb-3">
       <span className="text-sm font-medium text-gray-500">Total</span>
-      <div className="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center">
-        <Briefcase className="w-4 h-4 text-blue-600" />
+      <div className="w-9 h-9 bg-[#FDF8F3] rounded-xl flex items-center justify-center">
+        <Briefcase className="w-4 h-4 text-[#C45D3E]" />
       </div>
     </div>
     <div className="text-2xl font-bold text-gray-900">{services.length}</div>
@@ -313,8 +313,8 @@ const HostServicesContent: React.FC = () => {
   <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
     <div className="flex items-center justify-between mb-3">
       <span className="text-sm font-medium text-gray-500">Active</span>
-      <div className="w-9 h-9 bg-purple-50 rounded-xl flex items-center justify-center">
-        <Users className="w-4 h-4 text-purple-600" />
+      <div className="w-9 h-9 bg-[#FDF8F3] rounded-xl flex items-center justify-center">
+        <Users className="w-4 h-4 text-[#C45D3E]" />
       </div>
     </div>
     <div className="text-2xl font-bold text-gray-900">{services.filter(s => s.status === 'published').length}</div>
@@ -324,9 +324,9 @@ const HostServicesContent: React.FC = () => {
 
         {/* Filters and Search */}
         {/* <div className="mb-8">
-          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-purple-200/50 shadow-xl">
+          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-[#F5E6D3]/50 shadow-xl">
             <h6 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <div className="w-5 h-5 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
+              <div className="w-5 h-5 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] rounded-lg flex items-center justify-center">
                 <Search className="w-3 h-3 text-white" />
               </div>
               Search & Filter
@@ -338,14 +338,14 @@ const HostServicesContent: React.FC = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   leftIcon={<Search className="w-4 h-4 text-gray-400" />}
-                  className="bg-white/80 backdrop-blur-sm border-purple-200 focus:border-purple-400 focus:ring-purple-200"
+                  className="bg-white/80 backdrop-blur-sm border-[#F5E6D3] focus:border-[#C45D3E] focus:ring-[#C45D3E]/30"
                 />
               </div>
               <div className="flex gap-3">
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-4 py-2 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200 hover:shadow-md"
+                  className="px-4 py-2 border border-[#F5E6D3] rounded-xl focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200 hover:shadow-md"
                 >
                   <option value="all">All Status</option>
                   <option value="published">Published</option>
@@ -355,7 +355,7 @@ const HostServicesContent: React.FC = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="px-4 py-2 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200 hover:shadow-md"
+                  className="px-4 py-2 border border-[#F5E6D3] rounded-xl focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200 hover:shadow-md"
                 >
                   <option value="createdAt">Newest First</option>
                   <option value="updatedAt">Recently Updated</option>
@@ -456,18 +456,18 @@ const HostServicesContent: React.FC = () => {
           //         </div>
 
           //         <div className="flex items-center text-sm text-gray-600 mb-3">
-          //           <MapPin className="w-4 h-4 mr-2 text-purple-600" />
+          //           <MapPin className="w-4 h-4 mr-2 text-[#C45D3E]" />
           //           <span>{service.location.city}, {service.location.state}</span>
           //         </div>
 
           //         <div className="flex items-center justify-between mb-4">
           //           <div className="flex items-center space-x-4 text-sm text-gray-600">
           //             <div className="flex items-center">
-          //               <Users className="w-4 h-4 mr-1 text-purple-600" />
+          //               <Users className="w-4 h-4 mr-1 text-[#C45D3E]" />
           //               <span>Max {service.groupSize?.max || 1}</span>
           //             </div>
           //             <div className="flex items-center">
-          //               <Clock className="w-4 h-4 mr-1 text-purple-600" />
+          //               <Clock className="w-4 h-4 mr-1 text-[#C45D3E]" />
           //               <span>{service.duration ? `${service.duration.value} ${service.duration.unit}` : 'Flexible'}</span>
           //             </div>
           //           </div>
@@ -489,11 +489,11 @@ const HostServicesContent: React.FC = () => {
           //         {/* Stats */}
           //         <div className="flex items-center justify-between text-sm text-gray-600 mb-6 p-3 bg-gray-50/50 rounded-xl">
           //           <span className="flex items-center">
-          //             <Calendar className="w-4 h-4 mr-1 text-purple-600" />
+          //             <Calendar className="w-4 h-4 mr-1 text-[#C45D3E]" />
           //             Created {formatDate(service.createdAt)}
           //           </span>
           //           <span className="flex items-center">
-          //             <Clock className="w-4 h-4 mr-1 text-purple-600" />
+          //             <Clock className="w-4 h-4 mr-1 text-[#C45D3E]" />
           //             {formatDate(service.updatedAt)}
           //           </span>
           //         </div>
@@ -503,7 +503,7 @@ const HostServicesContent: React.FC = () => {
           //           <Button
           //             variant="outline"
           //             size="sm"
-          //             className="w-full bg-white/80 backdrop-blur-sm border-purple-200 hover:bg-white hover:shadow-md text-gray-700 font-medium rounded-lg transition-all duration-200"
+          //             className="w-full bg-white/80 backdrop-blur-sm border-[#F5E6D3] hover:bg-white hover:shadow-md text-gray-700 font-medium rounded-lg transition-all duration-200"
           //             onClick={() => router.push(`/host/service/${service._id}/edit`)}
           //           >
           //             <Edit className="w-4 h-4 mr-2" />
@@ -512,7 +512,7 @@ const HostServicesContent: React.FC = () => {
           //           <Button
           //             variant="outline"
           //             size="sm"
-          //             className="w-full bg-white/80 backdrop-blur-sm border-purple-200 hover:bg-white hover:shadow-md text-gray-700 font-medium rounded-lg transition-all duration-200"
+          //             className="w-full bg-white/80 backdrop-blur-sm border-[#F5E6D3] hover:bg-white hover:shadow-md text-gray-700 font-medium rounded-lg transition-all duration-200"
           //             onClick={() => router.push(`/host/service/${service._id}/availability`)}
           //           >
           //             <Calendar className="w-4 h-4 mr-2" />
@@ -521,7 +521,7 @@ const HostServicesContent: React.FC = () => {
           //           <Button
           //             variant="outline"
           //             size="sm"
-          //             className="w-full bg-white/80 backdrop-blur-sm border-purple-200 hover:bg-white hover:shadow-md text-gray-700 font-medium rounded-lg transition-all duration-200"
+          //             className="w-full bg-white/80 backdrop-blur-sm border-[#F5E6D3] hover:bg-white hover:shadow-md text-gray-700 font-medium rounded-lg transition-all duration-200"
           //             onClick={() => router.push(`/services/${service._id}`)}
           //           >
           //             <Eye className="w-4 h-4 mr-2" />

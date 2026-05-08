@@ -126,8 +126,8 @@ export default function Step3Page() {
               />
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
-              <p className="text-sm text-blue-800">
+            <div className="bg-[#FDF8F3] border border-[#F5E6D3] rounded-lg p-4 mt-6">
+              <p className="text-sm text-[#1A1A1A]">
                 <strong>Note:</strong> Your exact address will be kept private until after booking confirmation.
               </p>
             </div>
@@ -142,7 +142,7 @@ export default function Step3Page() {
             <Button
               onClick={handleNext}
               disabled={!address || !city || !state || isLoading}
-              className="bg-[#FF385C] hover:bg-[#E61E4D] text-white px-8 py-4 text-lg font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-8 py-4 text-lg font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
               size="lg"
             >
               {isLoading ? (

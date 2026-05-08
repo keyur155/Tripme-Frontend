@@ -156,7 +156,7 @@ const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompleteProps> = ({
           className={`w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed ${className}`}
         />
         {isLoading && (
-          <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-600 w-5 h-5 animate-spin" />
+          <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#C45D3E] w-5 h-5 animate-spin" />
         )}
       </div>
       {error && (

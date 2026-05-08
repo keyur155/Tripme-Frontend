@@ -83,7 +83,7 @@ const ProfileContent: React.FC = () => {
       case 'confirmed': return 'bg-green-100 text-green-700 border-green-200';
       case 'pending': return 'bg-amber-100 text-amber-700 border-amber-200';
       case 'cancelled': return 'bg-red-100 text-red-700 border-red-200';
-      case 'completed': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'completed': return 'bg-[#F5E6D3] text-[#C45D3E] border-[#F5E6D3]';
       default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   };
@@ -301,7 +301,7 @@ const ProfileContent: React.FC = () => {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#C45D3E] mx-auto mb-4"></div>
           <p className="text-gray-600">Loading profile...</p>
         </div>
       </div>
@@ -329,7 +329,7 @@ const ProfileContent: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setIsEditing(!isEditing)}
-                  className="bg-blue-50 text-[#4285f4] hover:bg-blue-100 px-4 py-2 rounded-xl text-sm font-bold transition-all"
+                  className="bg-[#FDF8F3] text-[#C45D3E] hover:bg-[#F5E6D3] px-4 py-2 rounded-xl text-sm font-bold transition-all"
                 >
                   {isEditing ? 'Cancel' : 'Edit Profile'}
                 </button>
@@ -410,7 +410,7 @@ const ProfileContent: React.FC = () => {
                   onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
                   disabled={!isEditing}
                   rows={4}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all disabled:text-gray-500"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:ring-2 focus:ring-[#C45D3E] outline-none transition-all disabled:text-gray-500"
                   placeholder="Tell us about yourself..."
                 />
               </div>
@@ -420,7 +420,7 @@ const ProfileContent: React.FC = () => {
                   <Button
                     onClick={handleSave}
                     disabled={isLoading}
-                    className="flex-1 sm:flex-none bg-[#4285F4] hover:bg-blue-600 text-white rounded-2xl"
+                    className="flex-1 sm:flex-none bg-[#C45D3E] hover:bg-[#A84B32] text-white rounded-2xl"
                   >
                     {isLoading ? 'Saving...' : 'Save Changes'}
                   </Button>
@@ -439,7 +439,7 @@ const ProfileContent: React.FC = () => {
             {/* Account Stats */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div className="bg-white p-6 rounded-3xl shadow-lg border border-gray-100 text-center">
-                <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="w-10 h-10 bg-[#FDF8F3] text-[#C45D3E] rounded-full flex items-center justify-center mx-auto mb-3">
                   <Calendar size={20} />
                 </div>
                 <div className="text-xl font-bold text-gray-900">12</div>
@@ -467,7 +467,7 @@ const ProfileContent: React.FC = () => {
             <div className="mb-8 p-6 bg-gray-50 rounded-2xl border border-gray-100">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-blue-50 text-[#4285F4] rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-[#FDF8F3] text-[#C45D3E] rounded-full flex items-center justify-center">
                     <Shield size={24} />
                   </div>
                   <div>
@@ -499,20 +499,20 @@ const ProfileContent: React.FC = () => {
                   Your identity is confirmed. You can now manage your properties and bookings as a host.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button onClick={() => router.push('/become-host')} className="bg-[#4285F4] text-white rounded-2xl px-8">Become a Host</Button>
+                  <Button onClick={() => router.push('/become-host')} className="bg-[#C45D3E] text-white rounded-2xl px-8">Become a Host</Button>
                   <Button variant="outline" onClick={() => router.push('/host/dashboard')} className="rounded-2xl px-8">Host Dashboard</Button>
                 </div>
               </div>
             ) : (
               <div className="text-center py-8">
-                <div className="w-20 h-20 bg-blue-50 text-[#4285F4] rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-20 h-20 bg-[#FDF8F3] text-[#C45D3E] rounded-full flex items-center justify-center mx-auto mb-4">
                   <Shield size={40} />
                 </div>
                 <h4 className="text-xl font-bold text-gray-900 mb-2">Verify Your Identity</h4>
                 <p className="text-gray-600 mb-8 max-w-md mx-auto">
                   Submit your identity documents to unlock hosting features and build trust.
                 </p>
-                <Button onClick={() => router.push('/user/kyc')} className="bg-[#4285F4] text-white rounded-2xl px-8 w-full sm:w-auto">
+                <Button onClick={() => router.push('/user/kyc')} className="bg-[#C45D3E] text-white rounded-2xl px-8 w-full sm:w-auto">
                   Submit KYC Documents
                 </Button>
               </div>
@@ -536,7 +536,7 @@ const ProfileContent: React.FC = () => {
               ].map((item, i) => (
                 <div key={i} className="flex items-center justify-between p-5 border border-gray-100 rounded-3xl hover:bg-gray-50 transition-all group">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-gray-50 text-gray-400 group-hover:text-[#4285F4] group-hover:bg-blue-50 rounded-2xl flex items-center justify-center transition-all">
+                    <div className="w-10 h-10 bg-gray-50 text-gray-400 group-hover:text-[#C45D3E] group-hover:bg-[#FDF8F3] rounded-2xl flex items-center justify-center transition-all">
                       <item.icon size={20} />
                     </div>
                     <div>
@@ -544,7 +544,7 @@ const ProfileContent: React.FC = () => {
                       <p className="text-xs text-gray-500">{item.desc}</p>
                     </div>
                   </div>
-                  <button className="text-[#4285F4] text-sm font-bold px-4 py-2 hover:bg-blue-50 rounded-xl transition-all">
+                  <button className="text-[#C45D3E] text-sm font-bold px-4 py-2 hover:bg-[#FDF8F3] rounded-xl transition-all">
                     {item.action}
                   </button>
                 </div>
@@ -575,7 +575,7 @@ const ProfileContent: React.FC = () => {
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" className="sr-only peer" defaultChecked={i < 2} />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#4285F4]"></div>
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#C45D3E]"></div>
                   </label>
                 </div>
               ))}
@@ -593,7 +593,7 @@ const ProfileContent: React.FC = () => {
 
             {isBookingsLoading ? (
               <div className="py-12 flex flex-col items-center">
-                <div className="w-10 h-10 border-4 border-blue-100 border-t-[#4285F4] rounded-full animate-spin mb-4" />
+                <div className="w-10 h-10 border-4 border-[#F5E6D3] border-t-[#C45D3E] rounded-full animate-spin mb-4" />
                 <p className="text-sm text-gray-500">Loading your trips...</p>
               </div>
             ) : bookings.length > 0 ? (
@@ -628,7 +628,7 @@ const ProfileContent: React.FC = () => {
                           <span>{formatDate(booking.checkIn)} - {formatDate(booking.checkOut)}</span>
                         </div>
                         <div className="flex items-center justify-between mt-auto">
-                          <div className="text-sm font-bold text-[#4285F4]">
+                          <div className="text-sm font-bold text-[#C45D3E]">
                             {formatPrice(booking.totalAmount)}
                           </div>
                           <div className="text-[10px] font-medium text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md">
@@ -647,7 +647,7 @@ const ProfileContent: React.FC = () => {
                 </div>
                 <h4 className="text-lg font-bold text-gray-900 mb-1">No bookings yet</h4>
                 <p className="text-sm text-gray-500 mb-8">Start exploring beautiful places in Bharat</p>
-                <Button onClick={() => router.push('/search')} className="bg-[#4285F4] text-white rounded-2xl px-8">
+                <Button onClick={() => router.push('/search')} className="bg-[#C45D3E] text-white rounded-2xl px-8">
                   Explore Rooms
                 </Button>
               </div>
@@ -661,7 +661,7 @@ const ProfileContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen bg-[#FAFAF8]">
       <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         {/* Email Verification Banner */}
         {!user.isVerified && !verifBannerDismissed && (
@@ -715,16 +715,16 @@ const ProfileContent: React.FC = () => {
           {/* Profile Header Card */}
           <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 flex flex-col items-center mb-6 animate-fade-in relative overflow-hidden">
             <div className="relative mb-4">
-              <div className="w-24 h-24 bg-gradient-to-br from-[#4285F4] to-blue-600 rounded-full flex items-center justify-center text-3xl font-bold text-white overflow-hidden shadow-xl ring-4 ring-blue-50">
+              <div className="w-24 h-24 bg-gradient-to-br from-[#C45D3E] to-[#A84B32] rounded-full flex items-center justify-center text-3xl font-bold text-white overflow-hidden shadow-xl ring-4 ring-[#FDF8F3]">
                 {profileImage ? (
                   <img src={profileImage} alt={user.name} className="w-full h-full object-cover" />
                 ) : (
                   user.name?.[0]?.toUpperCase() || <User size={32} />
                 )}
               </div>
-              <label className="absolute -bottom-1 -right-1 bg-white text-[#4285F4] p-2.5 rounded-full shadow-lg border border-blue-50 cursor-pointer">
+              <label className="absolute -bottom-1 -right-1 bg-white text-[#C45D3E] p-2.5 rounded-full shadow-lg border border-[#FDF8F3] cursor-pointer">
                 {isUploadingImage ? (
-                  <div className="w-4 h-4 border-2 border-[#4285F4] border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-[#C45D3E] border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <Camera size={16} />
                 )}
@@ -740,7 +740,7 @@ const ProfileContent: React.FC = () => {
                 {user.role === 'host' && (
                   <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Host</span>
                 )}
-                <span className={`px-3 py-1 rounded-full text-xs font-bold ${user.kyc?.status === 'verified' ? 'bg-blue-100 text-[#4285F4]' : 'bg-gray-100 text-gray-500'}`}>
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${user.kyc?.status === 'verified' ? 'bg-[#F5E6D3] text-[#C45D3E]' : 'bg-gray-100 text-gray-500'}`}>
                   {user.kyc?.status === 'verified' ? 'Verified' : 'Unverified'}
                 </span>
               </div>
@@ -758,7 +758,7 @@ const ProfileContent: React.FC = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl whitespace-nowrap transition-all ${
                     isActive 
-                      ? 'bg-[#4285F4] text-white shadow-lg shadow-blue-100' 
+                      ? 'bg-[#C45D3E] text-white shadow-lg shadow-[#F5E6D3]' 
                       : 'bg-white text-gray-600 border border-gray-100'
                   }`}
                 >
@@ -793,13 +793,13 @@ const ProfileContent: React.FC = () => {
             ) : (
               <button
                 onClick={() => router.push('/become-host')}
-                className="w-full bg-[#4285F4] text-white p-5 rounded-3xl flex items-center justify-between shadow-lg"
+                className="w-full bg-[#C45D3E] text-white p-5 rounded-3xl flex items-center justify-between shadow-lg"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><Plus size={20} /></div>
                   <div className="text-left">
                     <div className="font-bold">Become a Host</div>
-                    <div className="text-xs text-blue-100">Start earning today</div>
+                    <div className="text-xs text-[#F5E6D3]">Start earning today</div>
                   </div>
                 </div>
                 <Plus className="rotate-45" size={20} />
@@ -824,13 +824,13 @@ const ProfileContent: React.FC = () => {
           <div className="lg:col-span-1">
             <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20 shadow-2xl relative overflow-hidden">
               {/* Decorative background elements */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full -translate-y-16 translate-x-16"></div>
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-blue-400/10 to-cyan-400/10 rounded-full translate-y-12 -translate-x-12"></div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#C45D3E]/10 to-[#A84B32]/10 rounded-full -translate-y-16 translate-x-16"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-[#C45D3E]/10 to-[#A84B32]/10 rounded-full translate-y-12 -translate-x-12"></div>
 
               {/* Profile Summary */}
               <div className="text-center mb-8 relative z-10">
                 <div className="relative inline-block mb-6">
-                  <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto shadow-2xl overflow-hidden ring-4 ring-white/50">
+                  <div className="w-24 h-24 bg-gradient-to-br from-[#C45D3E] to-[#A84B32] rounded-full flex items-center justify-center mx-auto shadow-2xl overflow-hidden ring-4 ring-white/50">
                     {profileImage ? (
                       <img
                         src={profileImage}
@@ -841,9 +841,9 @@ const ProfileContent: React.FC = () => {
                       <User size={36} className="text-white" />
                     )}
                   </div>
-                  <label className="absolute -bottom-2 -right-2 bg-white text-purple-600 p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 cursor-pointer ring-2 ring-purple-100">
+                  <label className="absolute -bottom-2 -right-2 bg-white text-[#C45D3E] p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 cursor-pointer ring-2 ring-[#F5E6D3]">
                     {isUploadingImage ? (
-                      <div className="w-4 h-4 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-[#C45D3E] border-t-transparent rounded-full animate-spin" />
                     ) : (
                       <Camera size={18} />
                     )}
@@ -902,13 +902,13 @@ const ProfileContent: React.FC = () => {
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
                       className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left transition-all duration-300 group ${activeTab === tab.id
-                          ? 'bg-[#4285F4] hover:bg-[#3367D6] text-white shadow-lg transform scale-105'
-                          : 'text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-indigo-50 hover:text-purple-700 hover:shadow-md hover:scale-105'
+                          ? 'bg-[#C45D3E] hover:bg-[#A84B32] text-white shadow-lg transform scale-105'
+                          : 'text-gray-700 hover:bg-[#FDF8F3] hover:text-[#C45D3E] hover:shadow-md hover:scale-105'
                         }`}
                     >
                       <div className={`p-2 rounded-xl transition-all duration-300 ${activeTab === tab.id
                           ? 'bg-white/20'
-                          : 'bg-gray-100 group-hover:bg-purple-100'
+                          : 'bg-gray-100 group-hover:bg-[#F5E6D3]'
                         }`}>
                         <Icon size={20} className="flex-shrink-0" />
                       </div>
@@ -926,7 +926,7 @@ const ProfileContent: React.FC = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="w-full justify-start text-gray-700 hover:text-purple-700 hover:bg-purple-50"
+                      className="w-full justify-start text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3]"
                       onClick={() => router.push('/host/dashboard')}
                     >
                       <Home size={16} className="mr-2" />
@@ -935,7 +935,7 @@ const ProfileContent: React.FC = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="w-full justify-start text-gray-700 hover:text-purple-700 hover:bg-purple-50"
+                      className="w-full justify-start text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3]"
                       onClick={() => router.push('/host/property/new')}
                     >
                       <Plus size={16} className="mr-2" />

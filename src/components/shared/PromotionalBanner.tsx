@@ -32,7 +32,7 @@ const PromotionalBanner: React.FC = () => {
       validUntil: 'Dec 31, 2024',
       code: 'HDFC10',
       icon: <CreditCard className="w-5 h-5" />,
-      backgroundColor: 'bg-gradient-to-r from-blue-500 to-purple-600',
+      backgroundColor: 'bg-gradient-to-r from-[#C45D3E] to-[#A84B32]',
       textColor: 'text-white',
       borderColor: 'border-blue-400'
     },
@@ -71,7 +71,7 @@ const PromotionalBanner: React.FC = () => {
       validUntil: 'Mar 31, 2025',
       code: 'WEEKEND20',
       icon: <TrendingUp className="w-5 h-5" />,
-      backgroundColor: 'bg-gradient-to-r from-purple-500 to-pink-600',
+      backgroundColor: 'bg-gradient-to-r from-[#2D5F3A] to-[#1A4028]',
       textColor: 'text-white',
       borderColor: 'border-purple-400'
     }

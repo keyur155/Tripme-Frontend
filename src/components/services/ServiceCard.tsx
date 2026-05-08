@@ -85,7 +85,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             
             {/* Service Type Badge */}
             <div className="absolute top-3 left-3">
-              <span className="px-2 py-1 bg-white/90 backdrop-blur-sm text-xs font-medium text-purple-700 rounded-full">
+              <span className="px-2 py-1 bg-white/90 backdrop-blur-sm text-xs font-medium text-[#C45D3E] rounded-full">
                 {service.serviceType}
               </span>
             </div>
@@ -141,8 +141,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               </div>
               
               <div className="flex items-center gap-1">
-                <Briefcase size={14} className="text-purple-600" />
-                <span className="text-xs text-purple-600 font-medium">
+                <Briefcase size={14} className="text-[#C45D3E]" />
+                <span className="text-xs text-[#C45D3E] font-medium">
                   {service.serviceType}
                 </span>
               </div>

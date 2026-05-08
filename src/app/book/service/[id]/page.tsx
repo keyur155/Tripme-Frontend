@@ -49,7 +49,7 @@ function RazorpayModal({ isOpen, onClose, amount, user, onSuccess, serviceId }: 
         key, amount: Math.round(amount * 100), currency: "INR",
         name: "TripMe", description: "Service Booking", order_id: orderId,
         prefill: { name: user?.name || "", email: user?.email || "", contact: user?.phone || "" },
-        theme: { color: "#7C3AED" },
+        theme: { color: "#C45D3E" },
         handler: async (res: any) => {
           setStep("processing");
           try {
@@ -70,7 +70,7 @@ function RazorpayModal({ isOpen, onClose, amount, user, onSuccess, serviceId }: 
       <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl">
         <div className="p-6 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-600 rounded-2xl flex items-center justify-center"><CreditCard className="w-5 h-5 text-white" /></div>
+            <div className="w-10 h-10 bg-[#C45D3E] rounded-2xl flex items-center justify-center"><CreditCard className="w-5 h-5 text-white" /></div>
             <div><h2 className="text-xl font-bold">Complete Payment</h2><p className="text-sm text-gray-500">Secured by Razorpay</p></div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full"><X size={18} /></button>
@@ -78,20 +78,20 @@ function RazorpayModal({ isOpen, onClose, amount, user, onSuccess, serviceId }: 
         <div className="p-6">
           {step === "init" && (
             <div className="space-y-5">
-              <div className="text-center p-5 bg-purple-50 rounded-2xl">
+              <div className="text-center p-5 bg-[#FDF8F3] rounded-2xl">
                 <p className="text-sm text-gray-500 mb-1">Total Amount</p>
-                <p className="text-4xl font-black text-purple-700">{fmt(amount)}</p>
+                <p className="text-4xl font-black text-[#C45D3E]">{fmt(amount)}</p>
               </div>
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl text-sm text-gray-600"><Lock size={16} /> SSL encrypted · 100% secure</div>
               {err && <p className="text-sm text-red-600 bg-red-50 p-3 rounded-xl">{err}</p>}
-              <button onClick={pay} disabled={!loaded} className="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white font-bold text-lg rounded-2xl transition disabled:opacity-50 flex items-center justify-center gap-2">
+              <button onClick={pay} disabled={!loaded} className="w-full py-4 bg-[#C45D3E] hover:bg-[#A84B32] text-white font-bold text-lg rounded-2xl transition disabled:opacity-50 flex items-center justify-center gap-2">
                 <CreditCard size={20} />{!loaded ? "Loading…" : `Pay ${fmt(amount)}`}
               </button>
             </div>
           )}
           {step === "processing" && (
             <div className="text-center py-14">
-              <Loader2 size={40} className="animate-spin mx-auto mb-4 text-purple-500" />
+              <Loader2 size={40} className="animate-spin mx-auto mb-4 text-[#C45D3E]" />
               <p className="font-semibold text-lg">Processing…</p>
               <p className="text-sm text-gray-500 mt-1">Please wait, do not close this window.</p>
             </div>
@@ -109,7 +109,7 @@ function RazorpayModal({ isOpen, onClose, amount, user, onSuccess, serviceId }: 
               <p className="font-bold text-xl">Something Went Wrong</p>
               <p className="text-sm text-gray-500">{err}</p>
               <div className="flex gap-3 justify-center">
-                <button onClick={() => { setStep("init"); setErr(""); }} className="px-5 py-2 bg-purple-600 text-white rounded-xl text-sm font-semibold">Try Again</button>
+                <button onClick={() => { setStep("init"); setErr(""); }} className="px-5 py-2 bg-[#C45D3E] text-white rounded-xl text-sm font-semibold">Try Again</button>
                 <button onClick={onClose} className="px-5 py-2 border border-gray-200 rounded-xl text-sm text-gray-600">Close</button>
               </div>
             </div>
@@ -342,8 +342,8 @@ const PaymentModal: React.FC<{
 
               {/* Payment Info */}
               <div className="space-y-4">
-                <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                  <p className="text-sm text-blue-800">
+                <div className="p-4 bg-[#FDF8F3] rounded-xl border border-[#F5E6D3]">
+                  <p className="text-sm text-[#1A1A1A]">
                     You will be redirected to Razorpay's secure payment gateway to complete your payment.
                   </p>
                 </div>
@@ -439,12 +439,12 @@ function LoginGate({ id }: { id: string }) {
     <div className="border border-gray-200 rounded-2xl overflow-hidden">
       <div className="p-5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold">1</div>
+          <div className="w-8 h-8 bg-[#C45D3E] rounded-full flex items-center justify-center text-white text-sm font-bold">1</div>
           <span className="font-semibold text-gray-800">Log in or sign up</span>
         </div>
         <button
           onClick={() => router.push(`/auth/login?redirect=/book/service/${id}`)}
-          className="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold text-sm rounded-xl hover:from-purple-700 hover:to-indigo-700 transition"
+          className="px-5 py-2 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] text-white font-semibold text-sm rounded-xl hover:from-[#A84B32] hover:to-[#8B3D28] transition"
         >
           Continue
         </button>
@@ -595,7 +595,7 @@ export default function ServiceBookingPage() {
   if (loading || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 size={40} className="animate-spin text-purple-500" />
+        <Loader2 size={40} className="animate-spin text-[#C45D3E]" />
       </div>
     );
   }
@@ -605,7 +605,7 @@ export default function ServiceBookingPage() {
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <AlertCircle size={48} className="text-red-400" />
         <h2 className="text-2xl font-bold">Service Not Found</h2>
-        <button onClick={() => router.back()} className="flex items-center gap-1 text-purple-600 hover:underline"><ArrowLeft size={16} /> Go Back</button>
+        <button onClick={() => router.back()} className="flex items-center gap-1 text-[#C45D3E] hover:underline"><ArrowLeft size={16} /> Go Back</button>
       </div>
     );
   }
@@ -655,7 +655,7 @@ export default function ServiceBookingPage() {
                 <div className="border border-gray-200 rounded-2xl overflow-hidden">
                   <div className="p-5 border-b border-gray-100">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold">2</div>
+                      <div className="w-8 h-8 bg-[#C45D3E] rounded-full flex items-center justify-center text-white text-sm font-bold">2</div>
                       <span className="font-bold text-gray-800">Your Contact Information</span>
                     </div>
                   </div>
@@ -667,7 +667,7 @@ export default function ServiceBookingPage() {
                     ].map(f => (
                       <div key={f.key}>
                         <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase">{f.label}</label>
-                        <div className="flex items-center gap-2 border border-gray-200 rounded-xl px-3 py-2.5 focus-within:border-purple-400 focus-within:ring-2 focus-within:ring-purple-100 transition">
+                        <div className="flex items-center gap-2 border border-gray-200 rounded-xl px-3 py-2.5 focus-within:border-[#C45D3E] focus-within:ring-2 focus-within:ring-[#F5E6D3] transition">
                           <span className="text-gray-400">{f.icon}</span>
                           <input
                             type={f.type}
@@ -699,7 +699,7 @@ export default function ServiceBookingPage() {
                         onChange={e => setSpecialRequests(e.target.value)}
                         rows={3}
                         placeholder="Any special requests or notes for the provider…"
-                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition resize-none"
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-[#C45D3E] focus:ring-2 focus:ring-[#F5E6D3] transition resize-none"
                       />
                     </div>
                   </div>
@@ -714,7 +714,7 @@ export default function ServiceBookingPage() {
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold ${
                         locationStep === 'confirmed' ? 'bg-green-600' :
-                        locationStep === 'unavailable' ? 'bg-red-500' : 'bg-purple-600'
+                        locationStep === 'unavailable' ? 'bg-red-500' : 'bg-[#C45D3E]'
                       }`}>
                         {locationStep === 'confirmed' ? '✓' : locationStep === 'unavailable' ? '✗' : '3'}
                       </div>
@@ -725,12 +725,12 @@ export default function ServiceBookingPage() {
                     {locationStep === 'idle' && (
                       <>
                         <p className="text-sm text-gray-600 leading-relaxed">
-                          This service is available in <span className="font-semibold text-purple-700">{service.location?.city}</span>.
+                          This service is available in <span className="font-semibold text-[#C45D3E]">{service.location?.city}</span>.
                           Please confirm your location to proceed with payment.
                         </p>
                         <button
                           onClick={detectLocation}
-                          className="w-full py-3 flex items-center justify-center gap-2 border-2 border-purple-500 text-purple-700 font-semibold rounded-xl hover:bg-purple-50 transition"
+                          className="w-full py-3 flex items-center justify-center gap-2 border-2 border-[#C45D3E] text-[#C45D3E] font-semibold rounded-xl hover:bg-[#FDF8F3] transition"
                         >
                           <MapPin size={16} /> Use my current location
                         </button>
@@ -744,7 +744,7 @@ export default function ServiceBookingPage() {
                     )}
 
                     {locationStep === 'detecting' && (
-                      <div className="flex items-center gap-3 py-2 text-purple-700">
+                      <div className="flex items-center gap-3 py-2 text-[#C45D3E]">
                         <Loader2 size={20} className="animate-spin" />
                         <span className="text-sm font-medium">Detecting your location…</span>
                       </div>
@@ -754,7 +754,7 @@ export default function ServiceBookingPage() {
                       <>
                         <p className="text-sm text-gray-600">Enter your city to check availability:</p>
                         <div className="flex gap-2">
-                          <div className="flex-1 flex items-center gap-2 border border-gray-200 rounded-xl px-3 py-2.5 focus-within:border-purple-400 focus-within:ring-2 focus-within:ring-purple-100 transition">
+                          <div className="flex-1 flex items-center gap-2 border border-gray-200 rounded-xl px-3 py-2.5 focus-within:border-[#C45D3E] focus-within:ring-2 focus-within:ring-[#F5E6D3] transition">
                             <MapPin size={14} className="text-gray-400 shrink-0" />
                             <input
                               type="text"
@@ -767,7 +767,7 @@ export default function ServiceBookingPage() {
                           </div>
                           <button
                             onClick={handleManualCity}
-                            className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm rounded-xl transition"
+                            className="px-4 py-2.5 bg-[#C45D3E] hover:bg-[#A84B32] text-white font-semibold text-sm rounded-xl transition"
                           >
                             Check
                           </button>
@@ -796,7 +796,7 @@ export default function ServiceBookingPage() {
                         </div>
                         <button
                           onClick={() => { setLocationStep('manual'); setManualCity(''); }}
-                          className="text-sm text-purple-600 underline hover:text-purple-800"
+                          className="text-sm text-[#C45D3E] underline hover:text-[#A84B32]"
                         >
                           Try a different city
                         </button>
@@ -809,7 +809,7 @@ export default function ServiceBookingPage() {
                 <div className="border border-gray-200 rounded-2xl overflow-hidden">
                   <div className="p-5 border-b border-gray-100">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold">4</div>
+                      <div className="w-8 h-8 bg-[#C45D3E] rounded-full flex items-center justify-center text-white text-sm font-bold">4</div>
                       <span className="font-bold text-gray-800">Review your request</span>
                     </div>
                   </div>
@@ -861,7 +861,7 @@ export default function ServiceBookingPage() {
                     <button
                       onClick={() => setShowPayment(true)}
                       disabled={!canBook}
-                      className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-lg rounded-2xl transition disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
+                      className="w-full py-4 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] hover:from-[#A84B32] hover:to-[#8B3D28] text-white font-bold text-lg rounded-2xl transition disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
                     >
                       Confirm and Pay · {fmt(total)}
                     </button>

@@ -282,7 +282,7 @@ function MapSearchBox({ onSelect }: { onSelect: (coords: [number, number], addre
     <div className="relative mb-4">
       <input
         type="text"
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-800"
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent bg-white text-gray-800"
         placeholder="Search address or place on map..."
         value={query}
         onChange={handleInput}
@@ -295,7 +295,7 @@ function MapSearchBox({ onSelect }: { onSelect: (coords: [number, number], addre
             <button
               key={idx}
               type="button"
-              className="w-full text-left px-4 py-3 hover:bg-indigo-50 focus:bg-indigo-100 rounded-xl transition-all text-gray-900 font-medium"
+              className="w-full text-left px-4 py-3 hover:bg-[#FDF8F3] focus:bg-[#F5E6D3] rounded-xl transition-all text-gray-900 font-medium"
               onClick={() => {
                 setQuery(result.label);
                 setShowDropdown(false);
@@ -970,14 +970,14 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
     { number: 1, title: 'Basic Info', icon: <Home size={20} /> },
     { number: 2, title: 'Place Type', icon: <Home size={20} /> },
     { number: 3, title: 'Location', icon: <MapPin size={20} /> },
-    { number: 4, title: 'Pricing', icon: <span className="font-bold text-purple-600">₹</span> },
+    { number: 4, title: 'Pricing', icon: <span className="font-bold text-[#C45D3E]">₹</span> },
     { number: 5, title: 'Capacity', icon: <Users size={20} /> },
     { number: 6, title: 'Amenities', icon: <CheckCircle size={20} /> },
     { number: 7, title: 'Images', icon: <Calendar size={20} /> }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-[#FDF8F3]">
       {/* Full-screen sidebar */}
       <div className="flex min-h-screen">
         {/* Left Sidebar - Fixed width, full height */}
@@ -1025,7 +1025,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                     <div className={`
                       flex items-center space-x-4 p-4 rounded-xl transition-all duration-300
                       ${isActive 
-                        ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg shadow-purple-500/25' 
+                        ? 'bg-gradient-to-r from-[#C45D3E] to-[#A84B32] text-white shadow-lg shadow-[#C45D3E]/25' 
                         : isCompleted 
                           ? 'bg-green-50 text-green-700 border border-green-200' 
                           : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
@@ -1071,7 +1071,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
               <div className="text-sm text-gray-500 mb-2">Progress</div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-[#C45D3E] to-[#A84B32] h-2 rounded-full transition-all duration-500"
                   style={{ width: `${(step / steps.length) * 100}%` }}
                 ></div>
               </div>
@@ -1121,7 +1121,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                 value={formData.title}
                                 onChange={(e) => handleInputChange('title', e.target.value)}
                                 placeholder="e.g., Beautiful Beachfront Villa"
-                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
+                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
                               />
                               {fieldErrors['title'] && (
                                 <p className="text-red-500 text-sm mt-2">{fieldErrors['title']}</p>
@@ -1133,7 +1133,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                               <select
                                 value={formData.type}
                                 onChange={(e) => handleInputChange('type', e.target.value)}
-                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900"
+                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900"
                               >
                                 {propertyTypes.map(type => (
                                   <option key={type.value} value={type.value}>
@@ -1150,7 +1150,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                               <select
                                 value={formData.propertyType}
                                 onChange={(e) => handleInputChange('propertyType', e.target.value)}
-                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900"
+                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900"
                               >
                                 <option value="budget">Budget</option>
                                 <option value="standard">Standard</option>
@@ -1164,7 +1164,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                               <select
                                 value={formData.style}
                                 onChange={(e) => handleInputChange('style', e.target.value)}
-                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900"
+                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900"
                               >
                                 {propertyStyles.map(style => (
                                   <option key={style.value} value={style.value}>
@@ -1184,7 +1184,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                             onChange={(e) => handleInputChange('description', e.target.value)}
                             placeholder="Describe your property, its unique features, and what makes it special..."
                             rows={6}
-                            className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 resize-none bg-white text-slate-900 placeholder-slate-500"
+                            className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 resize-none bg-white text-slate-900 placeholder-slate-500"
                           />
                         </div>
                       </div>
@@ -1201,14 +1201,14 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                         
                         <div className="space-y-4">
                           {placeTypes.map(placeType => (
-                            <label key={placeType.value} className="flex items-start space-x-4 p-6 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-purple-300 hover:bg-purple-50 transition-all duration-200">
+                            <label key={placeType.value} className="flex items-start space-x-4 p-6 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200">
                               <input
                                 type="radio"
                                 name="placeType"
                                 value={placeType.value}
                                 checked={formData.placeType === placeType.value}
                                 onChange={(e) => handleInputChange('placeType', e.target.value)}
-                                className="mt-1 w-5 h-5 text-purple-600 border-gray-300 focus:ring-purple-500"
+                                className="mt-1 w-5 h-5 text-[#C45D3E] border-gray-300 focus:ring-[#C45D3E]"
                               />
                               <div className="flex-1">
                                 <div className="font-semibold text-gray-900 text-lg mb-2">{placeType.label}</div>
@@ -1230,10 +1230,10 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                         </div>
                         
                         <div className="space-y-6">
-                          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                          <div className="bg-[#FDF8F3] border border-[#F5E6D3] rounded-xl p-6">
                             <div className="flex items-center space-x-3 mb-4">
-                              <MapPin className="w-6 h-6 text-blue-600" />
-                              <h4 className="text-xl font-semibold text-blue-900">Map Search</h4>
+                              <MapPin className="w-6 h-6 text-[#C45D3E]" />
+                              <h4 className="text-xl font-semibold text-[#1A1A1A]">Map Search</h4>
                             </div>
                             <MapSearchBox onSelect={handleLocationSelect} />
                           </div>
@@ -1253,7 +1253,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                 value={formData.location.address}
                                 onChange={(e) => handleLocationChange('address', e.target.value)}
                                 placeholder="123 Main Street"
-                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
+                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
                               />
                             </div>
                             <div>
@@ -1263,7 +1263,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                 value={formData.location.city}
                                 onChange={(e) => handleLocationChange('city', e.target.value)}
                                 placeholder="Mumbai"
-                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
+                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
                               />
                             </div>
                             <div>
@@ -1273,7 +1273,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                 value={formData.location.state}
                                 onChange={(e) => handleLocationChange('state', e.target.value)}
                                 placeholder="Maharashtra"
-                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
+                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
                               />
                             </div>
                             <div>
@@ -1283,7 +1283,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                 value={formData.location.postalCode}
                                 onChange={(e) => handleLocationChange('postalCode', e.target.value)}
                                 placeholder="400001"
-                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
+                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
                               />
                             </div>
                           </div>
@@ -1305,7 +1305,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                             <div>
                               <label className="block text-lg font-semibold text-slate-800 mb-3">Base Price per Night</label>
                               <div className="relative">
-                                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-2xl font-bold text-purple-600">₹</span>
+                                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-2xl font-bold text-[#C45D3E]">₹</span>
                                 <input
                                   type="number"
                                   value={formData.pricing.basePrice === 0 ? '' : formData.pricing.basePrice}
@@ -1314,7 +1314,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                     const num = Number(v); handlePricingChange('basePrice', isNaN(num) ? 0 : num);
                                   }}
                                   placeholder="0"
-                                  className="w-full pl-12 pr-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
+                                  className="w-full pl-12 pr-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
                                 />
                               </div>
                               {fieldErrors['pricing.basePrice'] && (
@@ -1325,7 +1325,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                             <div>
                               <label className="block text-lg font-semibold text-slate-800 mb-3">Extra Guest Price</label>
                               <div className="relative">
-                                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-2xl font-bold text-purple-600">₹</span>
+                                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-2xl font-bold text-[#C45D3E]">₹</span>
                                 <input
                                   type="number"
                                   value={formData.pricing.extraGuestPrice === 0 ? '' : formData.pricing.extraGuestPrice}
@@ -1334,7 +1334,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                     const num = Number(v); handlePricingChange('extraGuestPrice', isNaN(num) ? 0 : num);
                                   }}
                                   placeholder="0"
-                                  className="w-full pl-12 pr-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
+                                  className="w-full pl-12 pr-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
                                 />
                               </div>
                             </div>
@@ -1344,7 +1344,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                             <div>
                               <label className="block text-lg font-semibold text-slate-800 mb-3">Cleaning Fee</label>
                               <div className="relative">
-                                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-2xl font-bold text-purple-600">₹</span>
+                                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-2xl font-bold text-[#C45D3E]">₹</span>
                                 <input
                                   type="number"
                                   value={formData.pricing.cleaningFee === 0 ? '' : formData.pricing.cleaningFee}
@@ -1353,7 +1353,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                     const num = Number(v); handlePricingChange('cleaningFee', isNaN(num) ? 0 : num);
                                   }}
                                   placeholder="0"
-                                  className="w-full pl-12 pr-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
+                                  className="w-full pl-12 pr-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
                                 />
                               </div>
                             </div>
@@ -1361,7 +1361,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                             <div>
                               <label className="block text-lg font-semibold text-slate-800 mb-3">Security Deposit</label>
                               <div className="relative">
-                                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-2xl font-bold text-purple-600">₹</span>
+                                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-2xl font-bold text-[#C45D3E]">₹</span>
                                 <input
                                   type="number"
                                   value={formData.pricing.securityDeposit === 0 ? '' : formData.pricing.securityDeposit}
@@ -1370,7 +1370,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                     const num = Number(v); handlePricingChange('securityDeposit', isNaN(num) ? 0 : num);
                                   }}
                                   placeholder="0"
-                                  className="w-full pl-12 pr-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
+                                  className="w-full pl-12 pr-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
                                 />
                               </div>
                             </div>
@@ -1391,13 +1391,13 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                 onChange={(e) => handleInputChange('anytimeEnabled', e.target.checked)}
                                 className="sr-only peer"
                               />
-                              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#C45D3E]/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#C45D3E]"></div>
                             </label>
                           </div>
 
                           {formData.anytimeEnabled && (
                             <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
-                              <div className="rounded-xl bg-blue-50 border border-blue-200 p-4 text-sm text-blue-800">
+                              <div className="rounded-xl bg-[#FDF8F3] border border-[#F5E6D3] p-4 text-sm text-[#1A1A1A]">
                                 Guests can choose Standard (11 AM → 10 AM) or Anytime (custom time → +23h).
                               </div>
                               <div>
@@ -1410,7 +1410,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                     const num = Number(v); handlePricingChange('basePrice24Hour', isNaN(num) ? 0 : num);
                                   }}
                                   placeholder={formData.pricing.basePrice ? String(Math.round(formData.pricing.basePrice * 1.2)) : 'e.g. 20% higher than base price'}
-                                  className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
+                                  className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
                                 />
                               </div>
                             </div>
@@ -1431,7 +1431,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                 onChange={(e) => handleHourlyBookingChange('enabled', e.target.checked)}
                                 className="sr-only peer"
                               />
-                              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#C45D3E]/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#C45D3E]"></div>
                             </label>
                           </div>
 
@@ -1453,7 +1453,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                           ...formData.hourlyBooking.hourlyRates,
                                           sixHours: Number(e.target.value) / 100
                                         })}
-                                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-purple-500 text-gray-900 font-medium bg-white"
+                                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-[#C45D3E] text-gray-900 font-medium bg-white"
                                       />
                                       <span className="ml-1 text-xs font-medium text-slate-700">%</span>
                                     </div>
@@ -1471,7 +1471,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                           ...formData.hourlyBooking.hourlyRates,
                                           twelveHours: Number(e.target.value) / 100
                                         })}
-                                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-purple-500 text-gray-900 font-medium bg-white"
+                                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-[#C45D3E] text-gray-900 font-medium bg-white"
                                       />
                                       <span className="ml-1 text-xs font-medium text-slate-700">%</span>
                                     </div>
@@ -1489,7 +1489,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                           ...formData.hourlyBooking.hourlyRates,
                                           eighteenHours: Number(e.target.value) / 100
                                         })}
-                                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-purple-500 text-gray-900 font-medium bg-white"
+                                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-[#C45D3E] text-gray-900 font-medium bg-white"
                                       />
                                       <span className="ml-1 text-xs font-medium text-slate-700">%</span>
                                     </div>
@@ -1514,15 +1514,15 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                         
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                           <div className="text-center">
-                            <div className="bg-purple-50 rounded-2xl p-6 border-2 border-purple-200">
-                              <Users className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+                            <div className="bg-[#FDF8F3] rounded-2xl p-6 border-2 border-[#F5E6D3]">
+                              <Users className="w-12 h-12 text-[#C45D3E] mx-auto mb-4" />
                               <label className="block text-lg font-semibold text-slate-800 mb-3">Max Guests</label>
                               <input
                                 type="number"
                                 value={formData.maxGuests}
                                 onChange={(e) => handleInputChange('maxGuests', parseInt(e.target.value))}
                                 placeholder="1"
-                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 text-center bg-white text-slate-900 placeholder-slate-500"
+                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-center bg-white text-slate-900 placeholder-slate-500"
                               />
                               {fieldErrors['maxGuests'] && (
                                 <p className="text-red-500 text-sm mt-2">{fieldErrors['maxGuests']}</p>
@@ -1531,15 +1531,15 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                           </div>
                           
                           <div className="text-center">
-                            <div className="bg-blue-50 rounded-2xl p-6 border-2 border-blue-200">
-                              <Bed className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+                            <div className="bg-[#FDF8F3] rounded-2xl p-6 border-2 border-[#F5E6D3]">
+                              <Bed className="w-12 h-12 text-[#C45D3E] mx-auto mb-4" />
                               <label className="block text-lg font-semibold text-slate-800 mb-3">Bedrooms</label>
                               <input
                                 type="number"
                                 value={formData.bedrooms}
                                 onChange={(e) => handleInputChange('bedrooms', parseInt(e.target.value))}
                                 placeholder="1"
-                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 text-center bg-white text-slate-900 placeholder-slate-500"
+                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-center bg-white text-slate-900 placeholder-slate-500"
                               />
                             </div>
                           </div>
@@ -1553,7 +1553,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                                 value={formData.bathrooms}
                                 onChange={(e) => handleInputChange('bathrooms', parseInt(e.target.value))}
                                 placeholder="1"
-                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 text-center bg-white text-slate-900 placeholder-slate-500"
+                                className="w-full px-4 py-3 text-lg border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-center bg-white text-slate-900 placeholder-slate-500"
                               />
                             </div>
                           </div>
@@ -1572,15 +1572,15 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                         
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                           {amenitiesList.map((amenity) => (
-                            <label key={amenity} className="flex items-center space-x-3 p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-all duration-200 cursor-pointer border-2 border-transparent hover:border-blue-200">
+                            <label key={amenity} className="flex items-center space-x-3 p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-all duration-200 cursor-pointer border-2 border-transparent hover:border-[#F5E6D3]">
                               <input
                                 type="checkbox"
                                 checked={formData.amenities.includes(amenity)}
                                 onChange={(e) => handleArrayToggle('amenities', amenity)}
-                                className="w-5 h-5 text-blue-600 border-slate-300 rounded focus:ring-blue-500 focus:ring-2"
+                                className="w-5 h-5 text-[#C45D3E] border-slate-300 rounded focus:ring-[#C45D3E] focus:ring-2"
                               />
                               <div className="flex items-center space-x-2">
-                                <span className="text-blue-600">
+                                <span className="text-[#C45D3E]">
                                   {getAmenityIcon(amenity)}
                                 </span>
                                 <span className="text-slate-700 font-medium capitalize">
@@ -1602,7 +1602,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                           <p className="text-slate-600 text-lg">Upload high-quality images of your property</p>
                         </div>
                         
-                        <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-8 border-2 border-purple-200">
+                        <div className="bg-gradient-to-r from-[#FDF8F3] to-[#FDF8F3] rounded-2xl p-8 border-2 border-[#F5E6D3]">
                           <ImageUpload
                             images={formData.images}
                             onImagesChange={(images) => handleInputChange('images', images)}
@@ -1631,7 +1631,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                   {step < steps.length ? (
                     <Button 
                       onClick={() => setStep(prev => prev + 1)}
-                      className="flex items-center px-8 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-200 rounded-xl shadow-lg shadow-purple-500/25 text-lg font-medium"
+                      className="flex items-center px-8 py-3 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] text-white hover:from-[#C45D3E] hover:to-[#A84B32] transition-all duration-200 rounded-xl shadow-lg shadow-[#C45D3E]/25 text-lg font-medium"
                     >
                       Next Step
                       <ArrowLeft className="w-5 h-5 ml-2 rotate-180" />

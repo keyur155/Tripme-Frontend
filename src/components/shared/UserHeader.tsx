@@ -70,9 +70,9 @@ const UserHeader = () => {
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-purple-400 focus:outline-none transition-all duration-200 border border-gray-300 rounded-full"
+                  className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-[#C45D3E]/40 focus:outline-none transition-all duration-200 border border-gray-300 rounded-full"
                 >
-                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center overflow-hidden">
+                  <div className="w-8 h-8 bg-[#F5E6D3] rounded-full flex items-center justify-center overflow-hidden">
                     {user.profileImage ? (
                       <img 
                         src={user.profileImage} 
@@ -80,7 +80,7 @@ const UserHeader = () => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <User className="w-4 h-4 text-purple-600" />
+                      <User className="w-4 h-4 text-[#C45D3E]" />
                     )}
                   </div>
                   <span className="text-sm font-medium">{user.name}</span>
@@ -91,7 +91,7 @@ const UserHeader = () => {
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
                     <Link 
                       href="/user/profile" 
-                      className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                      className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <User size={20} />
@@ -99,7 +99,7 @@ const UserHeader = () => {
                     </Link>
                     <Link 
                       href="/bookings" 
-                      className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                      className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <Calendar size={20} />
@@ -122,12 +122,12 @@ const UserHeader = () => {
             ) : (
               <div className="flex items-center gap-3">
                 <Link href="/auth/login">
-                  <button className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-purple-400 focus:outline-none transition-all duration-200 border border-gray-300 rounded-full">
+                  <button className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-[#C45D3E]/40 focus:outline-none transition-all duration-200 border border-gray-300 rounded-full">
                     Sign In
                   </button>
                 </Link>
                 <Link href="/auth/signup">
-                  <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-full transition-all duration-200">
+                  <button className="px-4 py-2 bg-[#C45D3E] hover:bg-[#A84B32] text-white font-medium rounded-full transition-all duration-200">
                     Sign Up
                   </button>
                 </Link>
@@ -152,7 +152,7 @@ const UserHeader = () => {
                 <>
                   <Link 
                     href="/user/profile" 
-                    className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                    className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <User size={20} />
@@ -160,7 +160,7 @@ const UserHeader = () => {
                   </Link>
                   <Link 
                     href="/bookings" 
-                    className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                    className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Calendar size={20} />
@@ -189,7 +189,7 @@ const UserHeader = () => {
                   </Link>
                   <Link 
                     href="/auth/signup" 
-                    className="block w-full text-center px-4 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium transition-all duration-200"
+                    className="block w-full text-center px-4 py-3 rounded-2xl bg-[#C45D3E] text-white font-medium transition-all duration-200"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Sign Up

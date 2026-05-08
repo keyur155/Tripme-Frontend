@@ -55,9 +55,9 @@ export default function VerifyEmailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-indigo-50 to-violet-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#FDF8F3] via-[#FDF8F3] to-[#FDF8F3]">
         <div className="text-center">
-          <Loader2 className="animate-spin h-12 w-12 text-purple-600 mx-auto mb-4" />
+          <Loader2 className="animate-spin h-12 w-12 text-[#C45D3E] mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Verifying Your Email</h2>
           <p className="text-gray-600">Please wait while we verify your email address...</p>
         </div>
@@ -66,7 +66,7 @@ export default function VerifyEmailPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-indigo-50 to-violet-50">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#FDF8F3] via-[#FDF8F3] to-[#FDF8F3]">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center">
         {/* Logo */}
         <div className="mb-8">
@@ -106,7 +106,7 @@ export default function VerifyEmailPage() {
           {verificationStatus === 'success' ? (
             <Link
               href="/auth/login"
-              className="block w-full bg-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+              className="block w-full bg-[#C45D3E] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#A84B32] transition-colors"
             >
               Continue to Login
             </Link>
@@ -114,7 +114,7 @@ export default function VerifyEmailPage() {
             <>
               <Link
                 href="/auth/signup"
-                className="block w-full bg-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+                className="block w-full bg-[#C45D3E] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#A84B32] transition-colors"
               >
                 Try Signing Up Again
               </Link>
@@ -129,7 +129,7 @@ export default function VerifyEmailPage() {
           
           <Link
             href="/"
-            className="block w-full bg-transparent text-purple-600 py-3 px-4 rounded-lg font-medium border border-purple-600 hover:bg-purple-50 transition-colors"
+            className="block w-full bg-transparent text-[#C45D3E] py-3 px-4 rounded-lg font-medium border border-[#C45D3E] hover:bg-[#FDF8F3] transition-colors"
           >
             Back to Home
           </Link>

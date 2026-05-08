@@ -212,7 +212,7 @@ export default function PhotosPage() {
         <div className="mt-4 flex items-center justify-between">
           <span className={`text-sm ${hasEnoughPhotos ? 'text-green-600' : 'text-gray-500'}`}>
             {uploadedPhotos.length} / {minPhotos} photos uploaded {hasEnoughPhotos ? '✓' : 'required'}
-            {isUploading && <span className="ml-2 text-blue-600">(uploading...)</span>}
+            {isUploading && <span className="ml-2 text-[#C45D3E]">(uploading...)</span>}
           </span>
           <div className="flex items-center gap-4">
             {photos.length > 1 && (
@@ -244,9 +244,9 @@ export default function PhotosPage() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-xl"
+            className="mt-4 p-3 bg-[#FDF8F3] border border-[#F5E6D3] rounded-xl"
           >
-            <p className="text-sm text-blue-700">
+            <p className="text-sm text-[#C45D3E]">
               <strong>Tip:</strong> Drag photos to reorder them. The first photo will be your cover photo.
             </p>
           </motion.div>

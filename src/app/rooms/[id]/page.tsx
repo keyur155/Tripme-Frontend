@@ -3617,24 +3617,26 @@ const FloatingInsightBadge = ({ badge }) => {
 
 
         {showWishlistModal && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl p-6 w-[400px]">
-              <h3 className="text-lg font-semibold mb-3">Create new list</h3>
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+              <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">Create new list</h3>
               <input
-                className="border w-full p-2 rounded mb-4"
+                className="border border-gray-200 w-full p-3 rounded-xl mb-4 focus:ring-2 focus:ring-[#C45D3E]/30 focus:border-[#C45D3E] outline-none transition-all text-sm"
                 placeholder="My dream stays"
                 value={wishlistName}
                 onChange={e => setWishlistName(e.target.value)}
               />
-              <div className="flex justify-end gap-2">
-                <button onClick={() => setShowWishlistModal(false)
-                  // setIsFavorite(false)
-                }>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowWishlistModal(false)}
+                  className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                >
                   Cancel
                 </button>
                 <button
-                  className="bg-red-500 text-white px-4 py-2 rounded"
+                  className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95 disabled:opacity-50"
                   onClick={createWishlistAndSave}
+                  disabled={!wishlistName.trim()}
                 >
                   Create & Save
                 </button>

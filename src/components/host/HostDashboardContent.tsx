@@ -139,7 +139,7 @@ const HostDashboardContent: React.FC = () => {
     const styles: Record<string, string> = {
       confirmed: 'bg-green-50 text-green-700',
       pending: 'bg-amber-50 text-amber-700',
-      completed: 'bg-blue-50 text-blue-700',
+      completed: 'bg-[#FDF8F3] text-[#C45D3E]',
       cancelled: 'bg-red-50 text-red-700',
       expired: 'bg-gray-100 text-gray-600',
     };
@@ -244,7 +244,7 @@ const HostDashboardContent: React.FC = () => {
           <p className="text-gray-500 mb-6">Start earning by hosting guests and offering services</p>
           <button
             onClick={() => router.push('/become-host')}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#FF385C] text-white rounded-xl font-semibold hover:bg-[#E61E4D] transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#C45D3E] text-white rounded-xl font-semibold hover:bg-[#A84B32] transition-colors"
           >
             Get Started
             <ArrowUpRight className="w-4 h-4" />
@@ -283,8 +283,8 @@ const HostDashboardContent: React.FC = () => {
         <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-medium text-gray-500">Listings</span>
-            <div className="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center">
-              <Home className="w-4.5 h-4.5 text-blue-600" />
+            <div className="w-9 h-9 bg-[#FDF8F3] rounded-xl flex items-center justify-center">
+              <Home className="w-4.5 h-4.5 text-[#C45D3E]" />
             </div>
           </div>
           <div className="text-2xl font-bold text-gray-900">{stats.totalListings}</div>
@@ -297,8 +297,8 @@ const HostDashboardContent: React.FC = () => {
         <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-medium text-gray-500">Services</span>
-            <div className="w-9 h-9 bg-purple-50 rounded-xl flex items-center justify-center">
-              <Briefcase className="w-4.5 h-4.5 text-purple-600" />
+            <div className="w-9 h-9 bg-[#FDF8F3] rounded-xl flex items-center justify-center">
+              <Briefcase className="w-4.5 h-4.5 text-[#C45D3E]" />
             </div>
           </div>
           <div className="text-2xl font-bold text-gray-900">{stats.totalServices}</div>
@@ -496,14 +496,14 @@ const HostDashboardContent: React.FC = () => {
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                  <div className="w-2 h-2 bg-[#C45D3E] rounded-full" />
                   <span className="text-sm text-gray-600">Current bookings</span>
                 </div>
                 <span className="text-sm font-semibold text-gray-900">{stats.currentBookings || 0}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full" />
+                  <div className="w-2 h-2 bg-[#C45D3E] rounded-full" />
                   <span className="text-sm text-gray-600">Active services</span>
                 </div>
                 <span className="text-sm font-semibold text-gray-900">{stats.activeServices}</span>

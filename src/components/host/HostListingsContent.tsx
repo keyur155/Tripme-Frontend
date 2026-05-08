@@ -121,7 +121,7 @@ const PropertyPreviewModal: React.FC<{
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-2xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] rounded-xl flex items-center justify-center">
                 <Eye className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -320,7 +320,7 @@ const PropertyPreviewModal: React.FC<{
                     </div>
 
                     <Button 
-                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 hover:shadow-lg"
+                      className="w-full bg-gradient-to-r from-[#C45D3E] to-[#A84B32] hover:from-[#A84B32] hover:to-[#A84B32] text-white font-semibold py-3 rounded-xl transition-all duration-200 hover:shadow-lg"
                     >
                       Reserve
                     </Button>
@@ -516,7 +516,7 @@ const HostListingsContent: React.FC = () => {
   const getStatusIcon = (listing: HostListing) => {
     // Handle approval workflow
     if (listing.status === 'draft' && listing.approvalStatus === 'pending') {
-      return <Clock className="w-4 h-4 text-blue-500" />;
+      return <Clock className="w-4 h-4 text-[#C45D3E]" />;
     }
     if (listing.status === 'draft' && listing.approvalStatus === 'rejected') {
       return <XCircle className="w-4 h-4 text-red-500" />;
@@ -566,7 +566,7 @@ const HostListingsContent: React.FC = () => {
   const getStatusColor = (listing: HostListing) => {
     // Handle approval workflow
     if (listing.status === 'draft' && listing.approvalStatus === 'pending') {
-      return 'bg-blue-100 text-blue-800';
+      return 'bg-[#F5E6D3] text-[#1A1A1A]';
     }
     if (listing.status === 'draft' && listing.approvalStatus === 'rejected') {
       return 'bg-red-100 text-red-800';
@@ -711,7 +711,7 @@ const HostListingsContent: React.FC = () => {
                   <p className="text-sm font-medium text-gray-600">Total Listings</p>
                   <p className="text-3xl font-bold text-gray-900">{listings.length}</p>
                 </div>
-                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
+                <div className="w-16 h-16 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
                   <Home className="w-8 h-8 text-white" />
                 </div>
               </div>
@@ -746,11 +746,11 @@ const HostListingsContent: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-gray-600">Pending Approval</p>
-                  <p className="text-3xl font-bold text-blue-600">
+                  <p className="text-3xl font-bold text-[#C45D3E]">
                     {listings.filter(l => l.status === 'draft' && l.approvalStatus === 'pending').length}
                   </p>
                 </div>
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
+                <div className="w-16 h-16 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
                   <Clock className="w-8 h-8 text-white" />
                 </div>
               </div>
@@ -763,7 +763,7 @@ const HostListingsContent: React.FC = () => {
                     {formatPrice(listings.reduce((sum, l) => sum + (l.totalEarnings || 0), 0))}
                   </p>
                 </div>
-                <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
+                <div className="w-16 h-16 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
                   <span className="text-white font-bold text-xl">₹</span>
                 </div>
               </div>
@@ -773,10 +773,10 @@ const HostListingsContent: React.FC = () => {
         {listings.length > 0 && (
   <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-8">
     {[
-      { label: "Total", value: listings.length, icon: Home, color: "bg-blue-50", iconColor: "text-blue-600", textColor: "text-gray-900" },
+      { label: "Total", value: listings.length, icon: Home, color: "bg-[#FDF8F3]", iconColor: "text-[#C45D3E]", textColor: "text-gray-900" },
       { label: "Live", value: listings.filter(l => l.status === 'published').length, icon: CheckCircle, color: "bg-green-50", iconColor: "text-green-600", textColor: "text-green-600" },
       { label: "Drafts", value: listings.filter(l => l.status === 'draft' && !l.approvalStatus).length, icon: Clock, color: "bg-amber-50", iconColor: "text-amber-600", textColor: "text-amber-600" },
-      { label: "Pending", value: listings.filter(l => l.status === 'draft' && l.approvalStatus === 'pending').length, icon: Clock, color: "bg-purple-50", iconColor: "text-purple-600", textColor: "text-purple-600" }
+      { label: "Pending", value: listings.filter(l => l.status === 'draft' && l.approvalStatus === 'pending').length, icon: Clock, color: "bg-[#FDF8F3]", iconColor: "text-[#C45D3E]", textColor: "text-[#C45D3E]" }
     ].map((stat, idx) => (
       <div key={idx} className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
         <div className="flex items-center justify-between mb-3">
@@ -806,9 +806,9 @@ const HostListingsContent: React.FC = () => {
 
         {/* Filters and Search */}
         {/* <div className="mb-8">
-          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-purple-200/50 shadow-xl">
+          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-[#F5E6D3]/50 shadow-xl">
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <div className="w-5 h-5 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
+              <div className="w-5 h-5 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] rounded-lg flex items-center justify-center">
                 <Search className="w-3 h-3 text-white" />
               </div>
               Search & Filter
@@ -820,14 +820,14 @@ const HostListingsContent: React.FC = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   leftIcon={<Search className="w-4 h-4 text-gray-400" />}
-                  className="bg-white/80 backdrop-blur-sm border-purple-200 focus:border-purple-400 focus:ring-purple-200"
+                  className="bg-white/80 backdrop-blur-sm border-[#F5E6D3] focus:border-[#C45D3E] focus:ring-[#C45D3E]/30"
                 />
               </div>
               <div className="flex gap-3">
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-4 py-2 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200 hover:shadow-md"
+                  className="px-4 py-2 border border-[#F5E6D3] rounded-xl focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200 hover:shadow-md"
                 >
                   <option value="all">All Status</option>
                   <option value="published">Published</option>
@@ -837,7 +837,7 @@ const HostListingsContent: React.FC = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="px-4 py-2 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200 hover:shadow-md"
+                  className="px-4 py-2 border border-[#F5E6D3] rounded-xl focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200 hover:shadow-md"
                 >
                   <option value="createdAt">Newest First</option>
                   <option value="updatedAt">Recently Updated</option>
@@ -995,7 +995,7 @@ const HostListingsContent: React.FC = () => {
 
             {listing.approvalStatus === 'approved' && !listing.isPublished && (
               <Button
-                className="w-full bg-indigo-600 text-white text-xs font-bold py-5 rounded-xl shadow-md"
+                className="w-full bg-[#C45D3E] text-white text-xs font-bold py-5 rounded-xl shadow-md"
                 onClick={() => handlePublishApproved(listing._id)}
               >
                 Go Live Now

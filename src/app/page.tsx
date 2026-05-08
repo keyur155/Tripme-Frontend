@@ -127,7 +127,7 @@ export default function Home() {
   };
 
   const categoryGradientPalette = [
-    'from-blue-600/90 via-indigo-700/80 to-purple-800/80',
+    'from-[#C45D3E]/90 via-[#A84B32]/80 to-[#1A1A1A]/80',
     'from-emerald-500/90 via-emerald-600/80 to-teal-800/80',
     'from-orange-500/90 via-rose-500/80 to-pink-700/80',
     'from-slate-700/90 via-slate-800/80 to-black/70',
@@ -1071,7 +1071,7 @@ export default function Home() {
       <p className="text-xs text-gray-500 uppercase font-bold tracking-tighter">Continue Booking</p>
       <h4 className="font-semibold text-gray-900 line-clamp-1">{propertyName}</h4>
     </div>
-    <button className="bg-[#4285F4] text-white p-2 rounded-full">
+    <button className="bg-[#C45D3E] text-white p-2 rounded-full">
       <ChevronRight size={20} />
     </button>
   </div>
@@ -1393,7 +1393,7 @@ export default function Home() {
             <section className="px-4 mt-10 md:hidden">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-sm font-medium text-blue-600">Explore India</p>
+                  <p className="text-sm font-medium text-[#C45D3E]">Explore India</p>
                   <h2 className="text-xl font-bold text-gray-900">Popular Destinations</h2>
                 </div>
               </div>
@@ -1458,7 +1458,7 @@ export default function Home() {
                   </div>
                   <button
                     onClick={() => router.push('/services')}
-                    className="hidden sm:inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-600 transition-colors hover:bg-blue-100"
+                    className="hidden sm:inline-flex items-center gap-2 rounded-full bg-[#FDF8F3] px-4 py-2 text-xs font-semibold text-[#C45D3E] transition-colors hover:bg-[#F5E6D3]"
                   >
                     View all
                     <ArrowRight className="h-4 w-4" />
@@ -2164,7 +2164,7 @@ export default function Home() {
                   </div>
                   <button
                     onClick={() => router.push('/services')}
-                    className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-5 py-3 text-sm font-semibold text-blue-600 transition-colors hover:bg-blue-100"
+                    className="inline-flex items-center gap-2 rounded-full bg-[#FDF8F3] px-5 py-3 text-sm font-semibold text-[#C45D3E] transition-colors hover:bg-[#F5E6D3]"
                   >
                     Explore all services
                     <ArrowRight className="h-5 w-5" />

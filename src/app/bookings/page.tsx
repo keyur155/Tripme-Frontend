@@ -84,7 +84,7 @@ const getStatusColor = (status: string) => {
     case 'cancelled':
       return 'bg-red-100 text-red-800 border-red-200';
     case 'completed':
-      return 'bg-blue-100 text-blue-800 border-blue-200';
+      return 'bg-[#F5E6D3] text-[#1A1A1A] border-[#F5E6D3]';
     default:
       return 'bg-gray-100 text-gray-800 border-gray-200';
   }
@@ -356,7 +356,7 @@ useEffect(() => {
               onClick={() => setActiveTab('upcoming')}
               className={`flex-1 py-3 px-6 rounded-lg font-medium transition-all ${
                 activeTab === 'upcoming'
-                  ? 'bg-indigo-600 text-white shadow-sm'
+                  ? 'bg-[#C45D3E] text-white shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -366,7 +366,7 @@ useEffect(() => {
               onClick={() => setActiveTab('past')}
               className={`flex-1 py-3 px-6 rounded-lg font-medium transition-all ${
                 activeTab === 'past'
-                  ? 'bg-indigo-600 text-white shadow-sm'
+                  ? 'bg-[#C45D3E] text-white shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -376,7 +376,7 @@ useEffect(() => {
 
           {loading ? (
             <div className="text-center py-12">
-              <div className="w-16 h-16 border-4 border-gray-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-6"></div>
+              <div className="w-16 h-16 border-4 border-gray-200 border-t-[#C45D3E] rounded-full animate-spin mx-auto mb-6"></div>
               <p className="text-gray-600">Loading your bookings...</p>
             </div>
           ) : error ? (
@@ -386,7 +386,7 @@ useEffect(() => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Error loading bookings</h3>
               <p className="text-gray-600 mb-6">{error}</p>
-              <Button onClick={fetchBookings} className="bg-indigo-600 hover:bg-indigo-700">
+              <Button onClick={fetchBookings} className="bg-[#C45D3E] hover:bg-[#A84B32]">
                 Try Again
               </Button>
             </div>
@@ -407,7 +407,7 @@ useEffect(() => {
               {activeTab === 'upcoming' && (
                 <Button 
                   onClick={() => router.push('/search')}
-                  className="bg-indigo-600 hover:bg-indigo-700"
+                  className="bg-[#C45D3E] hover:bg-[#A84B32]"
                 >
                   Start Planning
                 </Button>
@@ -453,13 +453,13 @@ useEffect(() => {
                         <span>Check-in: {getDisplayDateTime(booking, 'checkin')}</span>
                         <span>Check-out: {getDisplayDateTime(booking, 'checkout')}</span>
                         {booking.hourlyExtension?.hours && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F5E6D3] text-[#C45D3E] rounded-full text-xs font-medium">
                             <Clock className="w-3 h-3" />
                             +{booking.hourlyExtension.hours}h extension
                           </span>
                         )}
                         {(booking.bookingDuration === '24hour' || booking.bookingType === '24hour') && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F5E6D3] text-[#C45D3E] rounded-full text-xs font-medium">
                             24-Hour Booking
                           </span>
                         )}
@@ -480,7 +480,7 @@ useEffect(() => {
                       {/* Pricing Breakdown Collapsible */}
                       {booking.pricingBreakdown && (
                         <details className="mt-3 text-sm">
-                          <summary className="cursor-pointer text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1">
+                          <summary className="cursor-pointer text-[#C45D3E] hover:text-[#C45D3E] font-medium flex items-center gap-1">
                             <span>View Price Breakdown</span>
                           </summary>
                           <div className="mt-2 p-3 bg-gray-50 rounded-lg space-y-1.5 text-sm">
@@ -501,7 +501,7 @@ useEffect(() => {
                               </div>
                             )}
                             {booking.pricingBreakdown.customerBreakdown.hourlyExtension > 0 && (
-                              <div className="flex justify-between text-blue-600">
+                              <div className="flex justify-between text-[#C45D3E]">
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
                                   Hourly Extension
@@ -532,7 +532,7 @@ useEffect(() => {
                     <div className="flex gap-3 mt-6">
                       <Button
                         size="sm"
-                        className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                        className="bg-gradient-to-r from-[#C45D3E] to-[#A84B32] hover:from-[#A84B32] hover:to-[#A84B32] text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
                         onClick={() => router.push(`/bookings/${booking._id}`)}
                       >
                         View Details
@@ -541,7 +541,7 @@ useEffect(() => {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="border-purple-200 text-purple-600 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300"
+                          className="border-[#F5E6D3] text-[#C45D3E] hover:bg-[#FDF8F3] hover:border-[#F5E6D3] transition-all duration-300"
                           onClick={() => router.push(`/rooms/${booking.propertyId._id}`)}
                         >
                           Go to Property

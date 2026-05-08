@@ -116,7 +116,7 @@ export default function Step5Page() {
                   You're now a host! Redirecting to your dashboard...
                 </p>
                 <div className="flex justify-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-[#FF385C]" />
+                  <Loader2 className="w-8 h-8 animate-spin text-[#C45D3E]" />
                 </div>
               </Card>
             </motion.div>
@@ -130,7 +130,7 @@ export default function Step5Page() {
                 <div className="border-b border-gray-200 pb-6">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-[#FFF5F5] rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Building2 className="w-6 h-6 text-[#FF385C]" />
+                      <Building2 className="w-6 h-6 text-[#C45D3E]" />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-sm font-semibold text-gray-500 mb-1">Property Type</h3>
@@ -149,7 +149,7 @@ export default function Step5Page() {
                   <div className="border-b border-gray-200 pb-6">
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 bg-[#FFF5F5] rounded-lg flex items-center justify-center flex-shrink-0">
-                        <MapPin className="w-6 h-6 text-[#FF385C]" />
+                        <MapPin className="w-6 h-6 text-[#C45D3E]" />
                       </div>
                       <div className="flex-1">
                         <h3 className="text-sm font-semibold text-gray-500 mb-1">Location</h3>
@@ -177,8 +177,8 @@ export default function Step5Page() {
               )}
 
               {/* Info Box */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
-                <p className="text-sm text-blue-800">
+              <div className="bg-[#FDF8F3] border border-[#F5E6D3] rounded-lg p-4 mb-8">
+                <p className="text-sm text-[#1A1A1A]">
                   <strong>Note:</strong> After completing your application, you'll be able to create listings,
                   manage bookings, and start earning money. You can always update your information later.
                 </p>
@@ -193,7 +193,7 @@ export default function Step5Page() {
                   <Button
                     onClick={handleComplete}
                     disabled={isSubmitting}
-                    className="bg-[#FF385C] hover:bg-[#E61E4D] text-white px-8 py-4 text-lg font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-8 py-4 text-lg font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     size="lg"
                   >
                     {isSubmitting ? (

@@ -22,7 +22,7 @@ export default function HostProfileContent({ hostId }: Props) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-gray-200 border-t-[#C45D3E] rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">Loading host profile...</p>
         </div>
       </div>
@@ -36,7 +36,7 @@ export default function HostProfileContent({ hostId }: Props) {
           <p className="text-red-600 mb-4">{error || 'Host not found'}</p>
           <button 
             onClick={() => router.back()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-4 py-2 bg-[#C45D3E] text-white rounded-lg hover:bg-[#A84B32]"
           >
             Go Back
           </button>
@@ -73,7 +73,7 @@ export default function HostProfileContent({ hostId }: Props) {
               <div className="flex items-center gap-3 mb-2">
                 <h1 className="text-3xl font-bold">{host.name}</h1>
                 {host.isSuperhost && (
-                  <div className="flex items-center gap-1 px-3 py-1 bg-pink-50 text-pink-700 rounded-full text-sm font-medium">
+                  <div className="flex items-center gap-1 px-3 py-1 bg-[#FDF8F3] text-[#C45D3E] rounded-full text-sm font-medium">
                     <ShieldCheck className="w-4 h-4" />
                     Superhost
                   </div>

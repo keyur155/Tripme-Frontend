@@ -40,15 +40,15 @@ const PromotionalCard: React.FC<PromotionalCardProps> = ({
   const getGradient = () => {
     switch (type) {
       case 'credit-card':
-        return 'bg-gradient-to-br from-blue-500 to-purple-600';
+        return 'bg-gradient-to-br from-[#C45D3E] to-[#A84B32]';
       case 'cashback':
         return 'bg-gradient-to-br from-green-500 to-emerald-600';
       case 'discount':
         return 'bg-gradient-to-br from-orange-500 to-red-500';
       case 'bonus':
-        return 'bg-gradient-to-br from-purple-500 to-pink-600';
+        return 'bg-gradient-to-br from-[#2D5F3A] to-[#1A4028]';
       default:
-        return 'bg-gradient-to-br from-blue-500 to-purple-600';
+        return 'bg-gradient-to-br from-[#C45D3E] to-[#A84B32]';
     }
   };
 

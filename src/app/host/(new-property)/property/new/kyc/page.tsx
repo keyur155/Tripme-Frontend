@@ -400,7 +400,7 @@ const handleSelfieChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         transition={{ duration: 0.5 }}
       >
         <div className="flex items-center gap-3 mb-2">
-          <Shield className="w-8 h-8 text-blue-600" />
+          <Shield className="w-8 h-8 text-[#C45D3E]" />
           <h1 className="text-3xl font-semibold text-gray-900">
             Verify your identity
           </h1>
@@ -661,8 +661,8 @@ const handleSelfieChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     </div>
   </label>
   
-  <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-    <p className="text-sm text-blue-700">
+  <div className="mt-3 p-3 bg-[#FDF8F3] rounded-lg">
+    <p className="text-sm text-[#C45D3E]">
       <strong>Photo requirements:</strong> Clear front-facing photo holding your ID document, good lighting, no filters
     </p>
   </div>
