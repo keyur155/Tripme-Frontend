@@ -237,14 +237,6 @@ async function fetchPlacesGoogle(inputValue: string): Promise<any[]> {
   }
 }
 
-// Debounce utility
-function debounce<F extends (...args: any[]) => void>(func: F, wait: number) {
-  let timeout: ReturnType<typeof setTimeout>;
-  return (...args: Parameters<F>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-}
 
 const AirbnbSearchForm: React.FC<AirbnbSearchFormProps> = ({ 
   variant = 'default', 
@@ -644,12 +636,18 @@ const isStartOrEnd = (day, monthDate) => {
   // Calculate total guests
   const totalGuests = guestCounts.adults + guestCounts.children + guestCounts.infants;
 
-  // Debounced loadOptions for react-select/async
-  const debouncedLoadOptions = useRef(
-    debounce((inputValue: string, callback: (options: any[]) => void) => {
-      fetchPlacesGoogle(inputValue).then(callback);
-    }, 400)
-  ).current;
+  // Debounced loadOptions for react-select/async (Promise-based)
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debouncedLoadOptions = (inputValue: string) => {
+    return new Promise<any[]>((resolve) => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      debounceTimerRef.current = setTimeout(() => {
+        fetchPlacesGoogle(inputValue).then(resolve);
+      }, 400);
+    });
+  };
 
   // Detect user's current location
   const detectCurrentLocation = async () => {
@@ -1062,17 +1060,21 @@ const isStartOrEnd = (day, monthDate) => {
         <div className="flex-1 min-w-0 relative">
           <button
             type="button"
-            onClick={() => setActiveField(activeField === 'where' ? null : 'where')}
+            onClick={() => {
+              if (activeField === 'where') {
+                setActiveField(null);
+              } else {
+                setSearchInputValue('');
+                setActiveField('where');
+              }
+            }}
             className={cn(
               "w-full px-8 py-3.5 text-left transition-all duration-200 rounded-full flex flex-col justify-center",
-              // isCompact ? "px-4 py-2" : "px-8 py-3.5",
               activeField === 'where' 
                 ? "bg-white shadow-[0_2px_16px_rgba(0,0,0,0.12)]  border-[#C45D3E]" 
                 : activeField 
-                ? "hover:bg-[#F1F3F4] text-gray-500" // Dimmed: Soft gray hover when another field is active
-        : "hover:bg-[#F8F9FA] text-gray-700" // Neutral: Very light gray hover
-                  // ? "hover:bg-[#DDDDDD]" 
-                  // : "hover:bg-gray-100"
+                ? "hover:bg-[#F1F3F4] text-gray-500"
+        : "hover:bg-[#F8F9FA] text-gray-700"
             )}
           >
              <div className="text-xs font-semibold text-gray-800">Where</div>
@@ -1198,14 +1200,14 @@ const isStartOrEnd = (day, monthDate) => {
 
       {/* Where Overlay */}
       {activeField === 'where' && (
-        <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 search-overlay w-96">
-          <div className="p-6">
+        <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 search-overlay w-96 overflow-visible">
+          <div className="p-6 overflow-visible">
             <div className="text-lg font-semibold text-gray-900 mb-4">Search destinations</div>
             
             {/* Search Input */}
-            <div className="relative mb-6">
-              <div className="flex items-center bg-gray-100 rounded-xl px-4 py-3">
-                <Search className="text-gray-400 mr-3" size={20} />
+            <div className="relative mb-6 overflow-visible">
+              <div className="flex items-center bg-gray-100 rounded-xl px-4 py-3 relative overflow-visible">
+                <Search className="text-gray-400 mr-3 flex-shrink-0" size={20} />
                 <AsyncSelect
                   cacheOptions
                   loadOptions={debouncedLoadOptions}
@@ -1263,10 +1265,26 @@ const isStartOrEnd = (day, monthDate) => {
                   placeholder="Search destinations"
                   styles={{
                     ...customSelectStyles,
-                    menuPortal: (base: any) => ({ ...base, zIndex: 60 })
+                    menu: (base: any) => ({
+                      ...base,
+                      zIndex: 60,
+                      borderRadius: '12px',
+                      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
+                      background: '#fff',
+                      padding: '4px 0',
+                      marginTop: 8,
+                      border: '1px solid #e5e7eb',
+                      position: 'absolute',
+                      width: 'calc(100% + 40px)',
+                      left: '-20px',
+                    }),
+                    menuList: (base: any) => ({
+                      ...base,
+                      maxHeight: '200px',
+                    })
                   }}
-                  menuPortalTarget={typeof window !== 'undefined' ? document.body : undefined}
                   isSearchable
+                  autoFocus
                   menuPlacement="auto"
                   className="w-full"
                   components={{ DropdownIndicator: () => null }}
