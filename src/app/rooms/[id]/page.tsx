@@ -30,7 +30,7 @@ const PropertyMap = dynamic(() => import("@/components/rooms/PropertyMap"), {
   loading: () => (
     <div className="h-96 bg-gray-100 rounded-xl flex items-center justify-center">
       <div className="text-center">
-        <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-3"></div>
+        <div className="w-8 h-8 border-4 border-[#F5E6D3] border-t-[#C45D3E] rounded-full animate-spin mx-auto mb-3"></div>
         <p className="text-gray-600">Loading map...</p>
       </div>
     </div>
@@ -1675,7 +1675,7 @@ const FloatingInsightBadge = ({ badge }) => {
   };
 
   const getAmenityIcon = (amenity: string) => {
-    const iconClass = "w-5 h-5 sm:w-6 sm:h-6 text-[#4285f4]";
+    const iconClass = "w-5 h-5 sm:w-6 sm:h-6 text-[#C45D3E]";
     const iconMap: Record<string, any> = {
       'wifi': <WifiIcon className={iconClass} />,
       'tv': <Tv className={iconClass} />,
@@ -1875,7 +1875,7 @@ const FloatingInsightBadge = ({ badge }) => {
         />
         <div className="pt-40 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-gray-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-6"></div>
+            <div className="w-16 h-16 border-4 border-gray-200 border-t-[#C45D3E] rounded-full animate-spin mx-auto mb-6"></div>
             <span className="text-xl text-gray-600">Loading property details...</span>
           </div>
         </div>
@@ -1894,7 +1894,7 @@ const FloatingInsightBadge = ({ badge }) => {
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Property Not Found</h2>
             <p className="text-gray-600 mb-6">{error || "This property doesn't exist or has been removed."}</p>
-            <Button onClick={() => router.back()} className="bg-indigo-600 hover:bg-indigo-700">
+            <Button onClick={() => router.back()} className="bg-[#C45D3E] hover:bg-[#A84B32]">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Go Back
             </Button>
@@ -1921,7 +1921,7 @@ const FloatingInsightBadge = ({ badge }) => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-white">
       <Header visibleShare={true}
         visibleWishlist={true}
         onShareClick={handleShare}
@@ -1973,8 +1973,8 @@ const FloatingInsightBadge = ({ badge }) => {
                     }}
                     className={`relative flex-shrink-0 px-2 md:px-4 py-4 md:py-6 text-xs md:text-sm font-medium transition-colors duration-200 whitespace-nowrap border-b-2 ${
                       activeTab === key
-                        ? 'border-gray-900 text-gray-900'
-                        : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300'
+                        ? 'border-[#C45D3E] text-[#C45D3E]'
+                        : 'border-transparent text-gray-500 hover:text-[#1A1A1A] hover:border-gray-300'
                     }`}
                   >
                     {label}
@@ -2054,7 +2054,7 @@ const FloatingInsightBadge = ({ badge }) => {
                   {/* AIRBNB RATING STRIP */}
                   <div
                     onClick={() => setIsOpen(true)}
-                    className="cursor-pointer bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-4 sm:p-6 mt-5 flex items-center justify-between gap-3 sm:gap-8"
+                    className="cursor-pointer bg-[#FAFAF8] rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 mt-5 flex items-center justify-between gap-3 sm:gap-8"
                   >
                     {/* LEFT SECTION */}
                     <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
@@ -2118,54 +2118,33 @@ const FloatingInsightBadge = ({ badge }) => {
               </div>
 
               {/* Property Highlights */}
-            <div className="mb-8 bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-2 sm:p-6 mt-5">
-  <div className="flex flex-row items-center justify-between w-full gap-1 sm:gap-4">
-    
-    {/* Guests */}
-    <div className="flex-1 text-center">
-      <div className="flex justify-center mb-1">
-        <Users className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
-      </div>
-      <div className="text-[10px] sm:text-sm font-medium text-gray-900 leading-tight">
-        {property.maxGuests} guests
-      </div>
-    </div>
-
-    {/* Bedrooms */}
-    <div className="flex-1 text-center">
-      <div className="flex justify-center mb-1">
-        <BedDouble className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
-      </div>
-      <div className="text-[10px] sm:text-sm font-medium text-gray-900 leading-tight">
-        {property.bedrooms} {property.bedrooms > 1 ? 'bedrooms' : 'bedroom' }
-      </div>
-    </div>
-
-    {/* Beds */}
-    <div className="flex-1 text-center">
-      <div className="flex justify-center mb-1">
-        <Bed className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
-      </div>
-      <div className="text-[10px] sm:text-sm font-medium text-gray-900 leading-tight">
-        {property.beds} {property.beds > 1 ? 'beds' : 'bed'}
-      </div>
-    </div>
-
-    {/* Bathrooms */}
-    <div className="flex-1 text-center">
-      <div className="flex justify-center mb-1">
-        <Bath className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
-      </div>
-      <div className="text-[10px] sm:text-sm font-medium text-gray-900 leading-tight">
-        {property.bathrooms} bath
-      </div>
-    </div>
-
-  </div>
+            <div className="mb-8 mt-6 border-t border-b border-gray-100 py-5">
+              <div className="flex flex-row items-center divide-x divide-gray-200">
+                <div className="flex-1 flex flex-col items-center gap-1 px-2">
+                  <Users className="w-5 h-5 text-gray-700" />
+                  <span className="text-xs sm:text-sm font-semibold text-[#1A1A1A]">{property.maxGuests}</span>
+                  <span className="text-[10px] sm:text-xs text-gray-500">guests</span>
+                </div>
+                <div className="flex-1 flex flex-col items-center gap-1 px-2">
+                  <BedDouble className="w-5 h-5 text-gray-700" />
+                  <span className="text-xs sm:text-sm font-semibold text-[#1A1A1A]">{property.bedrooms}</span>
+                  <span className="text-[10px] sm:text-xs text-gray-500">{property.bedrooms > 1 ? 'bedrooms' : 'bedroom'}</span>
+                </div>
+                <div className="flex-1 flex flex-col items-center gap-1 px-2">
+                  <Bed className="w-5 h-5 text-gray-700" />
+                  <span className="text-xs sm:text-sm font-semibold text-[#1A1A1A]">{property.beds}</span>
+                  <span className="text-[10px] sm:text-xs text-gray-500">{property.beds > 1 ? 'beds' : 'bed'}</span>
+                </div>
+                <div className="flex-1 flex flex-col items-center gap-1 px-2">
+                  <Bath className="w-5 h-5 text-gray-700" />
+                  <span className="text-xs sm:text-sm font-semibold text-[#1A1A1A]">{property.bathrooms}</span>
+                  <span className="text-[10px] sm:text-xs text-gray-500">bath</span>
+                </div>
+              </div>
             </div>
 
             
-               <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-5 sm:p-8">
+               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-8">
             <HostCard host={property.host} />
           </div>
 
@@ -2173,16 +2152,16 @@ const FloatingInsightBadge = ({ badge }) => {
               {/* Overview Section */}
 
 
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-5 sm:p-8">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-8">
 
                 {/* HEADER */}
 
                 <div className="flex items-center gap-3 sm:gap-3 mb-4 sm:mb-6">
-                  <div className="w-10 h-10 sm:w-10 sm:h-10  rounded-lg sm:rounded-xl flex items-center justify-center">
-                    <Home className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]"  />
+                  <div className="w-10 h-10 rounded-xl bg-[#F5E6D3] flex items-center justify-center">
+                    <Home className="w-5 h-5 text-[#C45D3E]" />
                   </div>
 
-                  <h2 className="text-xl sm:text-2xl md:text-2xl font-bold text-gray-900 tracking-tight">
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A] tracking-tight">
                     About this place
                   </h2>
                 </div>
@@ -2198,7 +2177,7 @@ const FloatingInsightBadge = ({ badge }) => {
 
                       <button
                         onClick={() => setShowFullDescription(false)}
-                        className="text-indigo-600 font-medium mt-3 hover:underline"
+                        className="text-[#C45D3E] font-medium mt-3 hover:underline"
                       >
                         Show less
                       </button>
@@ -2214,7 +2193,7 @@ const FloatingInsightBadge = ({ badge }) => {
                       {property.description?.length > 300 && (
                         <button
                           onClick={() => setShowFullDescription(true)}
-                          className="text-indigo-600 font-medium mt-3 hover:underline"
+                          className="text-[#C45D3E] font-medium mt-3 hover:underline"
                         >
                           Show more
                         </button>
@@ -2231,13 +2210,13 @@ const FloatingInsightBadge = ({ badge }) => {
 
               {/* Amenities Section */}
 
-              <div ref={amenitiesRef} className="bg-white rounded-2xl shadow-md  p-5 md:p-8">
+              <div ref={amenitiesRef} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 md:p-8">
                 {/* HEADER */}
                 <div className="flex items-center gap-3 sm:gap-3 mb-4 sm:mb-6">
-                  <div className="w-10 h-10 sm:w-10 sm:h-10 flex items-center justify-center shrink-0">
-                    <CheckCircle className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
+                  <div className="w-10 h-10 rounded-xl bg-[#F5E6D3] flex items-center justify-center shrink-0">
+                    <CheckCircle className="w-5 h-5 text-[#C45D3E]" />
                   </div>
-                  <h2 className="text-xl md:text-2xl sm:text-2xl font-semibold text-gray-900">
+                  <h2 className="text-xl md:text-2xl font-bold text-[#1A1A1A]">
                     What this place offers
                   </h2>
                 </div>
@@ -2305,7 +2284,7 @@ const FloatingInsightBadge = ({ badge }) => {
 
 
               {/* Availability Calendar Section */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 ">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <PropertyAvailabilityCalendar
                   propertyId={id as string}
                   checkInDate={dateRange.startDate}
@@ -2448,7 +2427,7 @@ const FloatingInsightBadge = ({ badge }) => {
 
               <div className="sticky top-2">
                 
-                <div className="bg-white border border-gray-200 rounded-2xl shadow-xl p-6">
+                <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6">
                   {/* Price */}
                   <div className="mb-6">
                     <div className="flex items-baseline gap-2 mb-2">
@@ -2473,7 +2452,7 @@ const FloatingInsightBadge = ({ badge }) => {
                         <div
                           ref={checkInRef}
                           className={`border rounded-lg p-3 cursor-pointer transition-all duration-300 ${selectionStep === 'checkin'
-                            ? 'border-indigo-500 bg-indigo-50 shadow-md'
+                            ? 'border-[#C45D3E] bg-[#FDF8F3] shadow-md'
                             : availabilityError && availabilityError.includes('Check-in')
                               ? 'border-red-300 bg-red-50'
                               : 'border-gray-300 hover:border-gray-400'
@@ -2485,11 +2464,11 @@ const FloatingInsightBadge = ({ badge }) => {
                             setSelectionStep('checkin');
                           }}
                         >
-                          <div className={`text-xs font-medium mb-1 ${selectionStep === 'checkin' ? 'text-indigo-700' : 'text-gray-700'
+                          <div className={`text-xs font-medium mb-1 ${selectionStep === 'checkin' ? 'text-[#C45D3E]' : 'text-gray-700'
                             }`}>
                             {selectionStep === 'checkin' ? '🔄 Selecting Check-in' : 'Check-in'}
                           </div>
-                          <div className={`text-sm ${selectionStep === 'checkin' ? 'text-indigo-900' : 'text-gray-900'
+                          <div className={`text-sm ${selectionStep === 'checkin' ? 'text-[#1A1A1A]' : 'text-gray-900'
                             }`}>
                             {formatDate(dateRange.startDate)}
                           </div>
@@ -2497,7 +2476,7 @@ const FloatingInsightBadge = ({ badge }) => {
                         <div
                           ref={checkOutRef}
                           className={`border rounded-lg p-3 cursor-pointer transition-all duration-300 ${selectionStep === 'checkout'
-                            ? 'border-indigo-500 bg-indigo-50 shadow-md'
+                            ? 'border-[#C45D3E] bg-[#FDF8F3] shadow-md'
                             : availabilityError && availabilityError.includes('Check-out')
                               ? 'border-red-300 bg-red-50'
                               : 'border-gray-300 hover:border-gray-400'
@@ -2509,11 +2488,11 @@ const FloatingInsightBadge = ({ badge }) => {
                             setSelectionStep('checkout');
                           }}
                         >
-                          <div className={`text-xs font-medium mb-1 ${selectionStep === 'checkout' ? 'text-indigo-700' : 'text-gray-700'
+                          <div className={`text-xs font-medium mb-1 ${selectionStep === 'checkout' ? 'text-[#C45D3E]' : 'text-gray-700'
                             }`}>
                             {selectionStep === 'checkout' ? '🔄 Selecting Check-out' : 'Check-out'}
                           </div>
-                          <div className={`text-sm ${selectionStep === 'checkout' ? 'text-indigo-900' : 'text-gray-900'
+                          <div className={`text-sm ${selectionStep === 'checkout' ? 'text-[#1A1A1A]' : 'text-gray-900'
                             }`}>
                             {dateRange.endDate ? formatDate(dateRange.endDate) : 'Select date'}
                           </div>
@@ -2536,9 +2515,9 @@ const FloatingInsightBadge = ({ badge }) => {
 
                       {/* Custom Check-in Time Selector */}
                       {!isOwnProperty && (
-                        <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                        <div className="mt-4 p-4 bg-gradient-to-r from-[#FDF8F3] to-[#F5E6D3] rounded-xl border border-[#F5E6D3]">
                           <div className="flex items-center gap-2 mb-3">
-                            <Clock className="w-4 h-4 text-blue-600" />
+                            <Clock className="w-4 h-4 text-[#C45D3E]" />
                             <label className="text-sm font-semibold text-gray-800">Check-in Time</label>
                           </div>
                           <TimeSpinner
@@ -2577,10 +2556,10 @@ const FloatingInsightBadge = ({ badge }) => {
 
                           {/* Calculated checkout display */}
                           {dateRange.startDate && (
-                            <div className="mt-3 p-3 bg-white rounded-lg border border-blue-100">
+                            <div className="mt-3 p-3 bg-white rounded-lg border border-[#F5E6D3]">
                               <div className="flex items-center justify-between">
                                 <span className="text-xs text-gray-600">Calculated Check-out:</span>
-                                <span className="text-sm font-semibold text-blue-700">
+                                <span className="text-sm font-semibold text-[#C45D3E]">
                                   {(() => {
                                     const checkout = getCalculatedCheckout();
                                     if (!checkout) return 'Select dates';
@@ -2686,10 +2665,10 @@ const FloatingInsightBadge = ({ badge }) => {
                                         {/* Step Indicator */}
                                         <div className="text-center mb-4 text-sm">
                                           {selectionStep === 'checkin' && (
-                                            <span className="text-blue-600 font-medium">Select Check-in Date</span>
+                                            <span className="text-[#C45D3E] font-medium">Select Check-in Date</span>
                                           )}
                                           {selectionStep === 'checkout' && (
-                                            <span className="text-blue-600 font-medium">Select Check-out Date</span>
+                                            <span className="text-[#C45D3E] font-medium">Select Check-out Date</span>
                                           )}
                                           {selectionStep === 'complete' && (
                                             <span className="text-green-600 font-medium">Dates Selected!</span>
@@ -2754,13 +2733,13 @@ const FloatingInsightBadge = ({ badge }) => {
                                               } else if (isBooked) {
                                                 className += 'bg-red-50 text-red-600 cursor-not-allowed line-through';
                                               } else if (isStartDate || isEndDate) {
-                                                className += 'bg-blue-600 text-white font-semibold';
+                                                className += 'bg-[#C45D3E] text-white font-semibold';
                                               } else if (isInRange) {
-                                                className += 'bg-blue-100 text-blue-800';
+                                                className += 'bg-[#F5E6D3] text-[#1A1A1A]';
                                               } else if (!isSelectable) {
                                                 className += 'text-gray-400 cursor-default';
                                               } else if (isToday) {
-                                                className += 'bg-blue-50 text-blue-700 font-bold underline';
+                                                className += 'bg-[#FDF8F3] text-[#C45D3E] font-bold underline';
                                               } else {
                                                 className += 'text-black hover:bg-gray-100 cursor-pointer';
                                               }
@@ -2851,7 +2830,7 @@ const FloatingInsightBadge = ({ badge }) => {
                                             <span>Booked</span>
                                           </div>
                                           <div className="flex items-center gap-1">
-                                            <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                                            <span className="w-2 h-2 bg-[#C45D3E] rounded-full"></span>
                                             <span>Selected</span>
                                           </div>
                                         </div>
@@ -2897,7 +2876,7 @@ const FloatingInsightBadge = ({ badge }) => {
 
                                       <button
                                         onClick={() => setShowDatePicker(false)}
-                                        className="flex-1 py-2 text-sm rounded-lg bg-indigo-600 text-white"
+                                        className="flex-1 py-2 text-sm rounded-lg bg-[#C45D3E] text-white"
                                       >
                                         Done
                                       </button>
@@ -2953,10 +2932,10 @@ const FloatingInsightBadge = ({ badge }) => {
                                 {/* Step Indicator */}
                                 <div className="text-center mb-4 text-sm">
                                   {selectionStep === 'checkin' && (
-                                    <span className="text-blue-600 font-medium">Select Check-in Date</span>
+                                    <span className="text-[#C45D3E] font-medium">Select Check-in Date</span>
                                   )}
                                   {selectionStep === 'checkout' && (
-                                    <span className="text-blue-600 font-medium">Select Check-out Date</span>
+                                    <span className="text-[#C45D3E] font-medium">Select Check-out Date</span>
                                   )}
                                   {selectionStep === 'complete' && (
                                     <span className="text-green-600 font-medium">Dates Selected!</span>
@@ -3021,11 +3000,11 @@ const FloatingInsightBadge = ({ badge }) => {
                                       } else if (!isSelectable) {
                                         className += 'text-gray-400 bg-gray-100';
                                       } else if (isStartDate || isEndDate) {
-                                        className += 'bg-blue-600 text-white font-semibold';
+                                        className += 'bg-[#C45D3E] text-white font-semibold';
                                       } else if (isInRange) {
-                                        className += 'bg-blue-200 text-blue-800';
+                                        className += 'bg-[#F5E6D3] text-[#1A1A1A]';
                                       } else if (isToday) {
-                                        className += 'bg-blue-100 text-blue-800 font-medium';
+                                        className += 'bg-[#F5E6D3] text-[#1A1A1A] font-medium';
                                       } else {
                                         className += 'hover:bg-gray-100 cursor-pointer';
                                       }
@@ -3116,7 +3095,7 @@ const FloatingInsightBadge = ({ badge }) => {
                                     <span>Booked</span>
                                   </div>
                                   <div className="flex items-center gap-1">
-                                    <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                                    <span className="w-2 h-2 bg-[#C45D3E] rounded-full"></span>
                                     <span>Selected</span>
                                   </div>
                                 </div>
@@ -3208,7 +3187,7 @@ const FloatingInsightBadge = ({ badge }) => {
                               <div className="flex justify-end mt-4">
                                 <button
                                   onClick={() => setShowGuestPicker(false)}
-                                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                                  className="px-4 py-2 bg-[#C45D3E] text-white rounded-lg hover:bg-[#A84B32] transition-colors"
                                 >
                                   Done
                                 </button>
@@ -3228,7 +3207,7 @@ const FloatingInsightBadge = ({ badge }) => {
                       <button
                         onClick={() => setShowExtras((prev) => !prev)}
                         className="lg:hidden w-full flex items-center justify-between px-4 py-3 mb-3
-                                          bg-blue-50 border border-blue-200 rounded-xl font-semibold"
+                                          bg-[#FDF8F3] border border-[#F5E6D3] rounded-xl font-semibold"
                       >
                         <span>Add extra hours</span>
                         <ChevronDown
@@ -3239,7 +3218,7 @@ const FloatingInsightBadge = ({ badge }) => {
                       <div className="bg-white rounded-3xl p-6 border border-gray-100 mb-8">
                         <div className="flex items-center gap-4 mb-6">
                           <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
-                            <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-[#4285f4]" />
+                            <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-[#C45D3E]" />
                           </div>
                           <div>
                             <h3 className="text-lg font-bold text-gray-900">Extend Your Stay</h3>
@@ -3256,8 +3235,8 @@ const FloatingInsightBadge = ({ badge }) => {
                             <div
                               key={option.hours}
                               className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${hourlyExtension === option.hours
-                                ? 'border-[#4285F4] bg-blue-100 shadow-lg scale-105'
-                                : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
+                                ? 'border-[#C45D3E] bg-[#F5E6D3] shadow-lg scale-105'
+                                : 'border-gray-200 hover:border-[#C45D3E] hover:shadow-md'
                                 }`}
                               onClick={() => setHourlyExtension(hourlyExtension === option.hours ? null : option.hours)}
                             >
@@ -3273,7 +3252,7 @@ const FloatingInsightBadge = ({ badge }) => {
                         </div>
 
                         {hourlyExtension && (
-                          <div className="mt-4 p-4 bg-white rounded-xl border border-blue-200">
+                          <div className="mt-4 p-4 bg-white rounded-xl border border-[#F5E6D3]">
                             <div className="flex items-center justify-between">
                               <div>
                                 <div className="font-semibold text-gray-900">{hourlyExtension} hours selected</div>
@@ -3311,7 +3290,7 @@ const FloatingInsightBadge = ({ badge }) => {
                     <div className="bg-white rounded-3xl p-6 border border-gray-100 mb-8">
                         <div className="flex items-center gap-4 mb-6">
                           <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
-                            <Receipt className="w-6 h-6 sm:w-8 sm:h-8 text-[#4285f4]" />
+                            <Receipt className="w-6 h-6 sm:w-8 sm:h-8 text-[#C45D3E]" />
                           </div>
                           <div>
                             <h3 className="text-lg font-bold text-gray-900">Price Breakdown</h3>
@@ -3341,7 +3320,7 @@ const FloatingInsightBadge = ({ badge }) => {
                         You cannot book your own property. This is a preview of how guests see your listing.
                       </p>
                       <Button
-                        className="bg-[#4285f4] hover:bg-[#1A73E8] text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                        className="bg-[#C45D3E] hover:bg-[#A84B32] text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
                         onClick={() => router.push(`/host/property/${id}`)}
                       >
                         <Home className="w-4 h-4 mr-2" />
@@ -3352,8 +3331,8 @@ const FloatingInsightBadge = ({ badge }) => {
                     <div className="space-y-4">
                       <Button
                         className={`w-full py-4 rounded-2xl font-bold text-lg shadow-xl transition-all duration-300 transform ${selectionStep === 'complete' && nights > 0
-                          ? 'bg-gradient-to-r from-[#4285f4] to-[#4285f4] hover:from-emerald-600 hover:to-green-700 text-white hover:shadow-2xl hover:scale-105'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          ? 'bg-[#C45D3E] hover:bg-[#A84B32] text-white hover:shadow-2xl hover:scale-[1.02]'
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                           }`}
                         onClick={handleCompleteBooking}
                         disabled={bookingLoading || availabilityLoading || selectionStep !== 'complete' || nights === 0}
@@ -3464,7 +3443,7 @@ const FloatingInsightBadge = ({ badge }) => {
                       <span className="text-sm font-medium text-gray-900">
                         {property.cancellationPolicy || 'Moderate'} cancellation policy
                       </span>
-                      <span className="text-sm text-indigo-600 underline cursor-pointer">Learn more</span>
+                      <span className="text-sm text-[#C45D3E] underline cursor-pointer">Learn more</span>
                     </div>
                   </div>
 
@@ -3540,7 +3519,7 @@ const FloatingInsightBadge = ({ badge }) => {
                     </Button>
 
                     <Button
-                      className="flex-1 bg-indigo-600 text-white"
+                      className="flex-1 bg-[#C45D3E] text-white"
                       onClick={() => {
                         setShowTimePrompt(false);
                         setShowTimeSelector(true);
@@ -3588,7 +3567,7 @@ const FloatingInsightBadge = ({ badge }) => {
 
 
                   <Button
-                    className="w-full mt-4 bg-indigo-600 text-white"
+                    className="w-full mt-4 bg-[#C45D3E] text-white"
                     onClick={() => {
                       setTimeConfirmed(true);
                       setShowTimeSelector(false);
