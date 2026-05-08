@@ -1284,7 +1284,7 @@ export default function Home() {
 
           <section className="md:hidden py-1 bg-white ">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-xl font-bold text-[#1A1A1A] mb-2 md:mb-8">Popular Destinations</h2>
+              <h2 className="text-xl font-bold text-[#1A1A1A] mb-2 md:mb-8">Stays by City</h2>
 
               {/* City-wise Horizontal Property Display */}
               <div className="space-y-4">
@@ -1847,9 +1847,9 @@ export default function Home() {
           )}
 
           {/* Dynamic Cities Section */}
-          <section className="py-5 bg-white">
+          <section className="hidden md:block py-5 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-4xl font-bold text-[#1A1A1A] mb-8">Popular Destinations</h2>
+              <h2 className="text-4xl font-bold text-[#1A1A1A] mb-8">Stays by City</h2>
 
               {/* City-wise Horizontal Property Display */}
               <div className="space-y-12">

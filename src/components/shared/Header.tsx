@@ -247,45 +247,45 @@ const Header = ({ searchExpanded: externalSearchExpanded,
               </div>
             </Link>
 
-            {shouldShowFullHeader && !hideSearch ? <div className="hidden lg:flex items-center gap-12 transition-all duration-500 ease-in-out">
+            {shouldShowFullHeader && !hideSearch ? <div className="hidden lg:flex items-center gap-1 transition-all duration-500 ease-in-out">
               <button
                 onClick={() => {
                   setActiveCategory('homes');
                   router.push('/');
                 }}
-                className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-200 group relative ${activeCategory === 'homes'
-                  ? 'text-[#C45D3E]'
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-full transition-all duration-200 group relative ${activeCategory === 'homes'
+                  ? 'text-[#C45D3E] bg-[#FDF8F3]'
                   : 'text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3]'
                   }`}
               >
-                <Home size={20} className="group-hover:scale-110 transition-transform duration-200" />
-                <span className="font-medium text-base">Homes</span>
+                <Home size={18} className="group-hover:scale-110 transition-transform duration-200" />
+                <span className="font-medium text-sm">Homes</span>
               </button>
               <button
                 onClick={() => {
                   setActiveCategory('services');
                   router.push('/services');
                 }}
-                className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-200 group relative ${activeCategory === 'services'
-                  ? 'text-[#C45D3E]'
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-full transition-all duration-200 group relative ${activeCategory === 'services'
+                  ? 'text-[#C45D3E] bg-[#FDF8F3]'
                   : 'text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3]'
                   }`}
               >
-                <Compass size={20} className="group-hover:scale-110 transition-transform duration-200" />
-                <span className="font-medium text-base">Services</span>
+                <Compass size={18} className="group-hover:scale-110 transition-transform duration-200" />
+                <span className="font-medium text-sm">Services</span>
               </button>
               <button
                 onClick={() => {
                   setActiveCategory('stories');
                   router.push('/stories');
                 }}
-                className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-200 group relative ${activeCategory === 'stories'
-                  ? 'text-[#C45D3E]'
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-full transition-all duration-200 group relative ${activeCategory === 'stories'
+                  ? 'text-[#C45D3E] bg-[#FDF8F3]'
                   : 'text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3]'
                   }`}
               >
-                <BookOpen size={20} className="group-hover:scale-110 transition-transform duration-200" />
-                <span className="font-medium text-base">Stories</span>
+                <BookOpen size={18} className="group-hover:scale-110 transition-transform duration-200" />
+                <span className="font-medium text-sm">Stories</span>
               </button>
             </div>
               : (
@@ -337,20 +337,13 @@ const Header = ({ searchExpanded: externalSearchExpanded,
 
             {visibleFilter && (
               <div className="hidden lg:flex items-center transition-all duration-500 ease-in-out">
-                {/* className="bg-white border border-gray-300 rounded-full shadow-sm hover:shadow-md transition-all duration-500 ease-in-out p-1 cursor-pointer */}
                 <button
                   onClick={onFilterClick}
-                  className="bg-white border border-gray-300 rounded-full shadow-sm
-                 hover:shadow-md transition-all duration-500 ease-in-out
-                 p-1 cursor-pointer"
+                  className="flex items-center gap-2 bg-white border border-gray-300 rounded-full shadow-sm hover:shadow-md transition-all duration-300 px-4 py-2 cursor-pointer"
                   type="button"
                 >
-                  <div className="flex items-center gap-3 px-3 py-1 flex-1 hover:bg-gray-50 rounded-lg transition-colors" onClick={onFilterClick}>
-                    <Filter className="text-gray-600" size={18} />
-                    <div className="text-left">
-                      <div className="text-sm font-medium text-gray-900">Filter</div>
-                    </div>
-                  </div>
+                  <Filter className="text-gray-700" size={16} />
+                  <span className="text-sm font-medium text-gray-900">Filter</span>
                 </button>
               </div>
 
@@ -697,21 +690,13 @@ const Header = ({ searchExpanded: externalSearchExpanded,
             {/* Need to create three tabs like home , services and stories */}
 
             {visibleFilter ? (
-              <div className="flex items-center transition-all duration-500 ease-in-out lg:hidden">
-                {/* className="bg-white border border-gray-300 rounded-full shadow-sm hover:shadow-md transition-all duration-500 ease-in-out p-1 cursor-pointer */}
+              <div className="flex items-center lg:hidden">
                 <button
                   onClick={onFilterClick}
-                  className="bg-white border border-gray-300 rounded-full shadow-sm
-                 hover:shadow-md transition-all duration-500 ease-in-out
-                 p-1 cursor-pointer "
+                  className="w-9 h-9 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center hover:shadow-md transition-all"
                   type="button"
                 >
-                  <div className="flex items-center gap-3 px-3 py-1 flex-1 hover:bg-gray-50 rounded-lg transition-colors" onClick={onFilterClick}>
-                    <Filter className="text-gray-600" size={18} />
-                    <div className="text-left">
-                      <div className="text-sm font-medium text-gray-900">Filter</div>
-                    </div>
-                  </div>
+                  <Filter className="text-gray-700" size={16} />
                 </button>
               </div>
             ) : <button
@@ -956,12 +941,10 @@ const Header = ({ searchExpanded: externalSearchExpanded,
             </div> */}
            <div
   className={cn(
-    "flex justify-around bg-white sticky z-40 transition-all duration-300 ease-in-out",
-    
-    // 🔥 dynamic spacing
+    "flex justify-around bg-white sticky z-40 border-b border-gray-100 transition-all duration-300 ease-in-out",
     scrolled
-      ? "top-[56px] py-1 "
-      : "top-[72px] py-3"
+      ? "top-[56px] py-0"
+      : "top-[72px] py-1"
   )}
 >
   {categories.map((cat) => {
@@ -975,9 +958,9 @@ const Header = ({ searchExpanded: externalSearchExpanded,
     router.push(cat.path);
   }}
   className={cn(
-    "flex flex-col items-center justify-center relative min-w-[70px]",
+    "flex flex-col items-center justify-center relative min-w-[60px] py-1",
     "transition-all duration-300 ease-in-out",
-    scrolled ? "gap-0" : "gap-1.5",
+    scrolled ? "gap-0" : "gap-0.5",
     isActive ? "text-[#C45D3E]" : "text-gray-500"
   )}
 >
@@ -985,20 +968,19 @@ const Header = ({ searchExpanded: externalSearchExpanded,
   <div
     className={cn(
       "transition-all duration-300 ease-in-out transform",
-
       scrolled
         ? "opacity-0 scale-75 h-0 overflow-hidden"
-        : "opacity-100 scale-100 h-5"
+        : "opacity-100 scale-100 h-[18px]"
     )}
   >
-    <cat.icon size={18} />
+    <cat.icon size={18} strokeWidth={isActive ? 2.2 : 1.8} />
   </div>
 
   {/* LABEL */}
   <span
     className={cn(
-      "font-medium tracking-wide transition-all duration-300 mt-4 pb-2",
-      scrolled ? "text-sm" : "text-xs",
+      "font-medium transition-all duration-300 pb-1",
+      scrolled ? "text-[13px]" : "text-[11px]",
       isActive ? "text-[#C45D3E]" : "text-gray-500"
     )}
   >
@@ -1008,7 +990,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
   {/* ACTIVE LINE */}
   <span
     className={cn(
-      "absolute left-0 right-0 bottom-0 h-[3px] rounded-t-full transition-all duration-300",
+      "absolute left-0 right-0 bottom-0 h-[2px] rounded-t-full transition-all duration-300",
       isActive ? "bg-[#C45D3E] opacity-100" : "opacity-0"
     )}
   />

@@ -1142,8 +1142,8 @@ function SearchPageContent() {
 
   const SHEET_HEIGHTS = {
     peek: '12vh',
-    half: '60vh',
-    full: '96vh'
+    half: '45vh',
+    full: '92vh'
   };
 
   const handleListScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -1270,16 +1270,26 @@ function SearchPageContent() {
       
       const params = new URLSearchParams();
       
-      if (filters.priceRange.min) params.append('minPrice', filters.priceRange.min);
-      if (filters.priceRange.max) params.append('maxPrice', filters.priceRange.max);
-      if (filters.bedrooms) params.append('guests', filters.bedrooms);
-      if (filters.beds) params.append('beds', filters.beds);
-      if (filters.bathrooms) params.append('bathrooms', filters.bathrooms);
-      if (filters.propertyTypes.length > 0) params.append('type', filters.propertyTypes.join(','));
-      if (filters.amenities.length > 0) params.append('amenities', filters.amenities.join(','));
+      if (filters.priceRange.min) params.append('minPrice', String(filters.priceRange.min));
+      if (filters.priceRange.max) params.append('maxPrice', String(filters.priceRange.max));
+      if (filters.bedrooms) params.append('bedrooms', String(filters.bedrooms));
+      if (filters.beds) params.append('beds', String(filters.beds));
+      if (filters.bathrooms) params.append('bathrooms', String(filters.bathrooms));
+      if (filters.guests) params.append('guests', String(filters.guests));
+      if (filters.propertyTypes?.length > 0) params.append('type', filters.propertyTypes.join(','));
+      if (filters.placeType && filters.placeType !== 'any') params.append('placeType', filters.placeType);
+      if (filters.amenities?.length > 0) params.append('amenities', filters.amenities.join(','));
+      if (filters.features?.length > 0) params.append('features', filters.features.join(','));
+      if (filters.style?.length > 0) params.append('style', filters.style.join(','));
       if (filters.instantBook) params.append('instantBook', 'true');
-      if (filters.selfCheckIn) params.append('selfCheckIn', 'true');
-      if (filters.freeCancel) params.append('freeCancel', 'true');
+      if (filters.cancellationPolicy && filters.cancellationPolicy !== 'any') {
+        params.append('cancellationPolicy', filters.cancellationPolicy);
+      }
+
+      // Preserve location/coordinates from current search
+      if (lng) params.append('lng', lng);
+      if (lat) params.append('lat', lat);
+      if (city) params.append('city', city);
       
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/listings?${params}`);
       const data = await response.json();
@@ -1289,6 +1299,7 @@ function SearchPageContent() {
         if (data.data && data.data.listings) listingsData = data.data.listings;
         if (!Array.isArray(listingsData)) listingsData = [];
         setListings(listingsData);
+        setAllProperties(listingsData);
       }
     } catch (error) {
       console.error('Error applying filters:', error);
@@ -1701,7 +1712,7 @@ function SearchPageContent() {
                   </div>
                 </div>
               ) : stayListings.length > 0 ? (
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                   {stayListings.map((stay) => (
                     <div 
                       key={stay.id} 

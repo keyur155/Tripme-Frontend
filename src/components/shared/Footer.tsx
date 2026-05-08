@@ -171,20 +171,20 @@ export default function Footer() {
         {/* Subtle warm gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#FDF8F3] via-white to-[#F5E6D3] opacity-60"></div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
+        <div className="relative z-10 max-w-7xl mx-auto px-5 py-8 md:py-12">
           {/* Main footer content */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-8 md:mb-12">
             
             {/* Brand section */}
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div className="flex items-center">
                 <img 
                   src="/logo.png" 
                   alt="TripMe Logo" 
-                  className="h-10 w-auto"
+                  className="h-8 md:h-10 w-auto"
                 />
               </div>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 text-sm leading-relaxed">
                 Discover incredible stays across India. From heritage havelis to modern apartments, 
                 find your perfect home away from home.
               </p>
@@ -206,11 +206,11 @@ export default function Footer() {
 
             {/* Destinations */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <MapPin className="w-4 h-4 text-[#C45D3E] mr-2" />
+              <h3 className="text-sm md:text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                <MapPin className="w-3.5 h-3.5 text-[#C45D3E] mr-1.5" />
                 Popular Destinations
               </h3>
-              <ul className="space-y-2 text-xs md:text-base">
+              <ul className="space-y-1.5 text-xs md:text-sm">
                 {['Goa', 'Rajasthan', 'Kerala', 'Himachal Pradesh', 'Uttarakhand', 'Kashmir'].map((destination) => (
                   <li key={destination}>
                     <Link 
@@ -226,11 +226,11 @@ export default function Footer() {
 
             {/* Support */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <Shield className="w-4 h-4 text-[#C45D3E] mr-2" />
+              <h3 className="text-sm md:text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                <Shield className="w-3.5 h-3.5 text-[#C45D3E] mr-1.5" />
                 Support
               </h3>
-              <ul className="space-y-2 text-xs md:text-base">
+              <ul className="space-y-1.5 text-xs md:text-sm">
                 <li>
                   <Link href="/contact" className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">Contact Us</span>
@@ -271,11 +271,11 @@ export default function Footer() {
 
             {/* Newsletter */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <span className="mr-2">📧</span>
+              <h3 className="text-sm md:text-lg font-semibold text-gray-800 mb-2 md:mb-4 flex items-center">
+                <span className="mr-1.5">📧</span>
                 Stay Connected
               </h3>
-              <p className="text-gray-600 mb-4 text-xs md:text-sm">
+              <p className="text-gray-600 mb-3 text-xs md:text-sm">
                 Get travel inspiration and exclusive deals delivered to your inbox.
               </p>
               <div className="space-y-3">
@@ -337,77 +337,42 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Divider */}
-           <div className="border-t border-[#F5E6D3] my-8"></div>
-<div className="flex flex-col md:flex-row justify-center gap-6 items-center space-y-4 md:space-y-0">
-  
-  {/* Existing text or links */}
-  <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
-    <span>Follow us!!</span>
-  </div>
-
-  {/* Social Media Icons Group */}
-  <div className="flex items-center gap-4">
-    <a 
-      href="https://facebook.com/yourprofile" 
-      target="_blank" 
-      rel="noopener noreferrer"
-      className="text-gray-600 hover:text-blue-600 transition-colors"
-    >
-      <Facebook size={20} />
-    </a>
-    <a 
-      href="https://twitter.com/yourprofile" 
-      target="_blank" 
-      rel="noopener noreferrer"
-      className="text-gray-600 hover:text-sky-500 transition-colors"
-    >
-      <XIcon size={20} />
-    </a>
-    <a 
-      href="https://instagram.com/yourprofile" 
-      target="_blank" 
-      rel="noopener noreferrer"
-      className="text-gray-600 hover:text-pink-600 transition-colors"
-    >
-      <Instagram size={20} />
-    </a>
-
-    <a 
-    href="https://youtube.com/yourchannel" 
-    target="_blank" 
-    rel="noopener noreferrer"
-    className="text-gray-600 hover:text-red-600 transition-colors"
-  >
-    <Youtube size={20} />
-  </a>
-  </div>
-
-</div>
-        
-
-          {/* Copyright */}
-          <div className="text-center mt-8 pt-6 border-t border-[#F5E6D3]">
-            <p className="text-sm text-gray-500 flex items-center justify-center space-x-2">
-              <span>Made with</span>
-              <span className="text-red-500 animate-pulse">❤️</span>
-              <span>in India</span>
-              <span className="mx-2">•</span>
-              <span>&copy; {currentYear} TripMe. All rights reserved.</span>
-            </p>
-            <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-gray-400">
-              <Link href="/refund-cancellation" className="hover:text-[#C45D3E] transition-colors duration-200">Refund & Cancellation</Link>
-              <span>·</span>
-              <Link href="/shipping-policy" className="hover:text-[#C45D3E] transition-colors duration-200">Shipping Policy</Link>
-              <span>·</span>
-              <Link href="/privacy-policy" className="hover:text-[#C45D3E] transition-colors duration-200">Privacy Policy</Link>
-              <span>·</span>
-              <Link href="/terms" className="hover:text-[#C45D3E] transition-colors duration-200">Terms of Service</Link>
+          {/* Social + Copyright */}
+          <div className="border-t border-[#F5E6D3] pt-6">
+            <div className="flex flex-col items-center gap-3">
+              <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Follow us</span>
+              <div className="flex items-center gap-5">
+                <a href="https://facebook.com/yourprofile" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-[#C45D3E] transition-colors">
+                  <Facebook size={18} />
+                </a>
+                <a href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-[#C45D3E] transition-colors">
+                  <XIcon size={18} />
+                </a>
+                <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-[#C45D3E] transition-colors">
+                  <Instagram size={18} />
+                </a>
+                <a href="https://youtube.com/yourchannel" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-[#C45D3E] transition-colors">
+                  <Youtube size={18} />
+                </a>
+              </div>
             </div>
-            <div className="mt-2 flex items-center justify-center space-x-1 text-xs text-gray-400">
-              <span>🇮🇳</span>
-              <span>Proudly serving travelers across Bharat</span>
-              <span>🇮🇳</span>
+
+            <div className="text-center mt-6 pt-5 border-t border-[#F5E6D3]">
+              <p className="text-xs text-gray-500">
+                Made with <span className="text-red-500">❤️</span> in India · &copy; {currentYear} TripMe. All rights reserved.
+              </p>
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-gray-400">
+                <Link href="/refund-cancellation" className="hover:text-[#C45D3E] transition-colors">Refund & Cancellation</Link>
+                <span>·</span>
+                <Link href="/shipping-policy" className="hover:text-[#C45D3E] transition-colors">Shipping Policy</Link>
+                <span>·</span>
+                <Link href="/privacy-policy" className="hover:text-[#C45D3E] transition-colors">Privacy Policy</Link>
+                <span>·</span>
+                <Link href="/terms" className="hover:text-[#C45D3E] transition-colors">Terms of Service</Link>
+              </div>
+              <p className="mt-2 text-[11px] text-gray-400">
+                🇮🇳 Proudly serving travelers across Bharat 🇮🇳
+              </p>
             </div>
           </div>
         </div>

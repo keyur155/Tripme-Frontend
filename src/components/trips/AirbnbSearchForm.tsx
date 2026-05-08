@@ -4,7 +4,6 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Search, MapPin, Calendar, Users, Minus, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { DateRange } from 'react-date-range';
 import { addDays, format } from 'date-fns';
-import AsyncSelect from 'react-select/async';
 import { RangeKeyDict } from 'react-date-range';
 import { createPortal } from 'react-dom';
 import 'react-date-range/dist/styles.css';
@@ -50,80 +49,6 @@ interface GuestCounts {
   infants: number;
 }
 
-const customSelectStyles = {
-  control: (provided: any, state: any) => ({
-    ...provided,
-    background: 'transparent',
-    border: 'none',
-    boxShadow: 'none',
-    minHeight: 'unset',
-    height: '2.5rem',
-    fontSize: '1rem',
-    fontWeight: 500,
-    color: '#1e293b',
-    paddingLeft: 0,
-    '&:hover': {
-      border: 'none',
-    },
-    '&:focus-within': {
-      border: 'none',
-      boxShadow: 'none',
-    },
-  }),
-  valueContainer: (provided: any) => ({
-    ...provided,
-    padding: 0,
-    paddingLeft: 0,
-  }),
-  input: (provided: any) => ({
-    ...provided,
-    margin: 0,
-    padding: 0,
-  }),
-  placeholder: (provided: any) => ({
-    ...provided,
-    color: '#94a3b8',
-    fontWeight: 400,
-  }),
-  singleValue: (provided: any) => ({
-    ...provided,
-    color: '#1e293b',
-  }),
-  dropdownIndicator: (provided: any) => ({
-    ...provided,
-    color: '#6366f1',
-    paddingRight: 0,
-  }),
-  indicatorSeparator: () => ({ display: 'none' }),
-  menu: (provided: any) => ({
-    ...provided,
-    zIndex: 50,
-    borderRadius: '16px',
-    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-    background: '#fff',
-    padding: '8px 0',
-    marginTop: 8,
-    border: '1px solid #e5e7eb',
-    animation: 'slideDown 0.2s ease-out',
-  }),
-  option: (provided: any, state: any) => ({
-    ...provided,
-    backgroundColor: state.isSelected
-      ? 'rgba(99,102,241,0.1)'
-      : '#fff',
-    color: state.isSelected ? '#6366f1' : '#1e293b',
-    padding: '12px 16px',
-    fontWeight: state.isSelected ? 600 : 500,
-    fontSize: '1rem',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    margin: '0 8px',
-    transition: 'all 0.15s ease',
-    '&:hover': {
-      backgroundColor: state.isSelected ? 'rgba(99,102,241,0.15)' : '#f3f4f6',
-    },
-  }),
-};
 
 // Ensure Google Maps script is loaded
 function loadGoogleMapsScript(): Promise<void> {
@@ -578,7 +503,7 @@ const handleDateClick = (day, monthDate) => {
       key: "selection",
     });
   } else {
-    // second click
+    // second click - both dates selected, auto-advance to guests
     if (newDate < dateRange.startDate) {
       setDateRange({
         startDate: newDate,
@@ -592,8 +517,7 @@ const handleDateClick = (day, monthDate) => {
         key: "selection",
       });
     }
-
-   
+    setTimeout(() => setActiveField('who'), 300);
   }
 };
 
@@ -636,18 +560,28 @@ const isStartOrEnd = (day, monthDate) => {
   // Calculate total guests
   const totalGuests = guestCounts.adults + guestCounts.children + guestCounts.infants;
 
-  // Debounced loadOptions for react-select/async (Promise-based)
+  // Place search results from Google
+  const [placeResults, setPlaceResults] = useState<any[]>([]);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const debouncedLoadOptions = (inputValue: string) => {
-    return new Promise<any[]>((resolve) => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
-      debounceTimerRef.current = setTimeout(() => {
-        fetchPlacesGoogle(inputValue).then(resolve);
-      }, 400);
-    });
-  };
+
+  // Fetch place suggestions when typing in Where field
+  useEffect(() => {
+    if (!searchInputValue || searchInputValue.length < 2) {
+      setPlaceResults([]);
+      return;
+    }
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    debounceTimerRef.current = setTimeout(() => {
+      fetchPlacesGoogle(searchInputValue).then((results) => {
+        setPlaceResults(results || []);
+      });
+    }, 350);
+    return () => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    };
+  }, [searchInputValue]);
 
   // Detect user's current location
   const detectCurrentLocation = async () => {
@@ -1058,34 +992,41 @@ const isStartOrEnd = (day, monthDate) => {
       >
         {/* Where Field */}
         <div className="flex-1 min-w-0 relative">
-          <button
-            type="button"
-            onClick={() => {
-              if (activeField === 'where') {
-                setActiveField(null);
-              } else {
+          {activeField === 'where' ? (
+            <div className="w-full px-8 py-2.5 rounded-full bg-white shadow-[0_2px_16px_rgba(0,0,0,0.12)]">
+              <div className="text-xs font-semibold text-gray-800">Where</div>
+              <input
+                type="text"
+                autoFocus
+                value={searchInputValue}
+                onChange={(e) => setSearchInputValue(e.target.value)}
+                placeholder="Search destinations"
+                className="w-full text-sm text-gray-800 placeholder-gray-400 outline-none bg-transparent mt-0.5"
+              />
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
                 setSearchInputValue('');
                 setActiveField('where');
-              }
-            }}
-            className={cn(
-              "w-full px-8 py-3.5 text-left transition-all duration-200 rounded-full flex flex-col justify-center",
-              activeField === 'where' 
-                ? "bg-white shadow-[0_2px_16px_rgba(0,0,0,0.12)]  border-[#C45D3E]" 
-                : activeField 
-                ? "hover:bg-[#F1F3F4] text-gray-500"
-        : "hover:bg-[#F8F9FA] text-gray-700"
-            )}
-          >
-             <div className="text-xs font-semibold text-gray-800">Where</div>
-           
-            <div className={cn(
-              "text-sm truncate mt-0.5",
-              selectedCity ? "text-gray-800" : "text-gray-400"
-            )}>
-              {selectedCity ? selectedCity.label : 'Search destinations'}
-            </div>
-          </button>
+              }}
+              className={cn(
+                "w-full px-8 py-3.5 text-left transition-all duration-200 rounded-full flex flex-col justify-center",
+                activeField 
+                  ? "hover:bg-[#F1F3F4] text-gray-500"
+                  : "hover:bg-[#F8F9FA] text-gray-700"
+              )}
+            >
+              <div className="text-xs font-semibold text-gray-800">Where</div>
+              <div className={cn(
+                "text-sm truncate mt-0.5",
+                selectedCity ? "text-gray-800" : "text-gray-400"
+              )}>
+                {selectedCity ? selectedCity.label : 'Search destinations'}
+              </div>
+            </button>
+          )}
         </div>
 
         {/* Divider - hide when any field is active */}
@@ -1198,176 +1139,115 @@ const isStartOrEnd = (day, monthDate) => {
         </div>
       </form>
 
-      {/* Where Overlay */}
+      {/* Where Overlay - Suggestions Panel */}
       {activeField === 'where' && (
-        <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 search-overlay w-96 overflow-visible">
-          <div className="p-6 overflow-visible">
-            <div className="text-lg font-semibold text-gray-900 mb-4">Search destinations</div>
-            
-            {/* Search Input */}
-            <div className="relative mb-6 overflow-visible">
-              <div className="flex items-center bg-gray-100 rounded-xl px-4 py-3 relative overflow-visible">
-                <Search className="text-gray-400 mr-3 flex-shrink-0" size={20} />
-                <AsyncSelect
-                  cacheOptions
-                  loadOptions={debouncedLoadOptions}
-                  defaultOptions={false}
-                  value={null} // Always null so it doesn't show selected value in input
-                  inputValue={searchInputValue}
-                  onInputChange={(newValue) => setSearchInputValue(newValue)}
-                  onChange={async (option) => {
-                    const opt = option as { value: string; label: string; coordinates?: [number, number]; type?: string; placeId?: string };
-                    
-                    // If we have a placeId, fetch coordinates from Google Places
-                    if (opt.placeId && window.google && window.google.maps) {
-                      const service = new window.google.maps.places.PlacesService(
-                        document.createElement('div')
-                      );
-                      
-                      service.getDetails(
-                        {
-                          placeId: opt.placeId,
-                          fields: ['geometry', 'formatted_address', 'name']
-                        },
-                        (place, status) => {
-                          if (status === window.google.maps.places.PlacesServiceStatus.OK && place && place.geometry) {
-                            const lat = place.geometry.location?.lat();
-                            const lng = place.geometry.location?.lng();
-                            
-                            setSelectedCity({
-                              value: opt.value,
-                              label: opt.label,
-                              coordinates: lng && lat ? [lng, lat] : undefined,
-                              type: opt.type
-                            });
-                          } else {
-                            // Fallback: set without coordinates
-                            setSelectedCity({ value: opt.value, label: opt.label, type: opt.type });
+        <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 search-overlay w-96">
+          <div className="max-h-96 overflow-y-auto p-4">
+            {/* Show Google Places results when typing */}
+            {searchInputValue.length >= 2 && placeResults.length > 0 ? (
+              <div className="space-y-1">
+                {placeResults.map((result: any, idx: number) => (
+                  <button
+                    key={result.placeId || idx}
+                    type="button"
+                    className="w-full flex items-center gap-3 px-3 py-3 hover:bg-gray-50 rounded-xl transition-colors text-left"
+                    onClick={() => {
+                      if (result.placeId && window.google && window.google.maps) {
+                        const service = new window.google.maps.places.PlacesService(document.createElement('div'));
+                        service.getDetails(
+                          { placeId: result.placeId, fields: ['geometry', 'formatted_address', 'name'] },
+                          (place: any, status: any) => {
+                            if (status === window.google.maps.places.PlacesServiceStatus.OK && place?.geometry) {
+                              const lat = place.geometry.location?.lat();
+                              const lng = place.geometry.location?.lng();
+                              setSelectedCity({ value: result.value, label: result.label, coordinates: lng && lat ? [lng, lat] : undefined, type: result.type });
+                            } else {
+                              setSelectedCity({ value: result.value, label: result.label, type: result.type });
+                            }
                           }
-                        }
-                      );
-                    } else {
-                      // No placeId, just set the city
-                      setSelectedCity({ value: opt.value, label: opt.label, coordinates: opt.coordinates, type: opt.type });
-                    }
-                    
-                    setSearchInputValue(''); // Clear input after selection
-                    setActiveField(null);
-                    // Auto-focus on dates after location selection
-                    setTimeout(() => {
+                        );
+                      } else {
+                        setSelectedCity({ value: result.value, label: result.label, coordinates: result.coordinates, type: result.type });
+                      }
+                      setSearchInputValue('');
+                      setPlaceResults([]);
                       setActiveField('checkin');
-                    }, 100);
-                  }}
-                  onFocus={() => {
-                    // Clear input when focused
-                    setSearchInputValue('');
-                  }}
-                  placeholder="Search destinations"
-                  styles={{
-                    ...customSelectStyles,
-                    menu: (base: any) => ({
-                      ...base,
-                      zIndex: 60,
-                      borderRadius: '12px',
-                      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
-                      background: '#fff',
-                      padding: '4px 0',
-                      marginTop: 8,
-                      border: '1px solid #e5e7eb',
-                      position: 'absolute',
-                      width: 'calc(100% + 40px)',
-                      left: '-20px',
-                    }),
-                    menuList: (base: any) => ({
-                      ...base,
-                      maxHeight: '200px',
-                    })
-                  }}
-                  isSearchable
-                  autoFocus
-                  menuPlacement="auto"
-                  className="w-full"
-                  components={{ DropdownIndicator: () => null }}
-                />
+                    }}
+                  >
+                    <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 flex-shrink-0">
+                      <MapPin className="text-gray-500" size={18} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-medium text-gray-900 truncate">{result.label}</div>
+                    </div>
+                  </button>
+                ))}
               </div>
-            </div>
-          </div>
-
-          {/* Scrollable Content */}
-          <div className="max-h-96 overflow-y-auto px-6 pb-6">
-            {/* Suggested Destinations */}
-            <div className="space-y-2">
-              {suggestedDestinations.map((dest, idx) => (
-                <button
-                  key={dest.label}
-                  type="button"
-                  className="w-full flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition-colors text-left"
-                  onClick={() => {
-                    if (dest.label === 'Nearby') {
-                      // For Nearby button, detect location instead of setting "Nearby"
-                      console.log('🔘 Dropdown Nearby button clicked!');
-                      detectCurrentLocation();
-                      setActiveField(null);
-                    } else {
-                      // For other destinations, use normal behavior
-                    setSelectedCity({ value: dest.label, label: dest.label });
-                    setActiveField(null);
-                    // Auto-focus on dates after location selection
-                    setTimeout(() => {
-                      setActiveField('checkin');
-                    }, 100);
-                    }
-                  }}
-                >
-                  <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-gray-100">
-                    {dest.label === 'Nearby' && isDetectingLocation ? (
-                      <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      dest.icon
-                    )}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-900">
-                      {dest.label === 'Nearby' && isDetectingLocation ? 'Detecting location...' : dest.label}
-                    </div>
-                    <div className="text-gray-500 text-sm">
-                      {dest.label === 'Nearby' && isDetectingLocation ? 'Please wait while we find your location' : dest.description}
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            {/* Recent Searches */}
-            {recentSearches.length > 0 && (
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="text-sm font-semibold text-gray-700 mb-3">Recent searches</div>
-                <div className="space-y-2">
-                  {recentSearches.map((search, idx) => (
+            ) : searchInputValue.length >= 2 && placeResults.length === 0 ? (
+              <div className="px-3 py-6 text-center text-gray-400 text-sm">Searching...</div>
+            ) : (
+              <>
+                {/* Suggested Destinations */}
+                <div className="space-y-1">
+                  <div className="px-3 pb-2 text-xs font-semibold text-gray-400 uppercase tracking-wide">Suggested destinations</div>
+                  {suggestedDestinations.map((dest) => (
                     <button
-                      key={search.location + idx}
+                      key={dest.label}
                       type="button"
-                      className="w-full flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition-colors text-left"
+                      className="w-full flex items-center gap-3 px-3 py-3 hover:bg-gray-50 rounded-xl transition-colors text-left"
                       onClick={() => {
-                        setSelectedCity({ value: search.location, label: search.location });
-                        setActiveField(null);
-                        // Auto-focus on dates after location selection
-                        setTimeout(() => {
+                        if (dest.label === 'Nearby') {
+                          detectCurrentLocation();
+                          setActiveField(null);
+                        } else {
+                          setSelectedCity({ value: dest.label, label: dest.label });
                           setActiveField('checkin');
-                        }, 100);
+                        }
                       }}
                     >
-                      <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-gray-100">
-                        <MapPin className="text-gray-500" size={20} />
+                      <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 flex-shrink-0">
+                        {dest.label === 'Nearby' && isDetectingLocation ? (
+                          <div className="w-5 h-5 border-2 border-[#C45D3E] border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          dest.icon
+                        )}
                       </div>
-                      <div>
-                        <div className="font-semibold text-gray-900">{search.location}</div>
-                        {search.dates && <div className="text-gray-500 text-sm">{search.dates}</div>}
+                      <div className="min-w-0">
+                        <div className="font-medium text-gray-900">
+                          {dest.label === 'Nearby' && isDetectingLocation ? 'Detecting...' : dest.label}
+                        </div>
+                        <div className="text-gray-400 text-sm truncate">{dest.description}</div>
                       </div>
                     </button>
                   ))}
                 </div>
-              </div>
+
+                {/* Recent Searches */}
+                {recentSearches.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <div className="px-3 pb-2 text-xs font-semibold text-gray-400 uppercase tracking-wide">Recent</div>
+                    {recentSearches.map((search, idx) => (
+                      <button
+                        key={search.location + idx}
+                        type="button"
+                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-gray-50 rounded-xl transition-colors text-left"
+                        onClick={() => {
+                          setSelectedCity({ value: search.location, label: search.location });
+                          setActiveField('checkin');
+                        }}
+                      >
+                        <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 flex-shrink-0">
+                          <MapPin className="text-gray-500" size={18} />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-medium text-gray-900">{search.location}</div>
+                          {search.dates && <div className="text-gray-400 text-sm">{search.dates}</div>}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -1529,10 +1409,10 @@ const isStartOrEnd = (day, monthDate) => {
               </button>
               <button
                 type="button"
-                onClick={() => setActiveField(null)}
+                onClick={() => setActiveField('who')}
                 className="px-4 py-2 bg-[#C45D3E] text-white rounded-lg text-sm font-medium hover:bg-[#A84B32] transition-colors"
               >
-                Close
+                Next
               </button>
             </div>
           </div>
@@ -1625,15 +1505,6 @@ const isStartOrEnd = (day, monthDate) => {
             </div>
           </div>
 
-          {/* Service Animal Link */}
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              className="text-sm text-gray-600 underline hover:text-gray-800 transition-colors"
-            >
-              Bringing a service animal?
-            </button>
-          </div>
         </div>
       )}
 
