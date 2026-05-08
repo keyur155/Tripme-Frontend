@@ -75,22 +75,22 @@ const BecomeHostLanding: React.FC = () => {
 
   const benefits = [
     {
-      icon: <DollarSign className="w-8 h-8 text-[#FF385C]" />,
+      icon: <DollarSign className="w-8 h-8 text-[#C45D3E]" />,
       title: 'Earn Extra Income',
       description: 'Turn your space into income. Set your own prices and earn on your terms.',
     },
     {
-      icon: <Calendar className="w-8 h-8 text-[#FF385C]" />,
+      icon: <Calendar className="w-8 h-8 text-[#C45D3E]" />,
       title: 'Flexible Hosting',
       description: 'Host when you want. You control your calendar and availability.',
     },
     {
-      icon: <Headphones className="w-8 h-8 text-[#FF385C]" />,
+      icon: <Headphones className="w-8 h-8 text-[#C45D3E]" />,
       title: '24/7 Support',
       description: 'Our dedicated support team is here to help you every step of the way.',
     },
     {
-      icon: <Shield className="w-8 h-8 text-[#FF385C]" />,
+      icon: <Shield className="w-8 h-8 text-[#C45D3E]" />,
       title: 'Secure Platform',
       description: 'Protected payments, verified guests, and insurance coverage.',
     },
@@ -117,7 +117,7 @@ const BecomeHostLanding: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#FFF5F5] via-white to-[#F5F5FF] pt-20 pb-16">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#FDF8F3] via-white to-[#FAFAF8] pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Contextual banner when user was redirected from a host-only page */}
@@ -142,7 +142,7 @@ const BecomeHostLanding: React.FC = () => {
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
               Host your space,
               <br />
-              <span className="text-[#FF385C]">share your world</span>
+              <span className="text-[#C45D3E]">share your world</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-2xl mx-auto">
               Join thousands of hosts earning extra income by sharing their space with travelers from around the world.
@@ -153,7 +153,7 @@ const BecomeHostLanding: React.FC = () => {
             >
               <Button
                 onClick={handleGetStarted}
-                className="bg-[#FF385C] hover:bg-[#E61E4D] text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all"
+                className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all"
                 size="lg"
               >
                 Get Started
@@ -228,7 +228,7 @@ const BecomeHostLanding: React.FC = () => {
             className="text-center mb-12"
           >
             <div className="flex items-center justify-center gap-3 mb-4">
-              <Calculator className="w-8 h-8 text-[#FF385C]" />
+              <Calculator className="w-8 h-8 text-[#C45D3E]" />
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
                 Earnings Calculator
               </h2>
@@ -253,7 +253,7 @@ const BecomeHostLanding: React.FC = () => {
                         key={city}
                         onClick={() => setSelectedCity(city)}
                         className={`p-4 rounded-xl border-2 transition-all duration-200 ${selectedCity === city
-                            ? 'border-[#FF385C] bg-[#FFF5F5] text-[#FF385C] shadow-md'
+                            ? 'border-[#C45D3E] bg-[#FDF8F3] text-[#C45D3E] shadow-md'
                             : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
                           }`}
                       >
@@ -281,7 +281,7 @@ const BecomeHostLanding: React.FC = () => {
                     onChange={(e) => setHostingDays(Number(e.target.value))}
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     style={{
-                      background: `linear-gradient(to right, #FF385C 0%, #FF385C ${((hostingDays - 5) / 25) * 100}%, #e5e7eb ${((hostingDays - 5) / 25) * 100}%, #e5e7eb 100%)`,
+                      background: `linear-gradient(to right, #C45D3E 0%, #C45D3E ${((hostingDays - 5) / 25) * 100}%, #e5e7eb ${((hostingDays - 5) / 25) * 100}%, #e5e7eb 100%)`,
                     }}
                   />
                   <div className="flex justify-between text-sm text-gray-500 mt-2">
@@ -292,7 +292,7 @@ const BecomeHostLanding: React.FC = () => {
               </div>
 
               {/* Earnings Display */}
-              <div className="bg-gradient-to-br from-[#FF385C] to-[#E61E4D] rounded-2xl p-8 text-white">
+              <div className="bg-gradient-to-br from-[#C45D3E] to-[#A84B32] rounded-2xl p-8 text-white">
                 <h3 className="text-2xl font-bold mb-6 text-center">Your Potential Earnings</h3>
                 <div className="space-y-4">
                   <div className="bg-white/20 rounded-xl p-6 text-center backdrop-blur-sm">
@@ -359,7 +359,7 @@ const BecomeHostLanding: React.FC = () => {
                       <ArrowRight className="w-8 h-8 text-gray-300" />
                     </div>
                   )}
-                  <div className="w-16 h-16 bg-[#FF385C] rounded-full flex items-center justify-center mx-auto mb-6">
+                  <div className="w-16 h-16 bg-[#C45D3E] rounded-full flex items-center justify-center mx-auto mb-6">
                     <span className="text-2xl font-bold text-white">{step.number}</span>
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-4">{step.title}</h3>
@@ -372,7 +372,7 @@ const BecomeHostLanding: React.FC = () => {
       </section>
 
       {/* Success Stories */}
-      <section className="py-16 bg-gradient-to-br from-[#FF385C] to-[#E61E4D] text-white">
+      <section className="py-16 bg-gradient-to-br from-[#C45D3E] to-[#A84B32] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -428,7 +428,7 @@ const BecomeHostLanding: React.FC = () => {
             >
               <Button
                 onClick={handleGetStarted}
-                className="bg-[#FF385C] hover:bg-[#E61E4D] text-white px-12 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all"
+                className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-12 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all"
                 size="lg"
               >
                 Get Started

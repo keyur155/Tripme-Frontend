@@ -211,7 +211,7 @@ const customSelectStyles = {
 
         {/* Tabs */}
         <div className="flex justify-center  items-center">
-          <button className="px-4 py-2 border  rounded-full text-sm font-medium bg-[#4285f4] text-white">
+          <button className="px-4 py-2 border  rounded-full text-sm font-medium bg-[#C45D3E] text-white">
             Dates
           </button>
           {/* <button className="px-4 py-2 rounded-full text-sm font-medium text-gray-500 hover:bg-gray-100">
@@ -284,7 +284,7 @@ const customSelectStyles = {
                "text-gray-300 cursor-not-allowed pointer-events-none" :
                   isStartOrEndDay
                     
-                     ? "bg-[#4285f4] text-white font-bold"
+                     ? "bg-[#C45D3E] text-white font-bold"
                       : inRange
                       ? "bg-[#ECF2FD] text-black"
                       : "text-gray-900 hover:bg-gray-100"
@@ -923,7 +923,7 @@ useEffect(() => {
                 onClick={() => setActiveStep("when")}
               >
                 <div className="flex justify-between items-center">
-                  <span className="text-[#4285F4] font-semibold">When</span>
+                  <span className="text-[#C45D3E] font-semibold">When</span>
                   <span className="text-gray-900 font-semibold">
                     {dateRange.startDate && dateRange.endDate 
                       ? `${dateRange.startDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} - ${dateRange.endDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}`
@@ -1021,7 +1021,7 @@ useEffect(() => {
                 onClick={() => setActiveStep("who")}
               >
                 <div className="flex justify-between items-center">
-                  <span className="text-[#4285F4] font-semibold">Who</span>
+                  <span className="text-[#C45D3E] font-semibold">Who</span>
                   <span className="text-gray-900 font-semibold">
                     {totalGuests > 0 ? getGuestDisplayText() : 'Add guests'}
                   </span>
@@ -1049,7 +1049,7 @@ useEffect(() => {
                            <div className="relative">
   
  <div className="flex items-center  bg-gray-100 rounded-xl px-2 py-2">
-  <Search className="text-[#4285F4] " size={20}    />
+  <Search className="text-[#C45D3E] " size={20}    />
   <AsyncSelect
     cacheOptions
     loadOptions={debouncedLoadOptions}
@@ -1258,7 +1258,7 @@ useEffect(() => {
                                <div className="relative">
   
  <div className="flex items-center  bg-gray-100 rounded-xl px-2 py-2">
-  <Search className="text-[#4285F4] " size={20}    />
+  <Search className="text-[#C45D3E] " size={20}    />
   <AsyncSelect
     cacheOptions
     loadOptions={debouncedLoadOptions}
@@ -1482,7 +1482,7 @@ useEffect(() => {
                 handleSearch();
               }
             }}
-            className="bg-[#4285F4] hover:bg-[#3367D6] text-white px-6 py-3 rounded-xl font-semibold transition flex items-center gap-2"
+            className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-6 py-3 rounded-xl font-semibold transition flex items-center gap-2"
           >
             <Search size={18} />
             Search

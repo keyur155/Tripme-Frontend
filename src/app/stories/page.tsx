@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   MapPin, 
@@ -78,12 +78,23 @@ const StoriesPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState('desc');
-  const [searchExpanded, setSearchExpanded] = useState(false);
+  const [showStorySearch, setShowStorySearch] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const storySearchRef = React.useRef<HTMLInputElement>(null);
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setCurrentPage(1);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   useEffect(() => {
     fetchStories();
     fetchCategories();
-  }, [currentPage, selectedCategory, searchTerm, sortBy, sortOrder]);
+  }, [currentPage, selectedCategory, debouncedSearch, sortBy, sortOrder]);
 
   const fetchStories = async () => {
     try {
@@ -99,11 +110,14 @@ const StoriesPage = () => {
         params.append('category', selectedCategory);
       }
 
-      if (searchTerm) {
-        params.append('search', searchTerm);
+      let endpoint = `${process.env.NEXT_PUBLIC_API_URL}/stories`;
+
+      if (debouncedSearch) {
+        params.append('q', debouncedSearch);
+        endpoint = `${process.env.NEXT_PUBLIC_API_URL}/stories/search`;
       }
 
-              const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stories?${params}`);
+      const response = await fetch(`${endpoint}?${params}`);
       const data = await response.json();
 
       if (data.success) {
@@ -167,11 +181,11 @@ const StoriesPage = () => {
 
   if (loading && stories.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50">
+      <div className="min-h-screen bg-[#FDF8F3]">
         <Header />
         <div className="pt-48 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-6"></div>
+            <div className="w-16 h-16 border-4 border-[#F5E6D3] border-t-[#C45D3E] rounded-full animate-spin mx-auto mb-6"></div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">Loading stories</h2>
             <p className="text-gray-600">Finding amazing travel stories...</p>
           </div>
@@ -181,32 +195,21 @@ const StoriesPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <Header 
-        searchExpanded={searchExpanded} 
-        onSearchToggle={setSearchExpanded}
-      />
-      
-      {/* Search Overlay */}
-      {searchExpanded && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40"
-          onClick={() => setSearchExpanded(false)}
-        />
-      )}
+    <div className="min-h-screen bg-[#FDF8F3]">
+      <Header />
       
       <main className="pt-20 pb-16">
         {/* Hero Section */}
         <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-blue-600/10 to-indigo-600/10"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-[#C45D3E]/5 via-[#F5E6D3]/20 to-[#2D5F3A]/5"></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="text-center max-w-4xl mx-auto">
-              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full text-purple-600 font-semibold text-sm mb-6 shadow-lg">
+              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full text-[#C45D3E] font-semibold text-sm mb-6 shadow-lg">
                 <Sparkles className="w-4 h-4" />
                 Share Your Journey
               </div>
               
-              <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-gray-900 via-purple-900 to-indigo-900 bg-clip-text text-transparent mb-6 leading-tight">
+              <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-[#1A1A1A] via-[#C45D3E] to-[#1A1A1A] bg-clip-text text-transparent mb-6 leading-tight">
                 Travel Stories
               </h1>
               
@@ -217,16 +220,19 @@ const StoriesPage = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   onClick={handleCreateStory}
-                  className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 border-0 shadow-xl"
+                  className="bg-[#C45D3E] hover:bg-[#A84B32] text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 border-0 shadow-xl"
                 >
                   <PenTool className="w-5 h-5 mr-2" />
                   Write Your Story
                 </Button>
                 <Button 
-                  onClick={() => setSearchExpanded(true)}
-                  className="border-2 border-purple-200 text-purple-700 hover:bg-purple-50 font-semibold px-8 py-4 rounded-2xl transition-all duration-300 hover:shadow-xl"
+                  onClick={() => {
+                    setShowStorySearch(true);
+                    setTimeout(() => storySearchRef.current?.focus(), 100);
+                  }}
+                  className="bg-white border border-gray-200 text-[#1A1A1A] hover:bg-gray-50 font-semibold px-8 py-4 rounded-2xl transition-all duration-300 hover:shadow-xl shadow-sm"
                 >
-                  <Search className="w-5 h-5 mr-2" />
+                  <Search className="w-5 h-5 mr-2 text-[#C45D3E]" />
                   Search Stories
                 </Button>
               </div>
@@ -234,39 +240,31 @@ const StoriesPage = () => {
           </div>
         </div>
 
-        {/* Stats Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="w-8 h-8 text-purple-600" />
-              </div>
-              <div className="text-3xl font-bold text-gray-900 mb-2">1,200+</div>
-              <div className="text-gray-600">Travel Stories</div>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <User className="w-8 h-8 text-blue-600" />
-              </div>
-              <div className="text-3xl font-bold text-gray-900 mb-2">500+</div>
-              <div className="text-gray-600">Storytellers</div>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Globe className="w-8 h-8 text-green-600" />
-              </div>
-              <div className="text-3xl font-bold text-gray-900 mb-2">50+</div>
-              <div className="text-gray-600">Countries</div>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-orange-100 to-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Heart className="w-8 h-8 text-orange-600" />
-              </div>
-              <div className="text-3xl font-bold text-gray-900 mb-2">10K+</div>
-              <div className="text-gray-600">Likes</div>
+        {/* Story Search Bar */}
+        {showStorySearch && (
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 mb-8">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                ref={storySearchRef}
+                type="text"
+                placeholder="Search stories by title, tag, or destination..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-12 pr-12 py-4 bg-white border border-[#F5E6D3] rounded-2xl shadow-lg focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent text-gray-900 placeholder-gray-400 transition-all"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+                >
+                  <span className="text-gray-600 text-xs font-bold">✕</span>
+                </button>
+              )}
             </div>
           </div>
-        </div>
+        )}
+
 
         {/* Featured Stories Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -275,7 +273,7 @@ const StoriesPage = () => {
               <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Stories</h2>
               <p className="text-gray-600">Handpicked adventures that inspire wanderlust</p>
             </div>
-            <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50">
+            <Button variant="outline" className="border-[#F5E6D3] text-[#C45D3E] hover:bg-[#FDF8F3]">
               View All
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
@@ -283,8 +281,8 @@ const StoriesPage = () => {
 
           {stories.length === 0 ? (
             <div className="text-center py-20">
-              <div className="w-24 h-24 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <BookOpen className="w-12 h-12 text-purple-600" />
+              <div className="w-24 h-24 bg-[#F5E6D3] rounded-full flex items-center justify-center mx-auto mb-6">
+                <BookOpen className="w-12 h-12 text-[#C45D3E]" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">No stories yet</h3>
               <p className="text-gray-600 mb-8 max-w-md mx-auto">
@@ -292,7 +290,7 @@ const StoriesPage = () => {
               </p>
               <Button 
                 onClick={handleCreateStory}
-                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 border-0 shadow-xl"
+                className="bg-[#C45D3E] hover:bg-[#A84B32] text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 border-0 shadow-xl"
               >
                 <PenTool className="w-5 h-5 mr-2" />
                 Start Writing
@@ -351,7 +349,7 @@ const StoriesPage = () => {
                   
                   <div className="p-6">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center">
+                      <div className="w-10 h-10 bg-[#C45D3E] rounded-full flex items-center justify-center">
                         <User className="w-5 h-5 text-white" />
                       </div>
                       <div>
@@ -372,7 +370,7 @@ const StoriesPage = () => {
                     {story.tags.length > 0 && (
                       <div className="flex flex-wrap gap-2">
                         {story.tags.slice(0, 3).map((tag, tagIndex) => (
-                          <span key={tagIndex} className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-medium">
+                          <span key={tagIndex} className="text-xs bg-[#F5E6D3] text-[#C45D3E] px-3 py-1 rounded-full font-medium">
                             {tag}
                           </span>
                         ))}
@@ -386,15 +384,15 @@ const StoriesPage = () => {
         </div>
 
         {/* Call to Action Section */}
-        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 py-20">
+        <div className="bg-gradient-to-r from-[#C45D3E] to-[#A84B32] py-20">
           <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
             <h2 className="text-4xl font-bold text-white mb-6">Ready to Share Your Story?</h2>
-            <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
               Join thousands of travelers who are sharing their adventures and inspiring others to explore the world.
             </p>
             <Button 
               onClick={handleCreateStory}
-              className="bg-white text-purple-600 hover:bg-gray-50 font-semibold px-8 py-4 rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 border-0 shadow-xl"
+              className="bg-white text-[#C45D3E] hover:bg-gray-50 font-semibold px-8 py-4 rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 border-0 shadow-xl"
             >
               <PenTool className="w-5 h-5 mr-2" />
               Start Writing Now

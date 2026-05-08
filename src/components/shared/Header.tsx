@@ -22,6 +22,7 @@ import {
   Home,
   Bell,
   BookOpen,
+  Compass,
   ArrowLeft,
   Share2,
   Star,
@@ -113,9 +114,9 @@ const Header = ({ searchExpanded: externalSearchExpanded,
   const [hideMobileHeader, setHideMobileHeader] = useState(false);
 
   const categories = [
-  { id: 'homes', icon: '🏠', label: 'Homes', path: '/' },
-  { id: 'services',icon: '🔔', label: 'Services', path: '/services' },
-  { id: 'stories',  icon: '📖', label: 'Stories', path: '/stories' },
+  { id: 'homes', icon: Home, label: 'Homes', path: '/' },
+  { id: 'services', icon: Compass, label: 'Services', path: '/services' },
+  { id: 'stories', icon: BookOpen, label: 'Stories', path: '/stories' },
 ];
 
   const isStoriesPage = pathname?.startsWith('/stories');
@@ -253,12 +254,11 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                   router.push('/');
                 }}
                 className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-200 group relative ${activeCategory === 'homes'
-                  ? 'text-[#4285F4]'
-                  : 'text-gray-700 hover:text-[#4285F4]'
+                  ? 'text-[#C45D3E]'
+                  : 'text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3]'
                   }`}
               >
-                <span className='text-3xl group-hover:scale-110 transition-transform duration-200'>🏠</span>
-                {/* <Home size={22} className="group-hover:scale-110 transition-transform duration-200" /> */}
+                <Home size={20} className="group-hover:scale-110 transition-transform duration-200" />
                 <span className="font-medium text-base">Homes</span>
               </button>
               <button
@@ -267,12 +267,11 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                   router.push('/services');
                 }}
                 className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-200 group relative ${activeCategory === 'services'
-                  ? 'text-[#4285F4]'
-                  : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
+                  ? 'text-[#C45D3E]'
+                  : 'text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3]'
                   }`}
               >
-                <span className='text-2xl group-hover:scale-110 transition-transform duration-200'>🔔</span>
-                {/* <Bell size={22} className="group-hover:scale-110 transition-transform duration-200" /> */}
+                <Compass size={20} className="group-hover:scale-110 transition-transform duration-200" />
                 <span className="font-medium text-base">Services</span>
               </button>
               <button
@@ -281,12 +280,11 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                   router.push('/stories');
                 }}
                 className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-200 group relative ${activeCategory === 'stories'
-                  ? 'text-[#4285F4]'
-                  : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
+                  ? 'text-[#C45D3E]'
+                  : 'text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3]'
                   }`}
               >
-                <span className='text-2xl group-hover:scale-110 transition-transform duration-200'>📖</span>
-                {/* <BookOpen size={22} className="group-hover:scale-110 transition-transform duration-200" /> */}
+                <BookOpen size={20} className="group-hover:scale-110 transition-transform duration-200" />
                 <span className="font-medium text-base">Stories</span>
               </button>
             </div>
@@ -328,7 +326,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                       </div>
 
                       {/* Search Button */}
-                      <button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white p-1.5 rounded-full transition-all duration-200 ml-2">
+                      <button className="bg-[#C45D3E] hover:bg-[#A84B32] text-white p-1.5 rounded-full transition-all duration-200 ml-2">
                         <Search className="w-4 h-4"  />
                       </button>
                     </div>
@@ -512,13 +510,13 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                             <Link
                               href="/become-host"
                               onClick={() => setHostMenuOpen(false)}
-                              className="flex items-center gap-4 px-3 py-3 rounded-xl hover:bg-purple-50 transition-all duration-200 group"
+                              className="flex items-center gap-4 px-3 py-3 rounded-xl hover:bg-[#FDF8F3] transition-all duration-200 group"
                             >
-                              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center shrink-0 group-hover:from-purple-200 group-hover:to-indigo-200 transition-all">
-                                <Home size={18} className="text-purple-600" />
+                              <div className="w-10 h-10 rounded-xl bg-[#F5E6D3] flex items-center justify-center shrink-0 group-hover:bg-[#F5E6D3]/80 transition-all">
+                                <Home size={18} className="text-[#C45D3E]" />
                               </div>
                               <div>
-                                <div className="text-sm font-semibold text-gray-800 group-hover:text-purple-700">Host your home</div>
+                                <div className="text-sm font-semibold text-gray-800 group-hover:text-[#C45D3E]">Host your home</div>
                                 <div className="text-xs text-gray-400 mt-0.5">Earn money sharing your space</div>
                               </div>
                             </Link>
@@ -527,13 +525,13 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                             <Link
                               href="/host/service/new"
                               onClick={() => setHostMenuOpen(false)}
-                              className="flex items-center gap-4 px-3 py-3 rounded-xl hover:bg-purple-50 transition-all duration-200 group"
+                              className="flex items-center gap-4 px-3 py-3 rounded-xl hover:bg-[#FDF8F3] transition-all duration-200 group"
                             >
-                              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 to-blue-100 flex items-center justify-center shrink-0 group-hover:from-indigo-200 group-hover:to-blue-200 transition-all">
-                                <Sparkles size={18} className="text-indigo-600" />
+                              <div className="w-10 h-10 rounded-xl bg-[#F5E6D3] flex items-center justify-center shrink-0 group-hover:bg-[#F5E6D3]/80 transition-all">
+                                <Sparkles size={18} className="text-[#C45D3E]" />
                               </div>
                               <div>
-                                <div className="text-sm font-semibold text-gray-800 group-hover:text-indigo-700">Host services</div>
+                                <div className="text-sm font-semibold text-gray-800 group-hover:text-[#C45D3E]">Host services</div>
                                 <div className="text-xs text-gray-400 mt-0.5">Offer unique local experiences</div>
                               </div>
                             </Link>
@@ -575,7 +573,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                             <Link
                               href="/become-host"
                               onClick={() => setHostMenuOpen(false)}
-                              className="block w-full text-center py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+                              className="block w-full text-center py-3 rounded-xl bg-[#C45D3E] hover:bg-[#A84B32] text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200"
                             >
                               Get started as a host
                             </Link>
@@ -590,9 +588,9 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                     <div className="relative">
                       <button
                         onClick={() => setUserMenuOpen(!userMenuOpen)}
-                        className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-purple-400 focus:outline-none transition-all duration-200 border border-gray-300 rounded-full"
+                        className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-[#C45D3E]/40 focus:outline-none transition-all duration-200 border border-gray-300 rounded-full"
                       >
-                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center overflow-hidden">
+                        <div className="w-8 h-8 bg-[#F5E6D3] rounded-full flex items-center justify-center overflow-hidden">
                           {user?.profileImage ? (
                             <img
                               src={user.profileImage}
@@ -600,7 +598,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <User className="w-4 h-4 text-purple-600" />
+                            <User className="w-4 h-4 text-[#C45D3E]" />
                           )}
                         </div>
                         <span className="text-sm font-medium">{user?.name}</span>
@@ -611,7 +609,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
                           <Link
                             href="/user/profile"
-                            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                             onClick={() => setUserMenuOpen(false)}
                           >
                             <User size={20} />
@@ -620,7 +618,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
 
                           <Link
                             href="/wishlist"
-                            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                             onClick={() => setUserMenuOpen(false)}
                           >
                             <Heart size={20} />
@@ -628,7 +626,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                           </Link>
                           <Link
                             href="/bookings"
-                            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                             onClick={() => setUserMenuOpen(false)}
                           >
                             <Calendar size={20} />
@@ -639,7 +637,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                               <div className="border-t border-gray-200 my-2"></div>
                               <Link
                                 href="/admin/dashboard"
-                                className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                                className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                                 onClick={() => setUserMenuOpen(false)}
                               >
                                 <Shield size={20} />
@@ -665,11 +663,11 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                     <Dropdown
                       trigger={
                         <button
-                          className="flex items-center justify-center gap-2 p-2 rounded-full text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-purple-400 focus:outline-none transition-all duration-200 border border-gray-300"
+                          className="flex items-center justify-center gap-2 p-2 rounded-full text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-[#C45D3E]/40 focus:outline-none transition-all duration-200 border border-gray-300"
                           aria-haspopup="true"
                         >
                           <Menu size={20} className="text-gray-700" />
-                          <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center shadow-sm overflow-hidden">
+                          <div className="w-8 h-8 bg-[#C45D3E] rounded-full flex items-center justify-center shadow-sm overflow-hidden">
                             <User size={16} className="text-white flex-shrink-0" />
                           </div>
                         </button>
@@ -685,7 +683,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                         </Link>
                         <Link
                           href="/auth/signup"
-                          className="block w-full text-center px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium transition-all duration-200"
+                          className="block w-full text-center px-4 py-2 rounded-xl bg-[#C45D3E] hover:bg-[#A84B32] text-white font-medium transition-all duration-200"
                         >
                           Sign Up
                         </Link>
@@ -744,8 +742,8 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                     setMobileMenuOpen(false);
                   }}
                   className={`flex items-center gap-3 px-4 py-3 rounded-2xl w-full text-left transition-all duration-200 ${activeCategory === 'homes'
-                    ? 'text-purple-600 bg-purple-50'
-                    : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
+                    ? 'text-[#C45D3E] bg-[#FDF8F3]'
+                    : 'text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3]'
                     }`}
                 >
                   <Home size={20} />
@@ -758,11 +756,11 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                     setMobileMenuOpen(false);
                   }}
                   className={`flex items-center gap-3 px-4 py-3 rounded-2xl w-full text-left transition-all duration-200 ${activeCategory === 'services'
-                    ? 'text-purple-600 bg-purple-50'
-                    : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
+                    ? 'text-[#C45D3E] bg-[#FDF8F3]'
+                    : 'text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3]'
                     }`}
                 >
-                  <Bell size={20} />
+                  <Compass size={20} />
                   <span className="font-medium">Services</span>
                 </button>
                 <button
@@ -772,8 +770,8 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                     setMobileMenuOpen(false);
                   }}
                   className={`flex items-center gap-3 px-4 py-3 rounded-2xl w-full text-left transition-all duration-200 ${activeCategory === 'stories'
-                    ? 'text-purple-600 bg-purple-50'
-                    : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
+                    ? 'text-[#C45D3E] bg-[#FDF8F3]'
+                    : 'text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3]'
                     }`}
                 >
                   <BookOpen size={20} />
@@ -785,7 +783,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                     <div className="border-t border-gray-200 pt-3 mt-3">
                       <Link
                         href="/user/profile"
-                        className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                        className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         <User size={20} />
@@ -794,7 +792,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
 
                       <Link
                         href="/wishlist"
-                        className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                        className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         <Heart size={20} />
@@ -802,7 +800,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                       </Link>
                       <Link
                         href="/bookings"
-                        className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                        className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         <Calendar size={20} />
@@ -811,7 +809,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                       {user?.role === 'admin' && (
                         <Link
                           href="/admin/dashboard"
-                          className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                          className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <Shield size={20} />
@@ -841,7 +839,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                     </Link>
                     <Link
                       href="/auth/signup"
-                      className="block w-full text-center px-4 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium transition-all duration-200"
+                      className="block w-full text-center px-4 py-3 rounded-2xl bg-[#C45D3E] hover:bg-[#A84B32] text-white font-medium transition-all duration-200"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Sign Up
@@ -883,7 +881,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
       text-left
     "
             >
-              <Search className="w-4 h-4 text-[#4285F4] flex-shrink-0" />
+              <Search className="w-4 h-4 text-[#C45D3E] flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 {searchValues && (searchValues.location || searchValues.checkIn) ? (
                   <div className="flex flex-col">
@@ -980,20 +978,20 @@ const Header = ({ searchExpanded: externalSearchExpanded,
     "flex flex-col items-center justify-center relative min-w-[70px]",
     "transition-all duration-300 ease-in-out",
     scrolled ? "gap-0" : "gap-1.5",
-    isActive ? "text-[#4285F4]" : "text-gray-500"
+    isActive ? "text-[#C45D3E]" : "text-gray-500"
   )}
 >
   {/* ICON with smooth fade + collapse */}
   <div
     className={cn(
-      "text-3xl transition-all duration-300 ease-in-out transform ",
+      "transition-all duration-300 ease-in-out transform",
 
       scrolled
         ? "opacity-0 scale-75 h-0 overflow-hidden"
         : "opacity-100 scale-100 h-5"
     )}
   >
-    {cat.icon}
+    <cat.icon size={18} />
   </div>
 
   {/* LABEL */}
@@ -1001,7 +999,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
     className={cn(
       "font-medium tracking-wide transition-all duration-300 mt-4 pb-2",
       scrolled ? "text-sm" : "text-xs",
-      isActive ? "text-[#4285F4]" : "text-gray-500"
+      isActive ? "text-[#C45D3E]" : "text-gray-500"
     )}
   >
     {cat.label}
@@ -1011,7 +1009,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
   <span
     className={cn(
       "absolute left-0 right-0 bottom-0 h-[3px] rounded-t-full transition-all duration-300",
-      isActive ? "bg-[#4285F4] opacity-100" : "opacity-0"
+      isActive ? "bg-[#C45D3E] opacity-100" : "opacity-0"
     )}
   />
 </button>
@@ -1082,7 +1080,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
           text-left
         "
                 >
-                  <Search className="w-4 h-4 text-[#4285F4] flex-shrink-0" />
+                  <Search className="w-4 h-4 text-[#C45D3E] flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     {searchValues && (searchValues.location || searchValues.checkIn) ? (
                       <div className="flex flex-col">

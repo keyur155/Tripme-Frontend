@@ -203,18 +203,18 @@ const CreateStoryPage = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50">
+      <div className="min-h-screen bg-[#FDF8F3]">
         <Header />
         <div className="pt-48 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <div className="w-20 h-20 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <User className="w-10 h-10 text-purple-600" />
+            <div className="w-20 h-20 bg-[#F5E6D3] rounded-full flex items-center justify-center mx-auto mb-6">
+              <User className="w-10 h-10 text-[#C45D3E]" />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-3">Sign in to create stories</h3>
             <p className="text-gray-600 mb-8">You need to be signed in to share your travel stories.</p>
             <Button 
               onClick={() => router.push('/auth/login')}
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105 border-0 shadow-lg"
+              className="bg-[#C45D3E] hover:bg-[#A84B32] text-white font-medium rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105 border-0 shadow-lg"
             >
               Sign In
             </Button>
@@ -227,7 +227,7 @@ const CreateStoryPage = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 overflow-x-hidden">
+    <div className="min-h-screen bg-[#FDF8F3] overflow-x-hidden">
       <Header />
       
       <main className="pt-28 pb-10 sm:pt-36 md:pt-44 lg:pt-48">
@@ -245,11 +245,11 @@ const CreateStoryPage = () => {
                   Back to Stories
                 </Button>
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <div className="w-12 h-12 bg-[#C45D3E] rounded-xl flex items-center justify-center shadow-lg">
                     <BookOpen className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent font-display">
+                    <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-[#C45D3E] to-[#A84B32] bg-clip-text text-transparent font-display">
                       Create Your Story
                     </h1>
                     <p className="text-gray-600 font-body">Share your amazing travel experiences</p>
@@ -269,7 +269,7 @@ const CreateStoryPage = () => {
                 <Button
                   onClick={handleSubmit}
                   disabled={loading}
-                  className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105 border-0 shadow-lg"
+                  className="w-full sm:w-auto bg-[#C45D3E] hover:bg-[#A84B32] text-white font-medium rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105 border-0 shadow-lg"
                 >
                   {loading ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -308,10 +308,10 @@ const CreateStoryPage = () => {
                   ) : (
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-full h-64 border-2 border-dashed border-purple-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-purple-400 transition-colors"
+                      className="w-full h-64 border-2 border-dashed border-[#C45D3E]/40 rounded-xl flex items-center justify-center cursor-pointer hover:border-[#C45D3E] transition-colors"
                     >
                       <div className="text-center">
-                        <Upload className="w-12 h-12 text-purple-400 mx-auto mb-4" />
+                        <Upload className="w-12 h-12 text-[#C45D3E] mx-auto mb-4" />
                         <p className="text-gray-600">Click to upload featured image</p>
                       </div>
                     </div>
@@ -389,7 +389,7 @@ const CreateStoryPage = () => {
                       <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full px-3 py-2 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200"
                       >
                         {categories.map((cat) => (
                           <option key={cat.value} value={cat.value}>
@@ -410,7 +410,7 @@ const CreateStoryPage = () => {
                           value={newTag}
                           onChange={(e) => setNewTag(e.target.value)}
                           onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
-                          className="flex-1 px-3 py-2 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200"
+                          className="flex-1 px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200"
                         />
                         <Button
                           onClick={handleAddTag}
@@ -424,12 +424,12 @@ const CreateStoryPage = () => {
                         {tags.map((tag, index) => (
                           <span
                             key={index}
-                            className="flex items-center gap-1 bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm"
+                            className="flex items-center gap-1 bg-[#F5E6D3] text-[#C45D3E] px-3 py-1 rounded-full text-sm"
                           >
                             {tag}
                             <button
                               onClick={() => handleRemoveTag(tag)}
-                              className="hover:text-purple-900"
+                              className="hover:text-[#A84B32]"
                             >
                               <X className="w-3 h-3" />
                             </button>
@@ -448,7 +448,7 @@ const CreateStoryPage = () => {
                         max="60"
                         value={readTime}
                         onChange={(e) => setReadTime(parseInt(e.target.value) || 5)}
-                        className="w-full px-3 py-2 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200"
                       />
                     </div>
 
@@ -462,21 +462,21 @@ const CreateStoryPage = () => {
                           placeholder="City"
                           value={location.city}
                           onChange={(e) => setLocation({...location, city: e.target.value})}
-                          className="w-full px-3 py-2 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200"
                         />
                         <input
                           type="text"
                           placeholder="State/Province"
                           value={location.state}
                           onChange={(e) => setLocation({...location, state: e.target.value})}
-                          className="w-full px-3 py-2 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200"
                         />
                         <input
                           type="text"
                           placeholder="Country"
                           value={location.country}
                           onChange={(e) => setLocation({...location, country: e.target.value})}
-                          className="w-full px-3 py-2 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200"
                         />
                       </div>
                     </div>
@@ -487,7 +487,7 @@ const CreateStoryPage = () => {
                         id="publish"
                         checked={isPublished}
                         onChange={(e) => setIsPublished(e.target.checked)}
-                        className="w-4 h-4 text-purple-600 border-purple-300 rounded focus:ring-purple-500"
+                        className="w-4 h-4 text-[#C45D3E] border-gray-300 rounded focus:ring-[#C45D3E]"
                       />
                       <label htmlFor="publish" className="text-sm text-gray-700">
                         Publish immediately
@@ -517,10 +517,10 @@ const CreateStoryPage = () => {
                     ))}
                     <button
                       onClick={() => galleryInputRef.current?.click()}
-                      className="w-full h-28 sm:h-32 border-2 border-dashed border-purple-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-purple-400 transition-colors"
+                      className="w-full h-28 sm:h-32 border-2 border-dashed border-[#C45D3E]/40 rounded-lg flex items-center justify-center cursor-pointer hover:border-[#C45D3E] transition-colors"
                     >
                       <div className="text-center">
-                        <Plus className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                        <Plus className="w-8 h-8 text-[#C45D3E] mx-auto mb-2" />
                         <p className="text-sm text-gray-600">Add more images</p>
                       </div>
                     </button>

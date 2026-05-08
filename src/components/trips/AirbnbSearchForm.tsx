@@ -526,7 +526,7 @@ today.setHours(0, 0, 0, 0);
   return (
     
     <div className="space-y-3">
-      <h4 className="text-[#4285f4] font-semibold text-center">
+      <h4 className="text-[#C45D3E] font-semibold text-center">
         {monthYear}
       </h4>
 
@@ -555,9 +555,9 @@ today.setHours(0, 0, 0, 0);
   isPast
     ? "text-gray-300 cursor-not-allowed pointer-events-none"
     : isStartOrEndDay
-    ? "bg-[#4285f4] text-white font-bold"
+    ? "bg-[#C45D3E] text-white font-bold"
     : inRange
-    ? "bg-[#ECF2FD] text-black"
+    ? "bg-[#F5E6D3] text-black"
     : "text-gray-900 hover:bg-gray-100"
 }`}
 
@@ -1067,7 +1067,7 @@ const isStartOrEnd = (day, monthDate) => {
               "w-full px-8 py-3.5 text-left transition-all duration-200 rounded-full flex flex-col justify-center",
               // isCompact ? "px-4 py-2" : "px-8 py-3.5",
               activeField === 'where' 
-                ? "bg-white shadow-[0_2px_16px_rgba(0,0,0,0.12)]  border-[#4285F4]" 
+                ? "bg-white shadow-[0_2px_16px_rgba(0,0,0,0.12)]  border-[#C45D3E]" 
                 : activeField 
                 ? "hover:bg-[#F1F3F4] text-gray-500" // Dimmed: Soft gray hover when another field is active
         : "hover:bg-[#F8F9FA] text-gray-700" // Neutral: Very light gray hover
@@ -1188,7 +1188,7 @@ const isStartOrEnd = (day, monthDate) => {
           {/* Search Button - Airbnb Pink Pill */}
           <button
             type="submit"
-            className="mr-2 h-12 px-5 bg-[#1967D2] hover:bg-[#1A73E8] text-white rounded-full flex items-center justify-center gap-2 transition-all duration-200 hover:scale-[1.04] active:scale-[0.98] font-medium shadow-sm"
+            className="mr-2 h-12 px-5 bg-[#C45D3E] hover:bg-[#A84B32] text-white rounded-full flex items-center justify-center gap-2 transition-all duration-200 hover:scale-[1.04] active:scale-[0.98] font-medium shadow-sm"
           >
             <Search size={16} strokeWidth={2.5} />
             <span className="text-sm font-medium">Search</span>
@@ -1363,7 +1363,7 @@ const isStartOrEnd = (day, monthDate) => {
         )}>
           <div className="p-3 max-h-[70vh] overflow-y-auto">
             <div className="flex items-center justify-center mb-4">
-              <div className="inline-flex bg-[#4285f4] rounded-full p-1">
+              <div className="inline-flex bg-[#C45D3E] rounded-full p-1">
                 <button
                   type="button"
                   className="px-6 py-2 text-sm font-semibold rounded-full   text-white shadow-sm"
@@ -1383,7 +1383,7 @@ const isStartOrEnd = (day, monthDate) => {
         )
       )
     }
-    className="text-lg text-[#4285F4] hover:text-[#174EA6]"
+    className="text-lg text-[#C45D3E] hover:text-[#A84B32]"
   >
     ←
   </button>
@@ -1397,7 +1397,7 @@ const isStartOrEnd = (day, monthDate) => {
         )
       )
     }
-    className="text-lg text-[#4285F4] hover:text-[#174EA6]"
+    className="text-lg text-[#C45D3E] hover:text-[#A84B32]"
   >
     →
   </button>
@@ -1505,14 +1505,14 @@ const isStartOrEnd = (day, monthDate) => {
                   });
                   setIsSelectingStartDate(true);
                 }}
-                className="text-sm text-[#4285f4] hover:text-gray-800 underline"
+                className="text-sm text-[#C45D3E] hover:text-gray-800 underline"
               >
                 Clear dates
               </button>
               <button
                 type="button"
                 onClick={() => setActiveField(null)}
-                className="px-4 py-2 bg-[#4285f4] text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+                className="px-4 py-2 bg-[#C45D3E] text-white rounded-lg text-sm font-medium hover:bg-[#A84B32] transition-colors"
               >
                 Close
               </button>

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Home, Briefcase, User, Heart, Settings ,XIcon, Instagram, Facebook  ,Twitter ,Youtube, Search} from 'lucide-react';
+import { Home, Briefcase, User, Heart, Settings, XIcon, Instagram, Facebook, Twitter, Youtube, Search, MapPin, Shield } from 'lucide-react';
 import { useScrollDirection } from '@/hooks/userScrollDirection';
 import { useUI } from "@/core/store/uiContext";
 import { usePathname } from 'next/navigation';
@@ -97,7 +97,7 @@ export default function Footer() {
 };
 
   const navColor = "#717171"; // Neutral gray for inactive
-  const activeNavColor = "#4285F4"; // Brand blue for active
+  const activeNavColor = "#C45D3E"; // Earthy terracotta for active
 
   const getNavLinkClass = (path: string) => {
     const isActive = path === '/' ? pathname === '/' : pathname.startsWith(path);
@@ -168,14 +168,8 @@ export default function Footer() {
       <footer className={`relative w-full bg-white border-t border-gray-200 mt-auto overflow-hidden ${
         isHomePage ? 'pb-24 block' : 'hidden sm:block'
       }`}>
-        {/* Decorative background pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-4 left-8 text-6xl">🏛️</div>
-          <div className="absolute top-12 right-16 text-4xl">🕌</div>
-          <div className="absolute bottom-8 left-1/4 text-5xl">🏔️</div>
-          <div className="absolute bottom-12 right-1/3 text-4xl">🐘</div>
-          <div className="absolute top-6 left-1/2 text-3xl">🎪</div>
-        </div>
+        {/* Subtle warm gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#FDF8F3] via-white to-[#F5E6D3] opacity-60"></div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
           {/* Main footer content */}
@@ -213,7 +207,7 @@ export default function Footer() {
             {/* Destinations */}
             <div>
               <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <span className="mr-2">🏞️</span>
+                <MapPin className="w-4 h-4 text-[#C45D3E] mr-2" />
                 Popular Destinations
               </h3>
               <ul className="space-y-2 text-xs md:text-base">
@@ -221,7 +215,7 @@ export default function Footer() {
                   <li key={destination}>
                     <Link 
                       href={`/search?city=${encodeURIComponent(destination)}`} 
-                      className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group"
+                      className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group"
                     >
                       <span className="group-hover:translate-x-1 transition-transform duration-200">{destination}</span>
                     </Link>
@@ -233,42 +227,42 @@ export default function Footer() {
             {/* Support */}
             <div>
               <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <span className="mr-2">🛟</span>
+                <Shield className="w-4 h-4 text-[#C45D3E] mr-2" />
                 Support
               </h3>
               <ul className="space-y-2 text-xs md:text-base">
                 <li>
-                  <Link href="/contact" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                  <Link href="/contact" className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">Contact Us</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about-hosting" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                  <Link href="/about-hosting" className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">About Hosting</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                  <Link href="/about" className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">About Us</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/refund-cancellation" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                  <Link href="/refund-cancellation" className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">Cancellation Policy</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/shipping-policy" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                  <Link href="/shipping-policy" className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">Shipping Policy</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/refund-cancellation" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                  <Link href="/refund-cancellation" className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">Refund Policy</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/become-host" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                  <Link href="/become-host" className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">Become a Host</span>
                   </Link>
                 </li>
@@ -292,14 +286,14 @@ export default function Footer() {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent text-sm"
                 disabled={isSubscribing}
                 required
               />
               <button 
                 type="submit"
                 disabled={isSubscribing}
-                className="bg-[#4285F4] text-white px-4 py-2 rounded-r-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-[#C45D3E] text-white px-4 py-2 rounded-r-lg hover:bg-[#A84B32] transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubscribing ? (
                   <span className="animate-spin">⏳</span>
@@ -329,7 +323,7 @@ export default function Footer() {
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent text-sm"
                   />
                   <button className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-r-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-lg">
                     ✈️
@@ -344,7 +338,7 @@ export default function Footer() {
           </div>
 
           {/* Divider */}
-           <div className="border-t border-purple-200 my-8"></div>
+           <div className="border-t border-[#F5E6D3] my-8"></div>
 <div className="flex flex-col md:flex-row justify-center gap-6 items-center space-y-4 md:space-y-0">
   
   {/* Existing text or links */}
@@ -393,7 +387,7 @@ export default function Footer() {
         
 
           {/* Copyright */}
-          <div className="text-center mt-8 pt-6 border-t border-purple-200">
+          <div className="text-center mt-8 pt-6 border-t border-[#F5E6D3]">
             <p className="text-sm text-gray-500 flex items-center justify-center space-x-2">
               <span>Made with</span>
               <span className="text-red-500 animate-pulse">❤️</span>
@@ -402,13 +396,13 @@ export default function Footer() {
               <span>&copy; {currentYear} TripMe. All rights reserved.</span>
             </p>
             <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-gray-400">
-              <Link href="/refund-cancellation" className="hover:text-purple-600 transition-colors duration-200">Refund & Cancellation</Link>
+              <Link href="/refund-cancellation" className="hover:text-[#C45D3E] transition-colors duration-200">Refund & Cancellation</Link>
               <span>·</span>
-              <Link href="/shipping-policy" className="hover:text-purple-600 transition-colors duration-200">Shipping Policy</Link>
+              <Link href="/shipping-policy" className="hover:text-[#C45D3E] transition-colors duration-200">Shipping Policy</Link>
               <span>·</span>
-              <Link href="/privacy-policy" className="hover:text-purple-600 transition-colors duration-200">Privacy Policy</Link>
+              <Link href="/privacy-policy" className="hover:text-[#C45D3E] transition-colors duration-200">Privacy Policy</Link>
               <span>·</span>
-              <Link href="/terms" className="hover:text-purple-600 transition-colors duration-200">Terms of Service</Link>
+              <Link href="/terms" className="hover:text-[#C45D3E] transition-colors duration-200">Terms of Service</Link>
             </div>
             <div className="mt-2 flex items-center justify-center space-x-1 text-xs text-gray-400">
               <span>🇮🇳</span>
