@@ -577,8 +577,8 @@ const PropertyForm: React.FC = () => {
   // Helper component for field info - REMOVED
   // const FieldInfo = ({ field, rules }: { field: string; rules: any }) => (
   //   <div className="flex items-center space-x-2 mt-1 text-sm">
-  //     <Info className="w-4 h-4 text-blue-500" />
-  //     <span className="text-blue-600">
+  //     <Info className="w-4 h-4 text-[#C45D3E]" />
+  //     <span className="text-[#C45D3E]">
   //       {rules.required ? 'Required' : 'Optional'} • 
   //       {rules.minLength && ` Min: ${rules.minLength} chars`}
   //       {rules.maxLength && ` Max: ${rules.maxLength} chars`}
@@ -606,7 +606,7 @@ const PropertyForm: React.FC = () => {
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 placeholder="e.g., Cozy Mountain Cabin"
-                className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                   validationMessages.title || fieldErrors.title ? 'border-red-300' : 'border-slate-300'
                 }`}
               />
@@ -620,7 +620,7 @@ const PropertyForm: React.FC = () => {
               <select
                 value={formData.type}
                 onChange={(e) => handleInputChange('type', e.target.value)}
-                className="w-full px-4 py-3 text-base border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
+                className="w-full px-4 py-3 text-base border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
               >
                 {propertyTypes.map(type => (
                   <option key={type.value} value={type.value}>
@@ -638,7 +638,7 @@ const PropertyForm: React.FC = () => {
               <select
                 value={formData.style}
                 onChange={(e) => handleInputChange('style', e.target.value)}
-                className="w-full px-4 py-3 text-base border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
+                className="w-full px-4 py-3 text-base border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
               >
                 {propertyStyles.map(style => (
                   <option key={style.value} value={style.value}>
@@ -653,7 +653,7 @@ const PropertyForm: React.FC = () => {
               <select
                 value={formData.cancellationPolicy}
                 onChange={(e) => handleInputChange('cancellationPolicy', e.target.value)}
-                className="w-full px-4 py-3 text-base border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
+                className="w-full px-4 py-3 text-base border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-slate-900 placeholder-slate-500"
               >
                 <option value="flexible">Flexible - Full refund up to 24 hours before</option>
                 <option value="moderate">Moderate - Full refund up to 5 days before</option>
@@ -673,7 +673,7 @@ const PropertyForm: React.FC = () => {
             onChange={(e) => handleInputChange('description', e.target.value)}
             placeholder="Describe your property in detail..."
             rows={5}
-            className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 resize-none text-gray-900 placeholder-gray-500 ${
+            className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 resize-none text-gray-900 placeholder-gray-500 ${
               validationMessages.description || fieldErrors.description ? 'border-red-300' : 'border-gray-200'
             }`}
           />
@@ -712,14 +712,14 @@ const PropertyForm: React.FC = () => {
         
         <div className="space-y-4">
           {placeTypes.map(placeType => (
-            <label key={placeType.value} className="flex items-start space-x-4 p-6 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-purple-300 hover:bg-purple-50 transition-all duration-200">
+            <label key={placeType.value} className="flex items-start space-x-4 p-6 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200">
               <input
                 type="radio"
                 name="placeType"
                 value={placeType.value}
                 checked={formData.placeType === placeType.value}
                 onChange={(e) => handleInputChange('placeType', e.target.value)}
-                className="mt-1 w-5 h-5 text-purple-600 border-gray-300 focus:ring-purple-500"
+                className="mt-1 w-5 h-5 text-[#C45D3E] border-gray-300 focus:ring-[#C45D3E]"
               />
               <div className="flex-1">
                 <div className="font-semibold text-gray-900 text-lg mb-2">{placeType.label}</div>
@@ -750,7 +750,7 @@ const PropertyForm: React.FC = () => {
             onChange={(e) => handleLocationChange('userAddress', e.target.value)}
             placeholder="Enter your complete property address as you would like it to appear to guests..."
             rows={3}
-            className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 resize-none ${
+            className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 resize-none ${
               validationMessages.userAddress || fieldErrors['location.userAddress'] ? 'border-red-300' : 'border-gray-200'
             }`}
           />
@@ -763,7 +763,7 @@ const PropertyForm: React.FC = () => {
         {/* Google Places Search */}
         <div className="mb-6">
           <label className="block text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-purple-600" />
+            <MapPin className="w-5 h-5 text-[#C45D3E]" />
             Search Location with Google Maps
           </label>
           <GooglePlacesAutocomplete
@@ -792,7 +792,7 @@ const PropertyForm: React.FC = () => {
                 value={formData.location.address}
                 onChange={(e) => handleLocationChange('address', e.target.value)}
                 placeholder="Search using Google Maps above"
-                className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                   validationMessages.address || fieldErrors['location.address'] ? 'border-red-300' : 'border-gray-200'
                 }`}
               />
@@ -809,7 +809,7 @@ const PropertyForm: React.FC = () => {
                 value={formData.location.city}
                 onChange={(e) => handleLocationChange('city', e.target.value)}
                 placeholder="Mumbai"
-                className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                   validationMessages.city || fieldErrors['location.city'] ? 'border-red-300' : 'border-gray-200'
                 }`}
               />
@@ -826,7 +826,7 @@ const PropertyForm: React.FC = () => {
                 value={formData.location.state}
                 onChange={(e) => handleLocationChange('state', e.target.value)}
                 placeholder="Maharashtra"
-                className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                   validationMessages.state || fieldErrors['location.state'] ? 'border-red-300' : 'border-gray-200'
                 }`}
               />
@@ -843,7 +843,7 @@ const PropertyForm: React.FC = () => {
                 value={formData.location.postalCode}
                 onChange={(e) => handleLocationChange('postalCode', e.target.value)}
                 placeholder="400001"
-                className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                   validationMessages.postalCode || fieldErrors['location.postalCode'] ? 'border-red-300' : 'border-gray-200'
                 }`}
               />
@@ -865,7 +865,7 @@ const PropertyForm: React.FC = () => {
             height="400px"
             className="w-full shadow-lg"
           />
-          <p className="text-sm text-gray-700 mt-3 bg-blue-50 p-3 rounded-lg">
+          <p className="text-sm text-gray-700 mt-3 bg-[#FDF8F3] p-3 rounded-lg">
             📍 <strong>Selected Coordinates:</strong> <span className="font-mono font-medium">{formData.location.coordinates[1].toFixed(6)}, {formData.location.coordinates[0].toFixed(6)}</span>
             <br />
             <span className="text-xs text-gray-600">Click on the map to adjust the exact property location</span>
@@ -888,7 +888,7 @@ const PropertyForm: React.FC = () => {
             <div>
               <label className="block text-base font-semibold text-gray-900 mb-2">Base Price per Night</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl font-bold text-purple-600">₹</span>
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl font-bold text-[#C45D3E]">₹</span>
                 <input
                   type="number"
                   inputMode="numeric"
@@ -899,7 +899,7 @@ const PropertyForm: React.FC = () => {
                     const num = Number(v); handlePricingChange('basePrice', isNaN(num) ? 0 : num);
                   }}
                   placeholder="0"
-                  className={`w-full pl-10 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                  className={`w-full pl-10 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                     validationMessages.basePrice || fieldErrors.basePrice ? 'border-red-300' : 'border-gray-200'
                   }`}
                 />
@@ -915,7 +915,7 @@ const PropertyForm: React.FC = () => {
             <div>
               <label className="block text-base font-semibold text-gray-900 mb-2">Extra Guest Price</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl font-bold text-purple-600">₹</span>
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl font-bold text-[#C45D3E]">₹</span>
                 <input
                   type="number"
                   inputMode="numeric"
@@ -925,7 +925,7 @@ const PropertyForm: React.FC = () => {
                     const num = Number(v); handlePricingChange('extraGuestPrice', isNaN(num) ? 0 : num);
                   }}
                   placeholder="500"
-                  className={`w-full pl-10 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                  className={`w-full pl-10 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                     validationMessages.extraGuestPrice || fieldErrors['pricing.extraGuestPrice'] ? 'border-red-300' : 'border-gray-200'
                   }`}
                 />
@@ -940,7 +940,7 @@ const PropertyForm: React.FC = () => {
             <div>
               <label className="block text-base font-semibold text-gray-900 mb-2">Cleaning Fee</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl font-bold text-purple-600">₹</span>
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl font-bold text-[#C45D3E]">₹</span>
                 <input
                   type="number"
                   inputMode="numeric"
@@ -950,7 +950,7 @@ const PropertyForm: React.FC = () => {
                     const num = Number(v); handlePricingChange('cleaningFee', isNaN(num) ? 0 : num);
                   }}
                   placeholder="0"
-                  className={`w-full pl-10 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                  className={`w-full pl-10 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                     validationMessages.cleaningFee || fieldErrors['pricing.cleaningFee'] ? 'border-red-300' : 'border-gray-200'
                   }`}
                 />
@@ -963,7 +963,7 @@ const PropertyForm: React.FC = () => {
             <div>
               <label className="block text-base font-semibold text-gray-900 mb-2">Security Deposit</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl font-bold text-purple-600">₹</span>
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl font-bold text-[#C45D3E]">₹</span>
                 <input
                   type="number"
                   inputMode="numeric"
@@ -973,7 +973,7 @@ const PropertyForm: React.FC = () => {
                     const num = Number(v); handlePricingChange('securityDeposit', isNaN(num) ? 0 : num);
                   }}
                   placeholder="0"
-                  className={`w-full pl-10 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                  className={`w-full pl-10 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                     validationMessages.securityDeposit || fieldErrors['pricing.securityDeposit'] ? 'border-red-300' : 'border-gray-200'
                   }`}
                 />
@@ -990,7 +990,7 @@ const PropertyForm: React.FC = () => {
           <select
             value={formData.pricing.currency}
             onChange={(e) => handleInputChange('pricing', { ...formData.pricing, currency: e.target.value })}
-            className="w-full px-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 bg-white text-gray-900 max-w-xs"
+            className="w-full px-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-gray-900 max-w-xs"
           >
             <option value="INR">INR (₹)</option>
             <option value="EUR">EUR (€)</option>
@@ -1013,13 +1013,13 @@ const PropertyForm: React.FC = () => {
                 onChange={(e) => handleInputChange('anytimeEnabled', e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#C45D3E]/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#C45D3E]"></div>
             </label>
           </div>
 
           {formData.anytimeEnabled && (
             <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
-              <div className="rounded-xl bg-blue-50 border border-blue-200 p-4 text-sm text-blue-800">
+              <div className="rounded-xl bg-[#FDF8F3] border border-[#F5E6D3] p-4 text-sm text-[#1A1A1A]">
                 Guests will see two ways to book:
                 <ul className="list-disc ml-5 mt-1">
                   <li>Standard: Check‑in 11:00 AM, check‑out 10:00 AM next day</li>
@@ -1032,7 +1032,7 @@ const PropertyForm: React.FC = () => {
                 <input
                   type="number"
                   inputMode="numeric"
-                  className={`w-full px-4 py-2.5 rounded-xl border focus:ring-2 focus:ring-purple-200 focus:border-purple-500 transition-colors text-gray-900 placeholder-gray-500 ${
+                  className={`w-full px-4 py-2.5 rounded-xl border focus:ring-2 focus:ring-[#C45D3E]/30 focus:border-[#C45D3E] transition-colors text-gray-900 placeholder-gray-500 ${
                     fieldErrors['pricing.basePrice24Hour'] ? 'border-red-300' : 'border-gray-300'
                   }`}
                   placeholder={
@@ -1072,7 +1072,7 @@ const PropertyForm: React.FC = () => {
                 onChange={(e) => handleInputChange('hourlyBooking', { ...formData.hourlyBooking, enabled: e.target.checked })}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#C45D3E]/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#C45D3E]"></div>
             </label>
           </div>
 
@@ -1094,7 +1094,7 @@ const PropertyForm: React.FC = () => {
                           ...formData.hourlyBooking,
                           hourlyRates: { ...formData.hourlyBooking.hourlyRates, sixHours: Number(e.target.value) / 100 }
                         })}
-                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-purple-500 text-gray-900 font-medium bg-white"
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-[#C45D3E] text-gray-900 font-medium bg-white"
                       />
                       <span className="ml-1 text-xs font-medium text-gray-700">%</span>
                     </div>
@@ -1112,7 +1112,7 @@ const PropertyForm: React.FC = () => {
                           ...formData.hourlyBooking,
                           hourlyRates: { ...formData.hourlyBooking.hourlyRates, twelveHours: Number(e.target.value) / 100 }
                         })}
-                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-purple-500 text-gray-900 font-medium bg-white"
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-[#C45D3E] text-gray-900 font-medium bg-white"
                       />
                       <span className="ml-1 text-xs font-medium text-gray-700">%</span>
                     </div>
@@ -1130,7 +1130,7 @@ const PropertyForm: React.FC = () => {
                           ...formData.hourlyBooking,
                           hourlyRates: { ...formData.hourlyBooking.hourlyRates, eighteenHours: Number(e.target.value) / 100 }
                         })}
-                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-purple-500 text-gray-900 font-medium bg-white"
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-[#C45D3E] text-gray-900 font-medium bg-white"
                       />
                       <span className="ml-1 text-xs font-medium text-gray-700">%</span>
                     </div>
@@ -1158,13 +1158,13 @@ const PropertyForm: React.FC = () => {
             <div>
               <label className="block text-base font-semibold text-gray-900 mb-2">Maximum Guests</label>
               <div className="relative">
-                <Users className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-600" />
+                <Users className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#C45D3E]" />
                 <input
                   type="number"
                   value={formData.maxGuests}
                   onChange={(e) => handleInputChange('maxGuests', Number(e.target.value))}
                   placeholder="4"
-                  className={`w-full pl-12 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                  className={`w-full pl-12 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                     validationMessages.maxGuests || fieldErrors.maxGuests ? 'border-red-300' : 'border-gray-200'
                   }`}
                 />
@@ -1177,13 +1177,13 @@ const PropertyForm: React.FC = () => {
             <div>
               <label className="block text-base font-semibold text-gray-900 mb-2">Bedrooms</label>
               <div className="relative">
-                <Bed className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-600" />
+                <Bed className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#C45D3E]" />
                 <input
                   type="number"
                   value={formData.bedrooms}
                   onChange={(e) => handleInputChange('bedrooms', Number(e.target.value))}
                   placeholder="2"
-                  className={`w-full pl-12 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                  className={`w-full pl-12 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                     validationMessages.bedrooms || fieldErrors.bedrooms ? 'border-red-300' : 'border-gray-200'
                   }`}
                 />
@@ -1198,13 +1198,13 @@ const PropertyForm: React.FC = () => {
                 Bathrooms <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <Bath className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-600" />
+                <Bath className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#C45D3E]" />
                 <input
                   type="number"
                   value={formData.bathrooms}
                   onChange={(e) => handleInputChange('bathrooms', Number(e.target.value))}
                   placeholder="2"
-                  className={`w-full pl-12 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                  className={`w-full pl-12 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                     validationMessages.bathrooms || fieldErrors.bathrooms ? 'border-red-300' : 'border-gray-200'
                   }`}
                 />
@@ -1223,7 +1223,7 @@ const PropertyForm: React.FC = () => {
                 value={formData.minNights}
                 onChange={(e) => handleInputChange('minNights', Number(e.target.value))}
                 placeholder="1"
-                className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                   validationMessages.minNights || fieldErrors.minNights ? 'border-red-300' : 'border-gray-200'
                 }`}
               />
@@ -1239,7 +1239,7 @@ const PropertyForm: React.FC = () => {
                 value={formData.beds}
                 onChange={(e) => handleInputChange('beds', Number(e.target.value))}
                 placeholder="3"
-                className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                   validationMessages.beds || fieldErrors.beds ? 'border-red-300' : 'border-gray-200'
                 }`}
               />
@@ -1271,10 +1271,10 @@ const PropertyForm: React.FC = () => {
                     type="checkbox"
                     checked={formData.amenities.includes(amenity)}
                     onChange={() => handleArrayToggle('amenities', amenity)}
-                    className="w-5 h-5 rounded border-2 border-gray-300 text-purple-600 focus:ring-4 focus:ring-purple-100 focus:ring-offset-0"
+                    className="w-5 h-5 rounded border-2 border-gray-300 text-[#C45D3E] focus:ring-4 focus:ring-[#C45D3E]/20 focus:ring-offset-0"
                   />
                   <div className="flex items-center space-x-2">
-                    <span className="text-purple-600">
+                    <span className="text-[#C45D3E]">
                       {getAmenityIcon(amenity)}
                     </span>
                     <span className="text-base text-gray-900 capitalize font-medium">
@@ -1295,10 +1295,10 @@ const PropertyForm: React.FC = () => {
                     type="checkbox"
                     checked={formData.features.includes(feature)}
                     onChange={() => handleArrayToggle('features', feature)}
-                    className="w-5 h-5 rounded border-2 border-gray-300 text-purple-600 focus:ring-4 focus:ring-purple-100 focus:ring-offset-0"
+                    className="w-5 h-5 rounded border-2 border-gray-300 text-[#C45D3E] focus:ring-4 focus:ring-[#C45D3E]/20 focus:ring-offset-0"
                   />
                   <div className="flex items-center space-x-2">
-                    <span className="text-purple-600">
+                    <span className="text-[#C45D3E]">
                       {getFeatureIcon(feature)}
                     </span>
                     <span className="text-base text-gray-900 capitalize font-medium">
@@ -1319,7 +1319,7 @@ const PropertyForm: React.FC = () => {
                     type="checkbox"
                     checked={formData.houseRules.includes(rule)}
                     onChange={() => handleArrayToggle('houseRules', rule)}
-                    className="w-5 h-5 rounded border-2 border-gray-300 text-purple-600 focus:ring-4 focus:ring-purple-100 focus:ring-offset-0"
+                    className="w-5 h-5 rounded border-2 border-gray-300 text-[#C45D3E] focus:ring-4 focus:ring-[#C45D3E]/20 focus:ring-offset-0"
                   />
                   <span className="text-base text-gray-900 capitalize font-medium">
                     {rule.replace('-', ' ')}
@@ -1344,7 +1344,7 @@ const PropertyForm: React.FC = () => {
           </p>
         </div>
         
-        <div className="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-dashed border-purple-200 rounded-xl p-8">
+        <div className="bg-gradient-to-r from-[#FDF8F3] to-[#FDF8F3] border-2 border-dashed border-[#F5E6D3] rounded-xl p-8">
           <ImageUpload
             images={formData.images}
             onImagesChange={(images) => handleInputChange('images', images)}
@@ -1359,7 +1359,7 @@ const PropertyForm: React.FC = () => {
     { number: 1, title: 'Basic Info', icon: <Home size={20} /> },
     { number: 2, title: 'Place Type', icon: <Home size={20} /> },
     { number: 3, title: 'Location', icon: <MapPin size={20} /> },
-    { number: 4, title: 'Pricing', icon: <span className="font-bold text-purple-600">₹</span> },
+    { number: 4, title: 'Pricing', icon: <span className="font-bold text-[#C45D3E]">₹</span> },
     { number: 5, title: 'Capacity', icon: <Users size={20} /> },
     { number: 6, title: 'Amenities', icon: <CheckCircle size={20} /> },
     { number: 7, title: 'Images', icon: <Camera size={20} /> }
@@ -1389,7 +1389,7 @@ const PropertyForm: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-[#FDF8F3]">
       {/* Full-screen sidebar */}
       <div className="flex min-h-screen">
         {/* Left Sidebar - Fixed width, full height */}
@@ -1438,7 +1438,7 @@ const PropertyForm: React.FC = () => {
                       flex items-center space-x-4 p-4 rounded-xl transition-all duration-300
                       ${isActive 
                         ? canCompleteCurrentStep
-                          ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg shadow-purple-500/25'
+                          ? 'bg-gradient-to-r from-[#C45D3E] to-[#A84B32] text-white shadow-lg shadow-[#C45D3E]/25'
                           : 'bg-orange-50 text-orange-700 border border-orange-200'
                         : isCompleted 
                           ? 'bg-green-50 text-green-700 border border-green-200' 
@@ -1500,7 +1500,7 @@ const PropertyForm: React.FC = () => {
               <div className="text-sm text-gray-500 mb-2">Progress</div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-[#C45D3E] to-[#A84B32] h-2 rounded-full transition-all duration-500"
                   style={{ width: `${(step / steps.length) * 100}%` }}
                 ></div>
               </div>
@@ -1573,7 +1573,7 @@ const PropertyForm: React.FC = () => {
                       disabled={!canProceed()}
                       className={`flex items-center px-8 py-3 rounded-xl shadow-lg text-lg font-medium transition-all duration-200 ${
                         canProceed()
-                          ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 shadow-purple-500/25'
+                          ? 'bg-gradient-to-r from-[#C45D3E] to-[#A84B32] text-white hover:from-[#C45D3E] hover:to-[#A84B32] shadow-[#C45D3E]/25'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
                     >

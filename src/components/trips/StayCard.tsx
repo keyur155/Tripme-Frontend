@@ -205,7 +205,7 @@ const currency =
               </h3>
               { varient == "featured" &&( 
               <div className="flex items-center gap-1 mt-1">
-                <MapPin size={14} className="text-[#4285f4] flex-shrink-0" />
+                <MapPin size={14} className="text-[#C45D3E] flex-shrink-0" />
                 <p className="text-xs md:text-sm text-gray-500 truncate">
                   {stay.location.city}, {stay.location.state}
                 </p>
@@ -237,7 +237,7 @@ const currency =
           {/* Price */}
 
          {priceAmount &&( <div className="flex items-baseline gap-1">
-            <span className="text-xs md:text-lg font-bold text-[#4285f4]">
+            <span className="text-xs md:text-lg font-bold text-[#C45D3E]">
               {formatCurrency(stay.price.amount, stay.price.currency)}
             </span>
             <span className="text-xs md:text-sm text-gray-600 font-medium">night</span>

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Home, Briefcase, User, Heart, Settings ,XIcon, Instagram, Facebook  ,Twitter ,Youtube, Search} from 'lucide-react';
+import { Home, Briefcase, User, Heart, Settings, XIcon, Instagram, Facebook, Twitter, Youtube, Search, MapPin, Shield } from 'lucide-react';
 import { useScrollDirection } from '@/hooks/userScrollDirection';
 import { useUI } from "@/core/store/uiContext";
 import { usePathname } from 'next/navigation';
@@ -97,7 +97,7 @@ export default function Footer() {
 };
 
   const navColor = "#717171"; // Neutral gray for inactive
-  const activeNavColor = "#4285F4"; // Brand blue for active
+  const activeNavColor = "#C45D3E"; // Earthy terracotta for active
 
   const getNavLinkClass = (path: string) => {
     const isActive = path === '/' ? pathname === '/' : pathname.startsWith(path);
@@ -168,37 +168,31 @@ export default function Footer() {
       <footer className={`relative w-full bg-white border-t border-gray-200 mt-auto overflow-hidden ${
         isHomePage ? 'pb-24 block' : 'hidden sm:block'
       }`}>
-        {/* Decorative background pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-4 left-8 text-6xl">🏛️</div>
-          <div className="absolute top-12 right-16 text-4xl">🕌</div>
-          <div className="absolute bottom-8 left-1/4 text-5xl">🏔️</div>
-          <div className="absolute bottom-12 right-1/3 text-4xl">🐘</div>
-          <div className="absolute top-6 left-1/2 text-3xl">🎪</div>
-        </div>
+        {/* Subtle warm gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#FDF8F3] via-white to-[#F5E6D3] opacity-60"></div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
+        <div className="relative z-10 max-w-7xl mx-auto px-5 py-8 md:py-12">
           {/* Main footer content */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-8 md:mb-12">
             
             {/* Brand section */}
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div className="flex items-center">
                 <img 
                   src="/logo.png" 
                   alt="TripMe Logo" 
-                  className="h-10 w-auto"
+                  className="h-8 md:h-10 w-auto"
                 />
               </div>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 text-sm leading-relaxed">
                 Discover incredible stays across India. From heritage havelis to modern apartments, 
                 find your perfect home away from home.
               </p>
               {/* <div className="flex space-x-3">
-                <a href="#" className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-2 rounded-full hover:scale-110 transition-transform duration-300 shadow-lg">
+                <a href="#" className="bg-[#C45D3E] text-white p-2 rounded-full hover:scale-110 transition-transform duration-300 shadow-lg">
                   <span className="text-sm">📱</span>
                 </a>
-                <a href="#" className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-2 rounded-full hover:scale-110 transition-transform duration-300 shadow-lg">
+                <a href="#" className="bg-[#2D5F3A] text-white p-2 rounded-full hover:scale-110 transition-transform duration-300 shadow-lg">
                   <span className="text-sm">📘</span>
                 </a>
                 <a href="#" className="bg-gradient-to-r from-pink-500 to-rose-500 text-white p-2 rounded-full hover:scale-110 transition-transform duration-300 shadow-lg">
@@ -212,16 +206,16 @@ export default function Footer() {
 
             {/* Destinations */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <span className="mr-2">🏞️</span>
+              <h3 className="text-sm md:text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                <MapPin className="w-3.5 h-3.5 text-[#C45D3E] mr-1.5" />
                 Popular Destinations
               </h3>
-              <ul className="space-y-2 text-xs md:text-base">
+              <ul className="space-y-1.5 text-xs md:text-sm">
                 {['Goa', 'Rajasthan', 'Kerala', 'Himachal Pradesh', 'Uttarakhand', 'Kashmir'].map((destination) => (
                   <li key={destination}>
                     <Link 
                       href={`/search?city=${encodeURIComponent(destination)}`} 
-                      className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group"
+                      className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group"
                     >
                       <span className="group-hover:translate-x-1 transition-transform duration-200">{destination}</span>
                     </Link>
@@ -232,43 +226,43 @@ export default function Footer() {
 
             {/* Support */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <span className="mr-2">🛟</span>
+              <h3 className="text-sm md:text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                <Shield className="w-3.5 h-3.5 text-[#C45D3E] mr-1.5" />
                 Support
               </h3>
-              <ul className="space-y-2 text-xs md:text-base">
+              <ul className="space-y-1.5 text-xs md:text-sm">
                 <li>
-                  <Link href="/contact" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                  <Link href="/contact" className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">Contact Us</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about-hosting" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                  <Link href="/about-hosting" className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">About Hosting</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                  <Link href="/about" className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">About Us</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/refund-cancellation" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                  <Link href="/refund-cancellation" className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">Cancellation Policy</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/shipping-policy" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                  <Link href="/shipping-policy" className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">Shipping Policy</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/refund-cancellation" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                  <Link href="/refund-cancellation" className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">Refund Policy</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/become-host" className="text-gray-600 hover:text-purple-600 transition-colors duration-200 flex items-center group">
+                  <Link href="/become-host" className="text-gray-600 hover:text-[#C45D3E] transition-colors duration-200 flex items-center group">
                     <span className="group-hover:translate-x-1 transition-transform duration-200">Become a Host</span>
                   </Link>
                 </li>
@@ -277,11 +271,11 @@ export default function Footer() {
 
             {/* Newsletter */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <span className="mr-2">📧</span>
+              <h3 className="text-sm md:text-lg font-semibold text-gray-800 mb-2 md:mb-4 flex items-center">
+                <span className="mr-1.5">📧</span>
                 Stay Connected
               </h3>
-              <p className="text-gray-600 mb-4 text-xs md:text-sm">
+              <p className="text-gray-600 mb-3 text-xs md:text-sm">
                 Get travel inspiration and exclusive deals delivered to your inbox.
               </p>
               <div className="space-y-3">
@@ -292,14 +286,14 @@ export default function Footer() {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent text-sm"
                 disabled={isSubscribing}
                 required
               />
               <button 
                 type="submit"
                 disabled={isSubscribing}
-                className="bg-[#4285F4] text-white px-4 py-2 rounded-r-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-[#C45D3E] text-white px-4 py-2 rounded-r-lg hover:bg-[#A84B32] transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubscribing ? (
                   <span className="animate-spin">⏳</span>
@@ -329,9 +323,9 @@ export default function Footer() {
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent text-sm"
                   />
-                  <button className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-r-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-lg">
+                  <button className="bg-[#C45D3E] text-white px-4 py-2 rounded-r-lg hover:bg-[#A84B32] transition-all duration-200 shadow-lg">
                     ✈️
                   </button>
                 </div>
@@ -343,77 +337,42 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Divider */}
-           <div className="border-t border-purple-200 my-8"></div>
-<div className="flex flex-col md:flex-row justify-center gap-6 items-center space-y-4 md:space-y-0">
-  
-  {/* Existing text or links */}
-  <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
-    <span>Follow us!!</span>
-  </div>
-
-  {/* Social Media Icons Group */}
-  <div className="flex items-center gap-4">
-    <a 
-      href="https://facebook.com/yourprofile" 
-      target="_blank" 
-      rel="noopener noreferrer"
-      className="text-gray-600 hover:text-blue-600 transition-colors"
-    >
-      <Facebook size={20} />
-    </a>
-    <a 
-      href="https://twitter.com/yourprofile" 
-      target="_blank" 
-      rel="noopener noreferrer"
-      className="text-gray-600 hover:text-sky-500 transition-colors"
-    >
-      <XIcon size={20} />
-    </a>
-    <a 
-      href="https://instagram.com/yourprofile" 
-      target="_blank" 
-      rel="noopener noreferrer"
-      className="text-gray-600 hover:text-pink-600 transition-colors"
-    >
-      <Instagram size={20} />
-    </a>
-
-    <a 
-    href="https://youtube.com/yourchannel" 
-    target="_blank" 
-    rel="noopener noreferrer"
-    className="text-gray-600 hover:text-red-600 transition-colors"
-  >
-    <Youtube size={20} />
-  </a>
-  </div>
-
-</div>
-        
-
-          {/* Copyright */}
-          <div className="text-center mt-8 pt-6 border-t border-purple-200">
-            <p className="text-sm text-gray-500 flex items-center justify-center space-x-2">
-              <span>Made with</span>
-              <span className="text-red-500 animate-pulse">❤️</span>
-              <span>in India</span>
-              <span className="mx-2">•</span>
-              <span>&copy; {currentYear} TripMe. All rights reserved.</span>
-            </p>
-            <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-gray-400">
-              <Link href="/refund-cancellation" className="hover:text-purple-600 transition-colors duration-200">Refund & Cancellation</Link>
-              <span>·</span>
-              <Link href="/shipping-policy" className="hover:text-purple-600 transition-colors duration-200">Shipping Policy</Link>
-              <span>·</span>
-              <Link href="/privacy-policy" className="hover:text-purple-600 transition-colors duration-200">Privacy Policy</Link>
-              <span>·</span>
-              <Link href="/terms" className="hover:text-purple-600 transition-colors duration-200">Terms of Service</Link>
+          {/* Social + Copyright */}
+          <div className="border-t border-[#F5E6D3] pt-6">
+            <div className="flex flex-col items-center gap-3">
+              <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Follow us</span>
+              <div className="flex items-center gap-5">
+                <a href="https://facebook.com/yourprofile" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-[#C45D3E] transition-colors">
+                  <Facebook size={18} />
+                </a>
+                <a href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-[#C45D3E] transition-colors">
+                  <XIcon size={18} />
+                </a>
+                <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-[#C45D3E] transition-colors">
+                  <Instagram size={18} />
+                </a>
+                <a href="https://youtube.com/yourchannel" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-[#C45D3E] transition-colors">
+                  <Youtube size={18} />
+                </a>
+              </div>
             </div>
-            <div className="mt-2 flex items-center justify-center space-x-1 text-xs text-gray-400">
-              <span>🇮🇳</span>
-              <span>Proudly serving travelers across Bharat</span>
-              <span>🇮🇳</span>
+
+            <div className="text-center mt-6 pt-5 border-t border-[#F5E6D3]">
+              <p className="text-xs text-gray-500">
+                Made with <span className="text-red-500">❤️</span> in India · &copy; {currentYear} TripMe. All rights reserved.
+              </p>
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-gray-400">
+                <Link href="/refund-cancellation" className="hover:text-[#C45D3E] transition-colors">Refund & Cancellation</Link>
+                <span>·</span>
+                <Link href="/shipping-policy" className="hover:text-[#C45D3E] transition-colors">Shipping Policy</Link>
+                <span>·</span>
+                <Link href="/privacy-policy" className="hover:text-[#C45D3E] transition-colors">Privacy Policy</Link>
+                <span>·</span>
+                <Link href="/terms" className="hover:text-[#C45D3E] transition-colors">Terms of Service</Link>
+              </div>
+              <p className="mt-2 text-[11px] text-gray-400">
+                🇮🇳 Proudly serving travelers across Bharat 🇮🇳
+              </p>
             </div>
           </div>
         </div>

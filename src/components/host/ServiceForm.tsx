@@ -28,7 +28,7 @@ declare global {
   }
 }
 
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'AIzaSyB9JgH59f8fK3xzaBfFB6T19u4qGEUeLOM';
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
 // Validation rules matching backend model
 const VALIDATION_RULES = {
@@ -307,7 +307,7 @@ function MapSearchBox({ onSelect }: { onSelect: (coords: [number, number], addre
     <div className="relative mb-4">
       <input
         type="text"
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-800"
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent bg-white text-gray-800"
         placeholder="Search address or place on map..."
         value={query}
         onChange={handleInput}
@@ -320,7 +320,7 @@ function MapSearchBox({ onSelect }: { onSelect: (coords: [number, number], addre
             <button
               key={idx}
               type="button"
-              className="w-full text-left px-4 py-3 hover:bg-indigo-50 focus:bg-indigo-100 rounded-xl transition-all text-gray-900 font-medium"
+              className="w-full text-left px-4 py-3 hover:bg-[#FDF8F3] focus:bg-[#F5E6D3] rounded-xl transition-all text-gray-900 font-medium"
               onClick={async () => {
                 setQuery(result.label);
                 setShowDropdown(false);
@@ -574,8 +574,8 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
   // Helper component for field info - REMOVED
   // const FieldInfo = ({ field, rules }: { field: string; rules: any }) => (
   //   <div className="flex items-center space-x-2 mt-1 text-sm">
-  //     <Info className="w-4 h-4 text-blue-500" />
-  //     <span className="text-blue-600">
+  //     <Info className="w-4 h-4 text-[#C45D3E]" />
+  //     <span className="text-[#C45D3E]">
   //       {rules.required ? 'Required' : 'Optional'} • 
   //       {rules.minLength && ` Min: ${rules.minLength} chars`}
   //       {rules.maxLength && ` Max: ${rules.maxLength} chars`}
@@ -673,7 +673,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
               value={formData.title}
               onChange={(e) => handleInputChange('title', e.target.value)}
               placeholder="e.g., Guided City Tour"
-              className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+              className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                 validationMessages.title || fieldErrors.title ? 'border-red-300' : 'border-gray-200'
               }`}
             />
@@ -689,7 +689,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
             <select
               value={formData.serviceType}
               onChange={(e) => handleInputChange('serviceType', e.target.value)}
-              className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 bg-white text-gray-900 ${
+              className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-gray-900 ${
                 validationMessages.serviceType || fieldErrors.serviceType ? 'border-red-300' : 'border-gray-200'
               }`}
             >
@@ -715,7 +715,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
             onChange={(e) => handleInputChange('description', e.target.value)}
             placeholder="Describe your service in detail..."
             rows={5}
-            className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 resize-none text-gray-900 placeholder-gray-500 ${
+            className={`w-full px-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 resize-none text-gray-900 placeholder-gray-500 ${
               validationMessages.description || fieldErrors.description ? 'border-red-300' : 'border-gray-200'
             }`}
           />
@@ -744,7 +744,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
             onChange={(e) => handleLocationChange('userAddress', e.target.value)}
             placeholder="Enter your complete service address as you would like it to appear to customers..."
             rows={3}
-            className="w-full px-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 resize-none"
+            className="w-full px-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 resize-none"
           />
           <p className="text-sm text-gray-600 mt-2">This is how your address will appear to customers. Be specific and include landmarks if helpful.</p>
         </div>
@@ -752,7 +752,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
         {/* Map-based Location Selection */}
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6">
           <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-blue-600" />
+            <MapPin className="w-5 h-5 text-[#C45D3E]" />
             Map Location (for search & directions)
           </h4>
           
@@ -803,7 +803,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
                 value={formData.location.postalCode}
                 onChange={(e) => handleLocationChange('postalCode', e.target.value)}
                 placeholder="400001"
-                className="w-full px-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
+                className="w-full px-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500"
               />
             </div>
           </div>
@@ -811,10 +811,10 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
         
         {/* Map search box */}
         <div className="mt-6">
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
+          <div className="bg-[#FDF8F3] border border-[#F5E6D3] rounded-xl p-4 mb-4">
             <div className="flex items-center space-x-3 mb-3">
-              <MapPin className="w-5 h-5 text-blue-600" />
-              <h4 className="text-lg font-semibold text-blue-900">Map Search</h4>
+              <MapPin className="w-5 h-5 text-[#C45D3E]" />
+              <h4 className="text-lg font-semibold text-[#1A1A1A]">Map Search</h4>
             </div>
             <MapSearchBox
               onSelect={(coords, address) => {
@@ -873,13 +873,13 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
           <div>
             <label className="block text-base font-semibold text-gray-900 mb-2">Base Price</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl font-bold text-purple-600">₹</span>
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl font-bold text-[#C45D3E]">₹</span>
               <input
                 type="number"
                 value={formData.pricing.basePrice}
                 onChange={(e) => handlePricingChange('basePrice', parseFloat(e.target.value) || 0)}
                 placeholder="0"
-                className={`w-full pl-10 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                className={`w-full pl-10 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                   validationMessages.basePrice || fieldErrors.basePrice ? 'border-red-300' : 'border-gray-200'
                 }`}
               />
@@ -892,13 +892,13 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
           <div>
             <label className="block text-base font-semibold text-gray-900 mb-2">Per Person Price</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl font-bold text-purple-600">₹</span>
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl font-bold text-[#C45D3E]">₹</span>
               <input
                 type="number"
                 value={formData.pricing.perPersonPrice}
                 onChange={(e) => handlePricingChange('perPersonPrice', Number(e.target.value))}
                 placeholder="100"
-                className={`w-full pl-10 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                className={`w-full pl-10 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                   validationMessages.perPersonPrice || fieldErrors['pricing.perPersonPrice'] ? 'border-red-300' : 'border-gray-200'
                 }`}
               />
@@ -925,7 +925,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
             <label className="block text-base font-semibold text-gray-900 mb-2">Duration</label>
             <div className="flex gap-3">
               <div className="relative flex-1">
-                <Clock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-600" />
+                <Clock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#C45D3E]" />
                 <input
                   type="number"
                   value={formData.duration.value}
@@ -939,7 +939,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
                   }}
                   placeholder="60"
                   min={1}
-                  className={`w-full pl-12 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                  className={`w-full pl-12 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                     validationMessages.duration || fieldErrors.duration ? 'border-red-300' : 'border-gray-200'
                   }`}
                 />
@@ -954,7 +954,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
                   // Mark duration field as touched
                   setTouchedFields(prev => ({ ...prev, duration: true }));
                 }}
-                className="px-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 bg-white text-gray-900 min-w-[120px]"
+                className="px-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-gray-900 min-w-[120px]"
               >
                 <option value="minutes">Minutes</option>
                 <option value="hours">Hours</option>
@@ -970,13 +970,13 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
             <div>
               <label className="block text-base font-semibold text-gray-900 mb-2">Minimum Group Size</label>
               <div className="relative">
-                <Users className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-600" />
+                <Users className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#C45D3E]" />
                 <input
                   type="number"
                   value={formData.groupSize.min}
                   onChange={(e) => handleGroupSizeChange('min', Number(e.target.value))}
                   placeholder="1"
-                  className={`w-full pl-12 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                  className={`w-full pl-12 pr-4 py-3 text-base border-2 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500 ${
                     validationMessages.groupSize || fieldErrors.groupSize ? 'border-red-300' : 'border-gray-200'
                   }`}
                 />
@@ -989,13 +989,13 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
             <div>
               <label className="block text-base font-semibold text-gray-900 mb-2">Maximum Group Size</label>
               <div className="relative">
-                <Users className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-600" />
+                <Users className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#C45D3E]" />
                 <input
                   type="number"
                   value={formData.groupSize.max}
                   onChange={(e) => handleGroupSizeChange('max', Number(e.target.value))}
                   placeholder="10"
-                  className="w-full pl-12 pr-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
+                  className="w-full pl-12 pr-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 text-gray-900 placeholder-gray-500"
                 />
               </div>
             </div>
@@ -1023,7 +1023,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
                     type="checkbox"
                     checked={formData.requirements.includes(requirement)}
                     onChange={() => handleRequirementsToggle(requirement)}
-                    className="w-5 h-5 rounded border-2 border-gray-300 text-purple-600 focus:ring-4 focus:ring-purple-100 focus:ring-offset-0"
+                    className="w-5 h-5 rounded border-2 border-gray-300 text-[#C45D3E] focus:ring-4 focus:ring-[#C45D3E]/20 focus:ring-offset-0"
                   />
                   <span className="text-base text-gray-900 capitalize font-medium">
                     {requirement.replace('-', ' ')}
@@ -1038,7 +1038,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
             <select
               value={formData.cancellationPolicy}
               onChange={(e) => handleInputChange('cancellationPolicy', e.target.value)}
-              className="w-full px-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200 bg-white text-gray-900 max-w-md"
+              className="w-full px-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-[#C45D3E]/20 focus:border-[#C45D3E] transition-all duration-200 bg-white text-gray-900 max-w-md"
             >
               <option value="flexible">Flexible - Full refund up to 24 hours before</option>
               <option value="moderate">Moderate - Full refund up to 5 days before</option>
@@ -1061,7 +1061,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
           </p>
         </div>
         
-        <div className="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-dashed border-purple-200 rounded-xl p-8">
+        <div className="bg-gradient-to-r from-[#FDF8F3] to-[#FDF8F3] border-2 border-dashed border-[#F5E6D3] rounded-xl p-8">
           <ImageUpload
             images={formData.media}
             onImagesChange={(media) => handleInputChange('media', media)}
@@ -1075,14 +1075,14 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
   const steps = [
     { number: 1, title: 'Basic Info', icon: <Briefcase size={20} /> },
     { number: 2, title: 'Location', icon: <MapPin size={20} /> },
-    { number: 3, title: 'Pricing', icon: <span className="font-bold text-purple-600">₹</span> },
+    { number: 3, title: 'Pricing', icon: <span className="font-bold text-[#C45D3E]">₹</span> },
     { number: 4, title: 'Duration', icon: <Clock size={20} /> },
     { number: 5, title: 'Requirements', icon: <FileText size={20} /> },
     { number: 6, title: 'Media', icon: <Upload size={20} /> }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-[#FDF8F3]">
       {/* Full-screen sidebar */}
       <div className="flex h-screen mb-32">
         {/* Left Sidebar - Fixed width, full height */}
@@ -1131,7 +1131,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
                       flex items-center space-x-4 p-4 rounded-xl transition-all duration-300
                       ${isActive 
                         ? canCompleteCurrentStep
-                          ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg shadow-purple-500/25'
+                          ? 'bg-gradient-to-r from-[#C45D3E] to-[#A84B32] text-white shadow-lg shadow-[#C45D3E]/25'
                           : 'bg-orange-50 text-orange-700 border border-orange-200'
                         : isCompleted 
                           ? 'bg-green-50 text-green-700 border border-green-200' 
@@ -1193,7 +1193,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
               <div className="text-sm text-gray-500 mb-2">Progress</div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-[#C45D3E] to-[#A84B32] h-2 rounded-full transition-all duration-500"
                   style={{ width: `${(step / steps.length) * 100}%` }}
                 ></div>
               </div>
@@ -1253,7 +1253,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, isEditMode }) =>
                       disabled={!canProceed()}
                       className={`flex items-center px-8 py-3 rounded-xl shadow-lg text-lg font-medium transition-all duration-200 ${
                         canProceed()
-                          ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 shadow-purple-500/25'
+                          ? 'bg-gradient-to-r from-[#C45D3E] to-[#A84B32] text-white hover:from-[#C45D3E] hover:to-[#A84B32] shadow-[#C45D3E]/25'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
                     >

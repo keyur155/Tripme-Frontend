@@ -186,7 +186,7 @@ const HostBookingsPage: React.FC = () => {
       case 'cancelled':
         return 'bg-red-100 text-red-800 border-red-200';
       case 'completed':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-[#F5E6D3] text-[#1A1A1A] border-[#F5E6D3]';
       case 'expired':
         return 'bg-gray-100 text-gray-800 border-gray-200';
       default:
@@ -221,11 +221,23 @@ const HostBookingsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-6"></div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Loading bookings</h2>
-          <p className="text-gray-600">Fetching your booking requests...</p>
+      <div className="max-w-6xl mx-auto px-6 py-10">
+        <div className="mb-8">
+          <div className="h-8 w-52 bg-gray-200 rounded-lg animate-pulse mb-2" />
+          <div className="h-5 w-72 bg-gray-100 rounded-lg animate-pulse" />
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white border border-gray-200 rounded-2xl p-5">
+              <div className="h-4 w-16 bg-gray-100 rounded animate-pulse mb-3" />
+              <div className="h-7 w-10 bg-gray-200 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white border border-gray-200 rounded-2xl p-5 h-44 animate-pulse" />
+          ))}
         </div>
       </div>
     );
@@ -233,52 +245,37 @@ const HostBookingsPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <AlertCircle className="w-8 h-8 text-red-600" />
+      <div className="max-w-6xl mx-auto px-6 py-10">
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-5">
+            <AlertCircle className="w-8 h-8 text-red-500" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h2>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <Button onClick={fetchBookings} className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white">
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Something went wrong</h2>
+          <p className="text-gray-500 mb-6 text-center max-w-sm">{error}</p>
+          <button onClick={fetchBookings} className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-colors">
             Try Again
-          </Button>
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="pb-12 pt-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="pb-12">
+      <div className="max-w-6xl mx-auto px-6 py-10">
           {/* Header */}
-          <div className="mb-8">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-              <div className="space-y-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <Receipt className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                      Booking Requests
-                    </h1>
-                    <p className="text-gray-600">Manage incoming booking requests</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <Button 
-                  onClick={() => router.push('/host/dashboard')}
-                  variant="outline"
-                  className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border-purple-200 hover:bg-white hover:shadow-lg transition-all duration-300 hover:scale-105"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Back to Dashboard
-                </Button>
-              </div>
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Reservations</h1>
+              <p className="text-gray-500 mt-1">Manage incoming booking requests</p>
             </div>
+            <button
+              onClick={() => router.push('/host/dashboard')}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Dashboard
+            </button>
           </div>
 
           {/* Stats */}
@@ -336,123 +333,101 @@ const HostBookingsPage: React.FC = () => {
           </div> */}
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-  {/* Total Bookings */}
-  <Card className="p-4 bg-white/80 backdrop-blur-sm border-0 shadow-lg rounded-2xl hover:shadow-xl transition-all duration-300 flex flex-col items-center justify-center text-center">
-    <div className="w-12 h-12 mb-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md shrink-0">
-      <Receipt className="w-6 h-6 text-white" />
+  <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-sm font-medium text-gray-500">Total</span>
+      <div className="w-9 h-9 bg-[#FDF8F3] rounded-xl flex items-center justify-center">
+        <Receipt className="w-4 h-4 text-[#C45D3E]" />
+      </div>
     </div>
-    <div className="space-y-1">
-      <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Total</p>
-      <p className="text-2xl font-bold text-gray-900 leading-none">
-        {bookings.length}
-      </p>
-    </div>
-  </Card>
+    <div className="text-2xl font-bold text-gray-900">{bookings.length}</div>
+  </div>
 
-  {/* Pending */}
-  <Card className="p-4 bg-white/80 backdrop-blur-sm border-0 shadow-lg rounded-2xl hover:shadow-xl transition-all duration-300 flex flex-col items-center justify-center text-center">
-    <div className="w-12 h-12 mb-3 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-md shrink-0">
-      <Clock className="w-6 h-6 text-white" />
+  <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-sm font-medium text-gray-500">Pending</span>
+      <div className="w-9 h-9 bg-amber-50 rounded-xl flex items-center justify-center">
+        <Clock className="w-4 h-4 text-amber-600" />
+      </div>
     </div>
-    <div className="space-y-1">
-      <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Pending</p>
-      <p className="text-2xl font-bold text-yellow-600 leading-none">
-        {bookings.filter(b => b.status === 'pending').length}
-      </p>
-    </div>
-  </Card>
+    <div className="text-2xl font-bold text-amber-600">{bookings.filter(b => b.status === 'pending').length}</div>
+  </div>
 
-  {/* Confirmed */}
-  <Card className="p-4 bg-white/80 backdrop-blur-sm border-0 shadow-lg rounded-2xl hover:shadow-xl transition-all duration-300 flex flex-col items-center justify-center text-center">
-    <div className="w-12 h-12 mb-3 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-md shrink-0">
-      <CheckCircle className="w-6 h-6 text-white" />
+  <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-sm font-medium text-gray-500">Confirmed</span>
+      <div className="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center">
+        <CheckCircle className="w-4 h-4 text-green-600" />
+      </div>
     </div>
-    <div className="space-y-1">
-      <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Confirmed</p>
-      <p className="text-2xl font-bold text-green-600 leading-none">
-        {bookings.filter(b => b.status === 'confirmed').length}
-      </p>
-    </div>
-  </Card>
+    <div className="text-2xl font-bold text-green-600">{bookings.filter(b => b.status === 'confirmed').length}</div>
+  </div>
 
-  {/* Total Earnings */}
-  <Card className="p-4 bg-white/80 backdrop-blur-sm border-0 shadow-lg rounded-2xl hover:shadow-xl transition-all duration-300 flex flex-col items-center justify-center text-center">
-    <div className="w-12 h-12 mb-3 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md shrink-0">
-      <span className="text-white font-bold text-lg">₹</span>
+  <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-sm font-medium text-gray-500">Earnings</span>
+      <div className="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center">
+        <span className="text-green-600 font-bold text-sm">₹</span>
+      </div>
     </div>
-    <div className="space-y-1 w-full">
-      <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Earnings</p>
-      <p className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight break-words">
-        {formatPrice(bookings.filter(b => b.status === 'confirmed').reduce((sum, b) => sum + b.totalAmount, 0))}
-      </p>
-    </div>
-  </Card>
+    <div className="text-xl font-bold text-gray-900">{formatPrice(bookings.filter(b => b.status === 'confirmed').reduce((sum, b) => sum + b.totalAmount, 0))}</div>
+  </div>
 </div>
 
           {/* Filters */}
           <div className="mb-8">
-            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-purple-200/50 shadow-xl">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <div className="w-5 h-5 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
-                  <Filter className="w-3 h-3 text-white" />
-                </div>
-                Search & Filter
-              </h2>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <input
-                      type="text"
-                      placeholder="Search by guest name or property..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200 hover:shadow-md"
-                    />
-                  </div>
-                </div>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-4 py-2 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200 hover:shadow-md"
-                >
-                  <option value="all">All Status</option>
-                  <option value="pending">Pending</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="cancelled">Cancelled</option>
-                  <option value="completed">Completed</option>
-                </select>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Search by guest name or property..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-300 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-colors"
+                />
               </div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-2.5 bg-white border border-gray-300 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-colors"
+              >
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="completed">Completed</option>
+              </select>
             </div>
           </div>
 
           {/* Bookings List */}
          {filteredBookings.length === 0 ? (
-  <Card className="p-8 md:p-12 text-center bg-white/80 backdrop-blur-sm border-0 shadow-xl rounded-2xl">
-    <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-      <Receipt className="w-8 h-8 md:w-10 md:h-10 text-purple-600" />
+  <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center">
+    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
+      <Calendar className="w-8 h-8 text-gray-400" />
     </div>
-    <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">No bookings found</h3>
-    <p className="text-sm md:text-base text-gray-600 mb-8 max-w-xs md:max-w-md mx-auto">
+    <h3 className="text-xl font-bold text-gray-900 mb-2">No reservations found</h3>
+    <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">
       {bookings.length === 0 
         ? "You haven't received any booking requests yet. Promote your listings to get more bookings."
         : "No bookings match your current filters. Try adjusting your search criteria."
       }
     </p>
-    <Button 
+    <button
       onClick={() => router.push('/host/listings')}
-      className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-xl py-6"
+      className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
     >
-      <Home className="w-5 h-5 mr-2" />
+      <Home className="w-4 h-4" />
       Manage Listings
-    </Button>
-  </Card>
+    </button>
+  </div>
 ) : (
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
     {filteredBookings.map((booking) => (
       <Card 
         key={booking._id}
-        className="bg-white/80 backdrop-blur-sm border-0 shadow-lg rounded-2xl overflow-hidden active:scale-[0.98] transition-all h-full flex flex-col"
+        className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-md transition-shadow h-full flex flex-col"
       >
         <div className="p-4 md:p-6 flex-1 flex flex-col">
           <div className="flex flex-col gap-4 flex-1">
@@ -493,7 +468,7 @@ const HostBookingsPage: React.FC = () => {
             {/* 2. Detail Grid: Dates & Times */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-gray-50 rounded-xl">
               <div className="flex items-center gap-3">
-                <Calendar className="w-4 h-4 text-purple-500" />
+                <Calendar className="w-4 h-4 text-gray-500" />
                 <div className="text-xs">
                   <p className="text-gray-400 font-medium uppercase tracking-tighter">Stay Dates</p>
                   <p className="text-gray-900 font-semibold">{formatDate(booking.checkIn)} - {formatDate(booking.checkOut)}</p>
@@ -502,18 +477,18 @@ const HostBookingsPage: React.FC = () => {
               
               {(booking.checkInTime || booking.checkOutTime) && (
                 <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-gray-200 pt-2 sm:pt-0 sm:pl-3">
-                  <Clock className="w-4 h-4 text-blue-500" />
+                  <Clock className="w-4 h-4 text-[#C45D3E]" />
                   <div className="text-xs flex gap-3">
                     {booking.checkInTime && (
                       <div>
                         <p className="text-gray-400 font-medium uppercase tracking-tighter">In</p>
-                        <p className="font-semibold text-blue-600">{booking.checkInTime}</p>
+                        <p className="font-semibold text-[#C45D3E]">{booking.checkInTime}</p>
                       </div>
                     )}
                     {booking.checkOutTime && (
                       <div>
                         <p className="text-gray-400 font-medium uppercase tracking-tighter">Out</p>
-                        <p className="font-semibold text-purple-600">{booking.checkOutTime}</p>
+                        <p className="font-semibold text-gray-700">{booking.checkOutTime}</p>
                       </div>
                     )}
                   </div>
@@ -533,9 +508,9 @@ const HostBookingsPage: React.FC = () => {
               )}
 
               {booking.hostFee && booking.hostFee > 0 && (
-                <div className="flex justify-between items-center p-3 bg-blue-50 text-blue-700 rounded-xl border border-blue-100 text-sm">
+                <div className="flex justify-between items-center p-3 bg-[#FDF8F3] text-[#C45D3E] rounded-xl border border-[#F5E6D3] text-sm">
                   <span className="font-medium">Your Payout:</span>
-                  <span className="font-black text-blue-800">{formatPrice(booking.hostFee)}</span>
+                  <span className="font-black text-[#1A1A1A]">{formatPrice(booking.hostFee)}</span>
                 </div>
               )}
             </div>

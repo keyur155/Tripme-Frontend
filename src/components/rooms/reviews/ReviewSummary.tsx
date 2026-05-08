@@ -156,8 +156,8 @@ export default function ReviewSummaryAirbnb({ summary, badge, tags = [] }: Revie
             {Number(summary?.averageRating || 0).toFixed(2)}
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-50 to-indigo-50 border border-emerald-100 shadow-sm">
-            <span className="text-emerald-500 text-lg sm:text-xl md:text-2xl">
+          <div className="flex items-center gap-2 sm:gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-[#FDF8F3] to-[#F5E6D3] border border-[#F5E6D3] shadow-sm">
+            <span className="text-[#2D5F3A] text-lg sm:text-xl md:text-2xl">
               {heroBadge.icon}
             </span>
             <span className="text-base sm:text-xl md:text-2xl font-semibold text-gray-900 leading-tight">
@@ -228,7 +228,7 @@ export default function ReviewSummaryAirbnb({ summary, badge, tags = [] }: Revie
                     <span className="text-[28px] font-semibold text-gray-900">
                       {Number(rating || 0).toFixed(1)}
                     </span>
-                    <Icon className="h-6 w-6 text-[#4285F4]" aria-hidden="true" />
+                    <Icon className="h-6 w-6 text-[#C45D3E]" aria-hidden="true" />
                   </div>
                 );
               })}

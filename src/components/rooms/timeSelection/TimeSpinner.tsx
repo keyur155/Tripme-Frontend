@@ -40,20 +40,20 @@ export function TimeSpinner({
       <button
         type="button"
         onClick={decrement}
-        className="px-3 py-2 bg-blue-100 rounded"
+        className="px-3 py-2 bg-[#F5E6D3] rounded"
         aria-label="Earlier check-in time"
       >
         ▲
       </button>
 
-      <div className="flex-1 text-center font-semibold bg-blue-100 text-lg rounded">
+      <div className="flex-1 text-center font-semibold bg-[#F5E6D3] text-lg rounded">
         {value}
       </div>
 
       <button
         type="button"
         onClick={increment}
-        className="px-3 py-2 bg-blue-100 rounded"
+        className="px-3 py-2 bg-[#F5E6D3] rounded"
         aria-label="Later check-in time"
       >
         ▼

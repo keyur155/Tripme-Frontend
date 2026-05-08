@@ -222,7 +222,7 @@ const KYCSubmissionContent: React.FC = () => {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#C45D3E]"></div>
         </div>
       </div>
     );
@@ -244,8 +244,8 @@ const KYCSubmissionContent: React.FC = () => {
           </Button>
         </div>
         <div className="flex items-center">
-          <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
-            <Shield className="w-6 h-6 text-purple-600" />
+          <div className="w-12 h-12 bg-[#F5E6D3] rounded-lg flex items-center justify-center mr-4">
+            <Shield className="w-6 h-6 text-[#C45D3E]" />
           </div>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Identity Verification</h1>
@@ -298,7 +298,7 @@ const KYCSubmissionContent: React.FC = () => {
               onClick={() => setActiveTab('status')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'status'
-                  ? 'border-purple-500 text-purple-600'
+                  ? 'border-[#C45D3E] text-[#C45D3E]'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
@@ -308,7 +308,7 @@ const KYCSubmissionContent: React.FC = () => {
               onClick={() => setActiveTab('submit')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'submit'
-                  ? 'border-purple-500 text-purple-600'
+                  ? 'border-[#C45D3E] text-[#C45D3E]'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
@@ -318,7 +318,7 @@ const KYCSubmissionContent: React.FC = () => {
               onClick={() => setActiveTab('requirements')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'requirements'
-                  ? 'border-purple-500 text-purple-600'
+                  ? 'border-[#C45D3E] text-[#C45D3E]'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
@@ -430,7 +430,7 @@ const KYCSubmissionContent: React.FC = () => {
                     <select
                       value={formData.identityDocument}
                       onChange={(e) => handleInputChange('identityDocument', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 text-gray-900 bg-white"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-[#C45D3E] focus:border-[#C45D3E] text-gray-900 bg-white"
                       required
                     >
                       <option value="" className="text-gray-500">Select document type</option>
@@ -484,13 +484,13 @@ const KYCSubmissionContent: React.FC = () => {
                           }
                         }
                       }}
-                      className="mt-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                      className="mt-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FDF8F3] file:text-[#C45D3E] hover:file:bg-[#F5E6D3]"
                       required
                       disabled={uploadingDocument}
                     />
                     {uploadingDocument && (
-                      <div className="mt-2 flex items-center justify-center text-sm text-blue-600">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                      <div className="mt-2 flex items-center justify-center text-sm text-[#C45D3E]">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#C45D3E] mr-2"></div>
                         Uploading...
                       </div>
                     )}
@@ -509,7 +509,7 @@ const KYCSubmissionContent: React.FC = () => {
                   <select
                     value={formData.addressProof}
                     onChange={(e) => handleInputChange('addressProof', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 text-gray-900 bg-white"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-[#C45D3E] focus:border-[#C45D3E] text-gray-900 bg-white"
                     required
                   >
                     <option value="" className="text-gray-500">Select address proof type</option>
@@ -548,13 +548,13 @@ const KYCSubmissionContent: React.FC = () => {
                           }
                         }
                       }}
-                      className="mt-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                      className="mt-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FDF8F3] file:text-[#C45D3E] hover:file:bg-[#F5E6D3]"
                       required
                       disabled={uploadingAddressProof}
                     />
                     {uploadingAddressProof && (
-                      <div className="mt-2 flex items-center justify-center text-sm text-blue-600">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                      <div className="mt-2 flex items-center justify-center text-sm text-[#C45D3E]">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#C45D3E] mr-2"></div>
                         Uploading...
                       </div>
                     )}
@@ -593,13 +593,13 @@ const KYCSubmissionContent: React.FC = () => {
                           }
                         }
                       }}
-                      className="mt-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                      className="mt-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FDF8F3] file:text-[#C45D3E] hover:file:bg-[#F5E6D3]"
                       required
                       disabled={uploadingSelfie}
                     />
                     {uploadingSelfie && (
-                      <div className="mt-2 flex items-center justify-center text-sm text-blue-600">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                      <div className="mt-2 flex items-center justify-center text-sm text-[#C45D3E]">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#C45D3E] mr-2"></div>
                         Uploading...
                       </div>
                     )}
@@ -695,7 +695,7 @@ const KYCSubmissionContent: React.FC = () => {
                     <ul className="text-sm text-gray-600 space-y-1">
                       {requirements.generalRequirements.map((req, index) => (
                         <li key={index} className="flex items-start">
-                          <span className="text-blue-500 mr-2">•</span>
+                          <span className="text-[#C45D3E] mr-2">•</span>
                           {req}
                         </li>
                       ))}

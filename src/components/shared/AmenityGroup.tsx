@@ -15,6 +15,7 @@ import {
   Waves,
   MountainSnow,
   MapPin,
+  ChevronDown,
 } from "lucide-react";
 
 const AMENITY_ICONS: Record<string, any> = {
@@ -25,14 +26,12 @@ const AMENITY_ICONS: Record<string, any> = {
   "Air conditioning": Droplets,
   Heating: Thermometer,
   TV: Tv,
-
   Pool: Waves,
   "Hot tub": Flame,
   "Free parking": ParkingCircle,
   "EV charger": Zap,
   Gym: Dumbbell,
   "BBQ grill": Drill,
-
   Beachfront: MapPin,
   Waterfront: MapPin,
   "Ski-in/Ski-out": MountainSnow,
@@ -64,42 +63,43 @@ const AmenityGroup: React.FC<AmenityGroupProps> = ({
 
   return (
     <div className="space-y-3">
-      <h4 className="font-medium text-sm ">{title}</h4>
-         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
-      {visibleItems.map((amenity) => {
-        const Icon = AMENITY_ICONS[amenity];
+      <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{title}</h4>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        {visibleItems.map((amenity) => {
+          const Icon = AMENITY_ICONS[amenity];
+          const isSelected = amenities.includes(amenity);
 
-        return (
-          <label
-            key={amenity}
-            className="flex items-center gap-4 py-2 cursor-pointer
-                       hover:bg-gray-50 -mx-2 px-2 rounded"
-          >
-            <input
-              type="checkbox"
-              checked={amenities.includes(amenity)}
-              onChange={() =>
-                toggleArrayItem(amenities, setAmenities, amenity)
-              }
-              className="w-5 h-5 rounded accent-gray-900"
-            />
-
-            {Icon && (
-              <Icon size={20} className="text-gray-600 shrink-0" />
-            )}
-
-            <span className="text-sm">{amenity}</span>
-          </label>
-        );
-      })}
+          return (
+            <button
+              key={amenity}
+              onClick={() => toggleArrayItem(amenities, setAmenities, amenity)}
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border transition-all duration-200 text-left
+                ${isSelected
+                  ? 'border-[#C45D3E] bg-[#FDF8F3] ring-1 ring-[#C45D3E]/20'
+                  : 'border-gray-200 hover:border-gray-300 bg-white'
+                }`}
+            >
+              {Icon && (
+                <Icon
+                  size={16}
+                  className={`shrink-0 ${isSelected ? 'text-[#C45D3E]' : 'text-gray-500'}`}
+                />
+              )}
+              <span className={`text-xs sm:text-sm font-medium truncate ${isSelected ? 'text-[#C45D3E]' : 'text-gray-700'}`}>
+                {amenity}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {canExpand && !expanded && (
         <button
           onClick={() => setExpanded(true)}
-          className="text-sm font-medium underline text-gray-800 mt-2"
+          className="flex items-center gap-1 text-sm font-medium text-[#C45D3E] hover:text-[#A84B32] mt-2 transition"
         >
           Show more
+          <ChevronDown size={14} />
         </button>
       )}
     </div>

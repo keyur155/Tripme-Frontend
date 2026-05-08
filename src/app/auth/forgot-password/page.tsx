@@ -61,12 +61,12 @@ export default function ForgotPasswordPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-50 via-indigo-50 to-violet-50 p-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#FDF8F3] via-[#FDF8F3] to-[#FDF8F3] p-4">
         {/* Background decoration */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-          <div className="absolute top-40 left-40 w-80 h-80 bg-violet-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#F5E6D3] rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-[#C45D3E] rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+          <div className="absolute top-40 left-40 w-80 h-80 bg-[#A84B32] rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
         </div>
 
         <div className="relative z-10 w-full max-w-md">
@@ -89,7 +89,7 @@ export default function ForgotPasswordPage() {
               Didn't receive the email? Check your spam folder or{' '}
               <button
                 onClick={() => setSuccess(false)}
-                className="text-purple-600 hover:text-purple-700 underline"
+                className="text-[#C45D3E] hover:text-[#C45D3E] underline"
               >
                 try again
               </button>
@@ -198,7 +198,7 @@ export default function ForgotPasswordPage() {
           <div className="text-center">
             <Link 
               href="/auth/login" 
-              className="text-purple-600 hover:text-purple-700 font-semibold hover:underline"
+              className="text-[#C45D3E] hover:text-[#C45D3E] font-semibold hover:underline"
             >
               ← Back to login
             </Link>

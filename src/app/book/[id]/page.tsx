@@ -59,7 +59,8 @@ import {
   User,
   Gift,
   Info,
-  MessageCircle
+  MessageCircle,
+  Shield
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useUI } from "@/core/store/uiContext";
@@ -266,25 +267,28 @@ const PaymentModal: React.FC<{
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 ">
-      <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl">
-        {/* Header */}
-        <div className="p-6 border-b border-gray-100">
+    <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden">
+        {/* Secure Header */}
+        <div className="bg-[#1A1A1A] px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-gray-700 to-gray-800 rounded-2xl flex items-center justify-center">
-                <CreditCard className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 bg-white/10 backdrop-blur rounded-lg flex items-center justify-center border border-white/20">
+                <Lock className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Complete Payment</h2>
-                <p className="text-sm text-gray-600">Secure payment via Razorpay</p>
+                <h2 className="text-base font-semibold text-white">Secure Payment</h2>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                  <p className="text-[11px] text-gray-300">256-bit SSL encrypted</p>
+                </div>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
             >
-              <X className="w-5 h-5 text-gray-600" />
+              <X className="w-4 h-4 text-gray-400" />
             </button>
           </div>
         </div>
@@ -292,32 +296,48 @@ const PaymentModal: React.FC<{
         {/* Content */}
         <div className="p-6">
           {paymentStep === 'init' && (
-            <div className="space-y-6">
+            <div className="space-y-5">
               {/* Amount Display */}
-              <div className="text-center p-4 bg-gradient-to-r from-gray-50 to-slate-50 rounded-2xl">
-                <p className="text-sm text-gray-600 mb-1">Total Amount</p>
-                <p className="text-3xl font-bold text-gray-900">{formatPrice(amount)}</p>
+              <div className="text-center py-5 bg-[#FDF8F3] rounded-xl border border-[#F5E6D3]">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Amount to Pay</p>
+                <p className="text-3xl font-bold text-[#1A1A1A]">{formatPrice(amount)}</p>
+                <p className="text-[11px] text-gray-400 mt-1">Including all taxes & fees</p>
               </div>
 
-              {/* Payment Info */}
-              <div className="space-y-4">
-                <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                  <p className="text-sm text-blue-800">
-                    You will be redirected to Razorpay's secure payment gateway to complete your payment.
+              {/* Payment Gateway Info */}
+              <div className="flex items-start gap-3 p-3.5 bg-gray-50 rounded-xl">
+                <div className="w-8 h-8 bg-[#2D6FDD] rounded-lg flex items-center justify-center shrink-0">
+                  <CreditCard className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-800">Powered by Razorpay</p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    You'll be securely redirected to complete payment via UPI, cards, or net banking.
                   </p>
                 </div>
               </div>
 
-              {/* Security Notice */}
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                <Lock className="w-5 h-5 text-gray-600" />
-                <p className="text-sm text-gray-600">Your payment is secured with SSL encryption</p>
+              {/* Security Badges */}
+              <div className="grid grid-cols-3 gap-2">
+                <div className="flex flex-col items-center gap-1 py-2.5 bg-gray-50 rounded-lg">
+                  <Lock className="w-3.5 h-3.5 text-green-600" />
+                  <span className="text-[10px] text-gray-600 font-medium">SSL Secure</span>
+                </div>
+                <div className="flex flex-col items-center gap-1 py-2.5 bg-gray-50 rounded-lg">
+                  <Shield className="w-3.5 h-3.5 text-green-600" />
+                  <span className="text-[10px] text-gray-600 font-medium">PCI DSS</span>
+                </div>
+                <div className="flex flex-col items-center gap-1 py-2.5 bg-gray-50 rounded-lg">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
+                  <span className="text-[10px] text-gray-600 font-medium">RBI Compliant</span>
+                </div>
               </div>
 
               {/* Error Display */}
               {error && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-xl">
-                  <p className="text-sm text-red-800">{error}</p>
+                <div className="p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                  <p className="text-sm text-red-700">{error}</p>
                 </div>
               )}
 
@@ -325,45 +345,62 @@ const PaymentModal: React.FC<{
               <Button
                 onClick={handlePayment}
                 disabled={loading || !razorpayLoaded}
-                className="w-full bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white font-semibold py-4 rounded-xl text-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-[#1A1A1A] hover:bg-[#333] text-white font-semibold py-4 rounded-xl text-base shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                <CreditCard className="w-5 h-5 mr-2" />
-                {!razorpayLoaded ? 'Loading Razorpay...' : `Pay ${formatPrice(amount)}`}
+                <Lock className="w-4 h-4" />
+                {!razorpayLoaded ? 'Loading...' : `Pay Securely — ${formatPrice(amount)}`}
               </Button>
+
+              <p className="text-center text-[10px] text-gray-400">
+                By proceeding, you agree to our Terms of Service and Privacy Policy
+              </p>
             </div>
           )}
 
           {paymentStep === 'processing' && (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 border-4 border-gray-200 border-t-gray-600 rounded-full animate-spin mx-auto mb-6"></div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Processing…</h3>
-              <p className="text-gray-600">Please wait while we confirm your booking securely.</p>
+            <div className="text-center py-14">
+              <div className="relative w-16 h-16 mx-auto mb-6">
+                <div className="absolute inset-0 border-4 border-[#F5E6D3] rounded-full"></div>
+                <div className="absolute inset-0 border-4 border-transparent border-t-[#C45D3E] rounded-full animate-spin"></div>
+                <Lock className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 text-[#C45D3E]" />
+              </div>
+              <h3 className="text-lg font-bold text-[#1A1A1A] mb-1">Verifying Payment</h3>
+              <p className="text-sm text-gray-500">Please don't close this window...</p>
+              <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-400">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                <span>Connection secure</span>
+              </div>
             </div>
           )}
 
           {paymentStep === 'success' && (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="text-center py-14">
+              <div className="w-16 h-16 bg-green-50 border-2 border-green-200 rounded-full flex items-center justify-center mx-auto mb-5">
                 <CheckCircle2 className="w-8 h-8 text-green-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Booking Confirmed!</h3>
-              <p className="text-gray-600">Redirecting you to your booking...</p>
+              <h3 className="text-lg font-bold text-[#1A1A1A] mb-1">Payment Successful!</h3>
+              <p className="text-sm text-gray-500 mb-4">Your booking is confirmed</p>
+              <div className="inline-flex items-center gap-1.5 text-xs text-green-700 bg-green-50 px-3 py-1.5 rounded-full">
+                <CheckCircle2 className="w-3 h-3" />
+                <span>Redirecting to booking details...</span>
+              </div>
             </div>
           )}
 
           {paymentStep === 'error' && (
             <div className="text-center py-8">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <AlertCircle className="w-8 h-8 text-red-600" />
+              <div className="w-14 h-14 bg-red-50 border-2 border-red-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle className="w-7 h-7 text-red-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Something Went Wrong</h3>
-              <p className="text-sm text-gray-600 mb-5 leading-relaxed">{error || 'An error occurred during payment'}</p>
+              <h3 className="text-lg font-bold text-[#1A1A1A] mb-1">Payment Failed</h3>
+              <p className="text-sm text-gray-500 mb-5 leading-relaxed max-w-xs mx-auto">{error || 'An error occurred during payment'}</p>
               <div className="flex flex-col gap-3">
-                {/* Only offer retry when the error is pre-payment (order creation / gateway error).
-                    If Razorpay already charged money, tell user to contact support. */}
                 {error?.toLowerCase().includes('contact support') || error?.toLowerCase().includes('mismatch') ? (
-                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
-                    ⚠️ Your payment was received but booking creation failed. Your money is safe — please contact support with your payment ID.
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-left">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                      <p className="text-xs text-amber-800">Your payment was received but booking creation failed. Your money is safe — please contact support with your payment ID.</p>
+                    </div>
                   </div>
                 ) : (
                   <Button
@@ -371,16 +408,16 @@ const PaymentModal: React.FC<{
                       setPaymentStep('init');
                       setError('');
                     }}
-                    className="bg-gray-700 text-white px-6 py-2 rounded-lg"
+                    className="bg-[#1A1A1A] hover:bg-[#333] text-white px-6 py-3 rounded-xl font-medium text-sm"
                   >
                     Try Again
                   </Button>
                 )}
                 <button
                   onClick={onClose}
-                  className="text-sm text-gray-500 hover:text-gray-700 underline"
+                  className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
                 >
-                  Close
+                  Cancel & go back
                 </button>
               </div>
             </div>
@@ -1689,9 +1726,9 @@ export default function BookingPage() {
             let cellClass = `relative flex items-center justify-center ${baseSize} mx-auto rounded-full font-semibold transition-colors duration-150 `;
 
             if (isSelectedBoundary) {
-              cellClass += 'bg-[#4285F4] text-white shadow-lg shadow-[#4285F4]/30';
+              cellClass += 'bg-[#C45D3E] text-white shadow-lg shadow-[#C45D3E]/30';
             } else if (isBetween) {
-              cellClass += 'bg-[#E7F0FF] text-[#1D4ED8]';
+              cellClass += 'bg-[#F5E6D3] text-[#C45D3E]';
             } else if (!isInCurrentMonth) {
               cellClass += 'text-gray-300';
             } else if (isHardBlocked) {
@@ -1699,9 +1736,9 @@ export default function BookingPage() {
             } else if (!isSelectableDay) {
               cellClass += 'text-gray-300 cursor-not-allowed';
             } else if (isBlockedSelf) {
-              cellClass += 'border border-dashed border-[#4285F4] text-[#4285F4] bg-[#F6FAFF]';
+              cellClass += 'border border-dashed border-[#C45D3E] text-[#C45D3E] bg-[#FDF8F3]';
             } else {
-              cellClass += 'text-gray-700 hover:bg-[#EEF4FF]';
+              cellClass += 'text-gray-700 hover:bg-[#FDF8F3]';
             }
 
             const actionable = isSelectableDay || isSelectedBoundary || isBetween;
@@ -2554,7 +2591,7 @@ export default function BookingPage() {
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Property Not Found</h2>
             <p className="text-gray-600 mb-6">{error || "This property doesn't exist or has been removed."}</p>
-            <Button onClick={() => router.back()} className="bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white">
+            <Button onClick={() => router.back()} className="bg-gradient-to-r from-[#C45D3E] to-[#A84B32] hover:from-[#A84B32] hover:to-[#8B3D2A] text-white">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Go Back
             </Button>
@@ -2577,7 +2614,7 @@ export default function BookingPage() {
           <div className="mb-8 hidden lg:block">
             <Button
               onClick={() => router.back()}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl px-4 py-2 hover:bg-[#4285f4]"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl px-4 py-2 hover:bg-[#C45D3E]"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to property
@@ -2596,7 +2633,7 @@ export default function BookingPage() {
                     </div>
                     <Button
                       onClick={() => setShowLoginModal(true)}
-                      className="  bg-[#4285F4] hover:bg-[#3367D6] text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
+                      className="  bg-[#C45D3E] hover:bg-[#A84B32] text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
                     >
                       Continue
                     </Button>
@@ -2611,7 +2648,7 @@ export default function BookingPage() {
                   <div className="flex items-center gap-4 w-full mb-8">
                     {/* Icon Container */}
                     <div className="w-12 h-12 flex items-center justify-center shrink-0">
-                      <Sparkles className="w-8 h-8 text-[#4285f4]" />
+                      <Sparkles className="w-8 h-8 text-[#C45D3E]" />
                     </div>
 
                     {/* Text Container */}
@@ -2632,7 +2669,7 @@ export default function BookingPage() {
                       <span className="text-gray-500">({property.reviewCount || 0} reviews)</span>
                     </div>
                     <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
-                      <MapPin className="w-4 h-4 text-[#4285f4]" />
+                      <MapPin className="w-4 h-4 text-[#C45D3E]" />
                       <span className="font-medium text-gray-700">{property.location?.city}, {property.location?.state}</span>
                     </div>
                   </div>
@@ -2655,7 +2692,7 @@ export default function BookingPage() {
                   {/* Header */}
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-12 h-12 flex items-center justify-center">
-                        <Calendar className="w-8 h-8 text-[#4285f4]" />
+                        <Calendar className="w-8 h-8 text-[#C45D3E]" />
                       </div>
                       <div>
                         <h2 className="text-xl font-bold text-gray-900">Booking Details</h2>
@@ -2675,7 +2712,7 @@ export default function BookingPage() {
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className="text-xs font-semibold text-[#4285f4] uppercase tracking-wide">Stay Dates</span>
+                          <span className="text-xs font-semibold text-[#C45D3E] uppercase tracking-wide">Stay Dates</span>
                           <div className="mt-1 flex items-center gap-2 text-sm font-semibold text-gray-900">
                             <span>{format(committedCheckIn, 'EEE, MMM d')}</span>
                             <span className="text-gray-400">→</span>
@@ -2687,7 +2724,7 @@ export default function BookingPage() {
                               : 'Choose your check-in and check-out dates'}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2 text-xs font-semibold text-[#4285f4]">
+                        <div className="flex items-center gap-2 text-xs font-semibold text-[#C45D3E]">
                           <span>Change</span>
                           <Calendar className="w-4 h-4" />
                         </div>
@@ -2753,7 +2790,7 @@ export default function BookingPage() {
                                     </button>
                                   </div>
 
-                                  <div className="text-center text-sm font-medium text-[#4285F4]">
+                                  <div className="text-center text-sm font-medium text-[#C45D3E]">
                                     {selectionStep === 'checkin'
                                       ? 'Select Check-in Date'
                                       : selectionStep === 'checkout'
@@ -2769,7 +2806,7 @@ export default function BookingPage() {
                                       <span>Booked</span>
                                     </div>
                                     <div className="flex items-center gap-1">
-                                      <span className="w-2 h-2 bg-[#4285F4] rounded-full" />
+                                      <span className="w-2 h-2 bg-[#C45D3E] rounded-full" />
                                       <span>Selected</span>
                                     </div>
                                   </div>
@@ -2794,7 +2831,7 @@ export default function BookingPage() {
                                   <button
                                     onClick={handleApplyPendingRange}
                                     disabled={!pendingRange.checkIn || !pendingRange.checkOut}
-                                    className={`flex-1 rounded-xl py-3 text-sm font-semibold text-white transition ${pendingRange.checkIn && pendingRange.checkOut ? 'bg-[#4285F4] hover:bg-[#2f6de0]' : 'bg-gray-300 cursor-not-allowed'}`}
+                                    className={`flex-1 rounded-xl py-3 text-sm font-semibold text-white transition ${pendingRange.checkIn && pendingRange.checkOut ? 'bg-[#C45D3E] hover:bg-[#2f6de0]' : 'bg-gray-300 cursor-not-allowed'}`}
                                   >
                                     Save
                                   </button>
@@ -2847,7 +2884,7 @@ export default function BookingPage() {
                                     </button>
                                   </div>
 
-                                  <div className="text-center text-sm font-medium text-[#4285F4]">
+                                  <div className="text-center text-sm font-medium text-[#C45D3E]">
                                     {selectionStep === 'checkin'
                                       ? 'Select Check-in Date'
                                       : selectionStep === 'checkout'
@@ -2864,7 +2901,7 @@ export default function BookingPage() {
                                         <span>Booked</span>
                                       </div>
                                       <div className="flex items-center gap-1">
-                                        <span className="w-2 h-2 bg-[#4285F4] rounded-full" />
+                                        <span className="w-2 h-2 bg-[#C45D3E] rounded-full" />
                                         <span>Selected</span>
                                       </div>
                                     </div>
@@ -2887,7 +2924,7 @@ export default function BookingPage() {
                                   <button
                                     onClick={handleApplyPendingRange}
                                     disabled={!pendingRange.checkIn || !pendingRange.checkOut}
-                                    className={`px-5 py-2 rounded-full text-sm font-semibold text-white transition ${pendingRange.checkIn && pendingRange.checkOut ? 'bg-[#4285F4] hover:bg-[#2f6de0]' : 'bg-gray-300 cursor-not-allowed'}`}
+                                    className={`px-5 py-2 rounded-full text-sm font-semibold text-white transition ${pendingRange.checkIn && pendingRange.checkOut ? 'bg-[#C45D3E] hover:bg-[#2f6de0]' : 'bg-gray-300 cursor-not-allowed'}`}
                                   >
                                     Save
                                   </button>
@@ -2902,7 +2939,7 @@ export default function BookingPage() {
 
                   {/* ── Check-in Time ─── */}
                   <div className="bg-white rounded-xl p-3 border border-gray-200 mb-4">
-                    <label className="block text-xs font-semibold text-[#4285f4] mb-2 uppercase tracking-wide">
+                    <label className="block text-xs font-semibold text-[#C45D3E] mb-2 uppercase tracking-wide">
                       <Clock className="w-3 h-3 inline mr-1" />
                       Check-in Time
                     </label>
@@ -2931,7 +2968,7 @@ export default function BookingPage() {
                   <div className="py-6 border-y border-gray-100 mb-8">
                     <div className="flex flex-col gap-3">
                       <div className="flex items-center gap-2">
-                        <div className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md text-xs font-bold uppercase tracking-wider">
+                        <div className="px-2 py-0.5 bg-[#F5E6D3] text-[#C45D3E] rounded-md text-xs font-bold uppercase tracking-wider">
                           {Math.ceil((
                             (bookingData.checkOut instanceof Date ? bookingData.checkOut : new Date(bookingData.checkOut)).getTime() -
                             (bookingData.checkIn instanceof Date ? bookingData.checkIn : new Date(bookingData.checkIn)).getTime()
@@ -2951,8 +2988,8 @@ export default function BookingPage() {
                           </span>
                         </div>
                         
-                        <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
-                          <ArrowRight className="w-4 h-4 text-blue-500" />
+                        <div className="w-8 h-8 rounded-full bg-[#FDF8F3] flex items-center justify-center">
+                          <ArrowRight className="w-4 h-4 text-[#C45D3E]" />
                         </div>
 
                         <div className="flex flex-col text-right">
@@ -2977,20 +3014,20 @@ export default function BookingPage() {
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 flex items-center justify-center shrink-0">
-                            <Clock3 className="w-8 h-8 text-[#4285f4]" />
+                            <Clock3 className="w-8 h-8 text-[#C45D3E]" />
                           </div>
                           <div className="min-w-0">
                             <label className="block text-lg font-bold text-gray-900 leading-tight">
                               Hourly Extension
                             </label>
-                            <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-blue-600 font-bold uppercase tracking-wider">
+                            <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-[#C45D3E] font-bold uppercase tracking-wider">
                               <span>Core Feature</span>
                               <span className="hidden xs:inline text-gray-300">•</span>
                               <span>Flexible Stay</span>
                             </div>
                           </div>
                         </div>
-                        <div className="self-start sm:self-center px-3 py-1 bg-[#4285f4] text-white text-[10px] font-bold rounded-full shadow-md whitespace-nowrap">
+                        <div className="self-start sm:self-center px-3 py-1 bg-[#C45D3E] text-white text-[10px] font-bold rounded-full shadow-md whitespace-nowrap">
                           MOST POPULAR
                         </div>
                       </div>
@@ -3028,8 +3065,8 @@ export default function BookingPage() {
                             }))}
                             className={`flex flex-col items-center justify-center py-3 rounded-xl text-xs font-bold transition-all border ${
                               bookingData.hourlyExtension === opt.hours
-                                ? 'bg-[#4285f4] text-white border-[#4285f4] shadow-lg scale-[1.02] ring-2 ring-[#4285f4]/20'
-                                : 'bg-white text-[#4285f4] border-[#4285f4]/20 hover:border-[#4285f4]/50 hover:bg-[#4285f4]/5'
+                                ? 'bg-[#C45D3E] text-white border-[#C45D3E] shadow-lg scale-[1.02] ring-2 ring-[#C45D3E]/20'
+                                : 'bg-white text-[#C45D3E] border-[#C45D3E]/20 hover:border-[#C45D3E]/50 hover:bg-[#C45D3E]/5'
                             }`}
                           >
                             <span className="text-sm">{opt.label}</span>
@@ -3044,7 +3081,7 @@ export default function BookingPage() {
                         <motion.div 
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="mt-4 flex items-center gap-2 text-blue-700 bg-blue-100/50 p-2 rounded-lg"
+                          className="mt-4 flex items-center gap-2 text-[#C45D3E] bg-[#F5E6D3]/50 p-2 rounded-lg"
                         >
                           <Info className="w-3.5 h-3.5" />
                           <span className="text-[11px] font-medium leading-none">
@@ -3324,7 +3361,7 @@ export default function BookingPage() {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 sticky top-24">
                 <div className="flex items-center gap-3 mb-6 ">
-                  <Receipt className="w-5 h-5   text-[#4285f4]" />
+                  <Receipt className="w-5 h-5   text-[#C45D3E]" />
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Booking Summary</h3>
                     <p className="text-sm text-gray-600">Review your selection</p>
@@ -3351,9 +3388,9 @@ export default function BookingPage() {
 
                 {/* Coupon Code Section */}
                 {/* <div className="mb-6">
-                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200">
+                  <div className="bg-gradient-to-r from-[#FDF8F3] to-[#F5E6D3] rounded-2xl p-6 border border-[#F5E6D3]">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                      <div className="w-10 h-10 bg-gradient-to-r from-[#FDF8F3]0 to-[#F5E6D3]0 rounded-xl flex items-center justify-center">
                         <Gift className="w-5 h-5 text-white" />
                       </div>
                       <div>
@@ -3370,7 +3407,7 @@ export default function BookingPage() {
                           onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                           onBlur={() => validateCoupon(couponCode)}
                           placeholder="Enter coupon code (e.g., SAVE20)"
-                          className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
+                          className="w-full px-4 py-3 border border-[#F5E6D3] rounded-xl focus:ring-2 focus:ring-[#C45D3E] focus:border-[#C45D3E] bg-white"
                           disabled={couponLoading}
                         />
                         {couponError && (
@@ -3389,7 +3426,7 @@ export default function BookingPage() {
                       <button
                         onClick={() => validateCoupon(couponCode)}
                         disabled={!couponCode.trim() || couponLoading}
-                        className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        className="px-6 py-3 bg-gradient-to-r from-[#FDF8F3]0 to-[#F5E6D3]0 text-white rounded-xl font-semibold hover:from-[#A84B32] hover:to-[#8B3D2A] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                       >
                         {couponLoading ? (
                           <>
@@ -3437,11 +3474,11 @@ export default function BookingPage() {
                 </div> */}
 
                 <div className="mb-6">
-                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 sm:p-6 border border-purple-200">
+                  <div className="bg-gradient-to-r from-[#FDF8F3] to-[#F5E6D3] rounded-2xl p-4 sm:p-6 border border-[#F5E6D3]">
 
                     {/* Header */}
                     <div className="flex items-start sm:items-center gap-3 mb-4">
-                      <div className="w-9 h-9 sm:w-10 sm:h-10  bg-[#4285f4]  rounded-xl flex items-center justify-center shrink-0">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10  bg-[#C45D3E]  rounded-xl flex items-center justify-center shrink-0">
                         <Gift className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                       </div>
                       <div>
@@ -3463,7 +3500,7 @@ export default function BookingPage() {
                           onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                           onBlur={() => validateCoupon(couponCode)}
                           placeholder="Enter coupon code"
-                          className="w-full px-4 py-3 text-sm sm:text-base border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
+                          className="w-full px-4 py-3 text-sm sm:text-base border border-[#F5E6D3] rounded-xl focus:ring-2 focus:ring-[#C45D3E] focus:border-[#C45D3E] bg-white"
                           disabled={couponLoading}
                         />
 
@@ -3490,7 +3527,7 @@ export default function BookingPage() {
                       <button
                         onClick={() => validateCoupon(couponCode)}
                         disabled={!couponCode.trim() || couponLoading}
-                        className="w-full sm:w-auto px-6 py-3  bg-[#4285f4]  text-white rounded-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
+                        className="w-full sm:w-auto px-6 py-3  bg-[#C45D3E]  text-white rounded-xl font-semibold hover:from-[#A84B32] hover:to-[#8B3D2A] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
                       >
                         {couponLoading ? (
                           <>
@@ -3558,7 +3595,7 @@ export default function BookingPage() {
                 <div className="mb-8">
                   {!priceBreakdown.total ? (
                     <div className="flex items-center justify-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#C45D3E]"></div>
                       <span className="ml-3 text-gray-600">Loading pricing...</span>
                     </div>
                   ) : priceBreakdown ? (
@@ -3632,7 +3669,7 @@ export default function BookingPage() {
                   disabled={!bookingData.agreeToTerms || bookingLoading || availabilityLoading}
                   className={`w-full py-3 rounded-lg font-semibold text-base transition-colors ${!bookingData.agreeToTerms || bookingLoading || availabilityLoading
                       ? 'bg-[#E2ECFD] text-gray-500 cursor-not-allowed'
-                      : ' bg-[#4285f4]  hover:bg-gray-700 text-white'
+                      : ' bg-[#C45D3E]  hover:bg-gray-700 text-white'
                     }`}
                 >
                   {bookingLoading ? (

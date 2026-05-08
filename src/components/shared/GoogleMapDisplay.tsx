@@ -381,9 +381,9 @@ const GoogleMapDisplay: React.FC<GoogleMapDisplayProps> = ({
         const priceText = markerData.price ? `₹${markerData.price}` : '₹N/A';
         
         const isSelected = markerData.isHighlighted;
-        const bgColor = isSelected ? '#4285f4' : 'white';
+        const bgColor = isSelected ? '#C45D3E' : 'white';
         const textColor = isSelected ? 'white' : '#1f2937';
-        const strokeColor = isSelected ? '#4285f4' : '#e5e7eb';
+        const strokeColor = isSelected ? '#C45D3E' : '#e5e7eb';
         
         const markerIcon = {
           url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
@@ -515,7 +515,7 @@ const GoogleMapDisplay: React.FC<GoogleMapDisplayProps> = ({
         style={{ height }}
       >
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto mb-2" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#C45D3E] mx-auto mb-2" />
           <p className="text-sm text-gray-600">Loading map...</p>
         </div>
       </div>

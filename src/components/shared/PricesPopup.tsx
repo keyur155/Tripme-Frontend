@@ -83,7 +83,7 @@ const PricesPopup: React.FC<PricesPopupProps> = ({
                 {/* Floating sparkles around the price tag */}
                 <div className="absolute -top-2 -right-2 w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
                 <div className="absolute -bottom-1 -left-2 w-1 h-1 bg-pink-300 rounded-full animate-pulse"></div>
-                <div className="absolute top-1/2 -right-3 w-1.5 h-1.5 bg-blue-300 rounded-full animate-bounce"></div>
+                <div className="absolute top-1/2 -right-3 w-1.5 h-1.5 bg-[#C45D3E] rounded-full animate-bounce"></div>
               </div>
             </div>
 

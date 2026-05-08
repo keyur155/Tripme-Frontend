@@ -182,7 +182,7 @@ export default function HostPayoutsPage() {
   const getStatusColor = (status: string) => {
     const colors = {
       pending: 'bg-yellow-100 text-yellow-800',
-      processing: 'bg-blue-100 text-blue-800',
+      processing: 'bg-[#F5E6D3] text-[#1A1A1A]',
       completed: 'bg-green-100 text-green-800',
       failed: 'bg-red-100 text-red-800',
       cancelled: 'bg-gray-100 text-gray-800'
@@ -339,7 +339,7 @@ export default function HostPayoutsPage() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C45D3E]"
                 >
                   <option value="">All Statuses</option>
                   <option value="pending">Pending</option>
@@ -396,7 +396,7 @@ export default function HostPayoutsPage() {
                           </div>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#F5E6D3] text-[#1A1A1A]">
                             {getMethodDisplay(payout.method)}
                           </span>
                         </td>
@@ -625,7 +625,7 @@ export default function HostPayoutsPage() {
               <select
                 value={payoutRequest.preferredMethod}
                 onChange={(e) => setPayoutRequest({...payoutRequest, preferredMethod: e.target.value as any})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C45D3E]"
               >
                 <option value="bank_transfer">Bank Transfer</option>
                 <option value="paypal">PayPal</option>

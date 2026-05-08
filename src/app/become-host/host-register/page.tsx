@@ -81,8 +81,8 @@ export default function HostRegisterPage() {
 
                 {status === "loading" && (
                     <div className="text-center">
-                        <div className="w-20 h-20 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Loader2 className="w-10 h-10 text-purple-600 animate-spin" />
+                        <div className="w-20 h-20 bg-[#FDF8F3] rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Loader2 className="w-10 h-10 text-[#C45D3E] animate-spin" />
                         </div>
                         <h2 className="text-2xl font-bold text-gray-900 mb-2">
                             Setting up your host account&hellip;
@@ -122,7 +122,7 @@ export default function HostRegisterPage() {
                                 setErrorMsg(null);
                                 window.location.reload();
                             }}
-                            className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-xl font-semibold transition-colors"
+                            className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-8 py-3 rounded-xl font-semibold transition-colors"
                         >
                             Try again
                         </button>

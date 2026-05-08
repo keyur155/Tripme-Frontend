@@ -446,10 +446,10 @@ export default function PricingPage() {
         </div>
 
         {/* Hourly Extension */}
-        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-6 border border-purple-200">
+        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-6 border border-[#F5E6D3]">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-[#C45D3E] to-indigo-500 rounded-xl flex items-center justify-center">
                 <Clock className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -464,7 +464,7 @@ export default function PricingPage() {
                 onChange={(e) => setHourlyExtensionEnabled(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500"></div>
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FDF8F3]0"></div>
             </label>
           </div>
 
@@ -472,7 +472,7 @@ export default function PricingPage() {
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
-              className="mt-4 pt-4 border-t border-purple-200"
+              className="mt-4 pt-4 border-t border-[#F5E6D3]"
             >
               <label className="block text-sm font-medium text-gray-700 mb-4">
                 Extension rates (% of daily rate)
@@ -485,7 +485,7 @@ export default function PricingPage() {
                 ].map((option) => (
                   <div
                     key={option.key}
-                    className="bg-white rounded-xl p-4 border border-purple-200"
+                    className="bg-white rounded-xl p-4 border border-[#F5E6D3]"
                   >
                     <div className="text-center mb-3">
                       <div className="text-2xl mb-1">{option.icon}</div>
@@ -508,9 +508,9 @@ export default function PricingPage() {
                           ...prev,
                           [option.key]: Math.min(100, Math.max(10, Number(e.target.value) || 10))
                         }))}
-                        className="w-14 text-center text-xs font-bold text-purple-600 border-none outline-none bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        className="w-14 text-center text-xs font-bold text-[#C45D3E] border-none outline-none bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       />
-                      <span className="text-purple-600 font-bold">%</span>
+                      <span className="text-[#C45D3E] font-bold">%</span>
                       <button
                         onClick={() => setHourlyRates(prev => ({
                           ...prev,
@@ -536,7 +536,7 @@ export default function PricingPage() {
   ].map((option) => (
     <div
       key={option.key}
-      className="bg-white rounded-xl p-4 border border-purple-200 shadow-sm"
+      className="bg-white rounded-xl p-4 border border-[#F5E6D3] shadow-sm"
     >
       <div className="flex flex-row sm:flex-col items-center justify-between sm:justify-center mb-3">
         <div className="flex items-center gap-3 sm:block sm:text-center">
@@ -556,7 +556,7 @@ export default function PricingPage() {
             ...prev,
             [option.key]: Math.max(10, prev[option.key as keyof typeof prev] - 5)
           }))}
-          className="w-10 h-10 sm:w-8 sm:h-8 rounded-full border border-gray-300 flex items-center justify-center text-lg sm:text-xs hover:bg-purple-50 hover:border-purple-500 transition-colors active:scale-95"
+          className="w-10 h-10 sm:w-8 sm:h-8 rounded-full border border-gray-300 flex items-center justify-center text-lg sm:text-xs hover:bg-[#FDF8F3] hover:border-purple-500 transition-colors active:scale-95"
         >
           -
         </button>
@@ -569,9 +569,9 @@ export default function PricingPage() {
               ...prev,
               [option.key]: Math.min(100, Math.max(10, Number(e.target.value) || 10))
             }))}
-            className="w-12 text-center text-sm font-bold text-purple-600 border-none outline-none bg-transparent py-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-12 text-center text-sm font-bold text-[#C45D3E] border-none outline-none bg-transparent py-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
-          <span className="text-purple-600 font-bold text-sm">%</span>
+          <span className="text-[#C45D3E] font-bold text-sm">%</span>
         </div>
 
         <button
@@ -579,7 +579,7 @@ export default function PricingPage() {
             ...prev,
             [option.key]: Math.min(100, prev[option.key as keyof typeof prev] + 5)
           }))}
-          className="w-10 h-10 sm:w-8 sm:h-8 rounded-full border border-gray-300 flex items-center justify-center text-lg sm:text-xs hover:bg-purple-50 hover:border-purple-500 transition-colors active:scale-95"
+          className="w-10 h-10 sm:w-8 sm:h-8 rounded-full border border-gray-300 flex items-center justify-center text-lg sm:text-xs hover:bg-[#FDF8F3] hover:border-purple-500 transition-colors active:scale-95"
         >
           +
         </button>
@@ -592,7 +592,7 @@ export default function PricingPage() {
     </div>
   ))}
 </div>
-              <p className="text-xs text-purple-700 mt-3 text-center">
+              <p className="text-xs text-[#C45D3E] mt-3 text-center">
                 Guests can extend their checkout time at these rates
               </p>
             </motion.div>
@@ -644,18 +644,18 @@ export default function PricingPage() {
         </div>
 
         {/* Price Comparison Info */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-6">
+        <div className="bg-[#FDF8F3] border border-[#F5E6D3] rounded-xl p-4 mt-6">
           <div className="flex items-start gap-3">
-            <IndianRupee className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <IndianRupee className="w-5 h-5 text-[#C45D3E] flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-medium text-blue-900">Price tip</p>
-              <p className="text-sm text-blue-700 mt-1">
+              <p className="text-sm text-[#C45D3E] mt-1">
                 Similar listings in your area are priced between ₹1,500 - ₹4,000 per night. 
                 Your price of ₹{basePrice.toLocaleString()} is competitive for your property type.
               </p>
               <button
                 onClick={() => setShowSimilarListings(true)}
-                className="text-sm text-blue-600 hover:text-blue-800 underline mt-2 font-medium"
+                className="text-sm text-[#C45D3E] hover:text-blue-800 underline mt-2 font-medium"
               >
                 Show similar listings on map
               </button>
@@ -778,9 +778,9 @@ export default function PricingPage() {
 
                   <div className="border-t pt-4 mt-4">
                     <h4 className="font-semibold text-gray-900 mb-3">Your price</h4>
-                    <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
-                      <div className="text-2xl font-bold text-purple-600">₹{basePrice.toLocaleString()}</div>
-                      <p className="text-sm text-purple-700 mt-1">per night</p>
+                    <div className="bg-[#FDF8F3] border border-[#F5E6D3] rounded-xl p-4">
+                      <div className="text-2xl font-bold text-[#C45D3E]">₹{basePrice.toLocaleString()}</div>
+                      <p className="text-sm text-[#C45D3E] mt-1">per night</p>
                     </div>
                   </div>
 

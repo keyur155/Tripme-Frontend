@@ -48,7 +48,7 @@ const HostingEmptyState: React.FC = () => {
           ))}
           <path
             d="M 100 40 L 100 180 L 110 175 L 100 180 L 90 175 Z"
-            fill="#FF385C"
+            fill="#C45D3E"
           />
         </svg>
       </div>

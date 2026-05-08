@@ -42,9 +42,9 @@ const STATUS_OPTIONS = [
     description: 'Available after maintenance/cleaning',
     icon: Clock,
     color: 'blue',
-    bgColor: 'blue-50',
-    textColor: 'blue-700',
-    borderColor: 'blue-200'
+    bgColor: '[#FDF8F3]',
+    textColor: '[#C45D3E]',
+    borderColor: '[#F5E6D3]'
   },
   {
     value: 'unavailable',
@@ -62,9 +62,9 @@ const STATUS_OPTIONS = [
     description: 'Already booked by guest',
     icon: Eye,
     color: 'purple',
-    bgColor: 'purple-50',
-    textColor: 'purple-700',
-    borderColor: 'purple-200'
+    bgColor: '[#FDF8F3]',
+    textColor: '[#C45D3E]',
+    borderColor: '[#F5E6D3]'
   },
   {
     value: 'maintenance',
@@ -487,7 +487,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#FDF8F3] to-[#F5E6D3] overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header Section */}
         <div className="mb-6 px-2 md:px-0">
@@ -559,7 +559,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                   <button
                     type="button"
                     className={`px-6 py-3 text-sm font-medium transition-all duration-200 ${selectionType === 'range'
-                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                      ? 'bg-gradient-to-r from-[#C45D3E] to-[#A84B32] text-white shadow-lg'
                       : 'bg-white text-slate-600 hover:bg-slate-50'
                       }`}
                     onClick={() => {
@@ -576,7 +576,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                   <button
                     type="button"
                     className={`px-6 py-3 text-sm font-medium border-l-2 border-slate-200 transition-all duration-200 ${selectionType === 'single'
-                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                      ? 'bg-gradient-to-r from-[#C45D3E] to-[#A84B32] text-white shadow-lg'
                       : 'bg-white text-slate-600 hover:bg-slate-50'
                       }`}
                     onClick={
@@ -610,13 +610,13 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                         case 'unavailable':
                           return 'bg-red-50 border-red-200 text-red-700';
                         case 'booked':
-                          return 'bg-purple-50 border-purple-200 text-purple-700';
+                          return 'bg-[#FDF8F3] border-[#F5E6D3] text-[#C45D3E]';
                         case 'maintenance':
                           return 'bg-orange-50 border-orange-200 text-orange-700';
                         case 'on-hold':
                           return 'bg-yellow-50 border-yellow-200 text-yellow-700';
                         case 'partially-available':
-                          return 'bg-blue-50 border-blue-200 text-blue-700';
+                          return 'bg-[#FDF8F3] border-[#F5E6D3] text-[#C45D3E]';
                         default:
                           return 'bg-slate-50 border-slate-200 text-slate-700';
                       }
@@ -629,7 +629,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                         case 'unavailable':
                           return 'text-red-500';
                         case 'booked':
-                          return 'text-purple-500';
+                          return 'text-[#C45D3E]';
                         case 'maintenance':
                           return 'text-orange-500';
                         case 'on-hold':
@@ -683,7 +683,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                       switch (val) {
                         case 'available': return 'border-emerald-500 text-emerald-700 bg-emerald-50';
                         case 'unavailable': return 'border-red-500 text-red-700 bg-red-50';
-                        case 'booked': return 'border-purple-500 text-purple-700 bg-purple-50';
+                        case 'booked': return 'border-[#C45D3E] text-[#C45D3E] bg-[#FDF8F3]';
                         case 'maintenance': return 'border-orange-500 text-orange-700 bg-orange-50';
                         default: return 'border-slate-400 text-slate-700 bg-slate-50';
                       }
@@ -732,7 +732,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                   </label>
                   <input
                     type="text"
-                    className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                    className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-slate-700 focus:border-[#C45D3E] focus:ring-2 focus:ring-[#C45D3E]/30 transition-all duration-200"
                     placeholder={`e.g., ${selectedStatus === 'unavailable' ? 'Personal use, renovation' : selectedStatus === 'maintenance' ? 'Plumbing repair, electrical work' : 'Temporary closure, staff shortage'}`}
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
@@ -758,7 +758,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                           setAvailableHours([]);
                         }
                       }}
-                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      className="w-4 h-4 text-[#C45D3E] border-gray-300 rounded focus:ring-[#C45D3E]"
                     />
                     <label htmlFor="allDayAvailable" className="text-sm text-slate-600">
                       Available all day (24 hours)
@@ -782,7 +782,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                                   updated[index].startTime = e.target.value;
                                   setAvailableHours(updated);
                                 }}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#C45D3E] focus:border-[#C45D3E]"
                               />
                             </div>
                             <div>
@@ -797,7 +797,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                                   updated[index].endTime = e.target.value;
                                   setAvailableHours(updated);
                                 }}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#C45D3E] focus:border-[#C45D3E]"
                               />
                             </div>
                           </div>
@@ -818,7 +818,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                         onClick={() => {
                           setAvailableHours([...availableHours, { startTime: '09:00', endTime: '17:00' }]);
                         }}
-                        className="w-full px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors flex items-center justify-center gap-2"
+                        className="w-full px-4 py-2 text-sm font-medium text-[#C45D3E] bg-[#FDF8F3] border border-[#F5E6D3] rounded-lg hover:bg-[#F5E6D3] transition-colors flex items-center justify-center gap-2"
                       >
                         <Plus className="w-4 h-4" />
                         Add Time Range
@@ -905,7 +905,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                   <label className="block text-sm font-semibold text-slate-700 mb-3">Select Date</label>
                   <input
                     type="date"
-                    className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                    className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-slate-700 focus:border-[#C45D3E] focus:ring-2 focus:ring-[#C45D3E]/30 transition-all duration-200"
                     value={format(singleDate, 'yyyy-MM-dd')}
                     onChange={e => {
                       // Parse date string to LOCAL midnight (not UTC)
@@ -929,7 +929,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
               <div className="hidden md:block space-y-3">
                 <Button
                   onClick={selectionType === 'range' ? addSelectionFromRange : addSelectionSingle}
-                  className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="w-full py-3 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] hover:from-[#A84B32] hover:to-[#A84B32] text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   {selectionType === 'range' ? 'Add Date Range' : 'Add Single Date'}
@@ -955,11 +955,11 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                         case 'available':
                           return 'text-emerald-600';
                         case 'partially-available':
-                          return 'text-blue-600';
+                          return 'text-[#C45D3E]';
                         case 'unavailable':
                           return 'text-red-600';
                         case 'booked':
-                          return 'text-purple-600';
+                          return 'text-[#C45D3E]';
                         case 'maintenance':
                           return 'text-orange-600';
                         case 'on-hold':
@@ -974,11 +974,11 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                         case 'available':
                           return 'text-emerald-500';
                         case 'partially-available':
-                          return 'text-blue-500';
+                          return 'text-[#C45D3E]';
                         case 'unavailable':
                           return 'text-red-500';
                         case 'booked':
-                          return 'text-purple-500';
+                          return 'text-[#C45D3E]';
                         case 'maintenance':
                           return 'text-orange-500';
                         case 'on-hold':
@@ -1098,11 +1098,11 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                         case 'available':
                           return 'bg-emerald-500';
                         case 'partially-available':
-                          return 'bg-blue-500';
+                          return 'bg-[#C45D3E]';
                         case 'unavailable':
                           return 'bg-red-500';
                         case 'booked':
-                          return 'bg-purple-500';
+                          return 'bg-[#C45D3E]';
                         case 'maintenance':
                           return 'bg-orange-500';
                         case 'on-hold':
@@ -1124,7 +1124,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                 {/* Additional Calendar Indicators */}
                 <div className="flex flex-wrap justify-center gap-4 text-xs text-slate-600">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-[#C45D3E]"></div>
                     <span>Today</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -1183,18 +1183,18 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                       // If date is in hover preview range (while selecting), use preview colors
                       if (isInHoverRange) {
                         if (isHoverStart || isHoverEnd) {
-                          return 'bg-blue-400 text-white border-2 border-blue-500 shadow-lg';
+                          return 'bg-[#C45D3E] text-white border-2 border-[#C45D3E] shadow-lg';
                         } else {
-                          return 'bg-blue-50 text-blue-700 border border-blue-200';
+                          return 'bg-[#FDF8F3] text-[#C45D3E] border border-[#F5E6D3]';
                         }
                       }
 
                       // If date is in final selection range, use selection colors
                       if (isInRange) {
                         if (isStartDate || isEndDate) {
-                          return 'bg-blue-500 text-white border-2 border-blue-600';
+                          return 'bg-[#C45D3E] text-white border-2 border-[#C45D3E]';
                         } else {
-                          return 'bg-blue-100 text-blue-800 border border-blue-300';
+                          return 'bg-[#F5E6D3] text-[#1A1A1A] border border-[#C45D3E]';
                         }
                       }
 
@@ -1203,11 +1203,11 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                         case 'available':
                           return 'bg-emerald-500 text-white';
                         case 'partially-available':
-                          return 'bg-blue-500 text-white';
+                          return 'bg-[#C45D3E] text-white';
                         case 'unavailable':
                           return 'bg-red-500 text-white';
                         case 'booked':
-                          return 'bg-purple-500 text-white';
+                          return 'bg-[#C45D3E] text-white';
                         case 'maintenance':
                           return 'bg-orange-500 text-white';
                         case 'on-hold':
@@ -1258,7 +1258,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                             <div className="font-semibold mb-1">Booked</div>
                             {(meta?.checkInDate || meta?.checkInTime) && (
                               <div className="flex items-center gap-1">
-                                <Clock className="w-3 h-3 text-blue-400" />
+                                <Clock className="w-3 h-3 text-[#C45D3E]" />
                                 <span>In: {meta?.checkInDate ? format(new Date(meta.checkInDate), 'MMM d') : ''}{meta?.checkInTime ? `, ${formatTime12Hour(meta.checkInTime)}` : ''}</span>
                               </div>
                             )}
@@ -1280,7 +1280,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
 
                         {/* Tooltip for dates with hour restrictions */}
                         {tooltipDate === ds && status === 'available' && !isExpired && ((meta?.availableHours && meta.availableHours.length > 0) || (meta?.unavailableHours && meta.unavailableHours.length > 0)) && (
-                          <div className="absolute z-[9999] bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-blue-600 text-white text-xs rounded-lg shadow-lg">
+                          <div className="absolute z-[9999] bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-[#C45D3E] text-white text-xs rounded-lg shadow-lg">
                             {(meta?.availableHours && meta.availableHours.length > 0) && (
                               <>
                                 <div className="font-semibold mb-1 flex items-center gap-1">
@@ -1288,7 +1288,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                                   Available Hours
                                 </div>
                                 {meta.availableHours.map((range, idx) => (
-                                  <div key={idx} className="text-blue-200">
+                                  <div key={idx} className="text-[#F5E6D3]">
                                     {formatTime12Hour(range.startTime)} - {formatTime12Hour(range.endTime)}
                                   </div>
                                 ))}
@@ -1296,7 +1296,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                             )}
                             {(meta?.unavailableHours && meta.unavailableHours.length > 0) && (
                               <>
-                                {meta?.availableHours && meta.availableHours.length > 0 && <div className="mt-2 pt-2 border-t border-blue-500"></div>}
+                                {meta?.availableHours && meta.availableHours.length > 0 && <div className="mt-2 pt-2 border-t border-[#C45D3E]"></div>}
                                 <div className="font-semibold mb-1 flex items-center gap-1">
                                   <XCircle className="w-3 h-3" />
                                   Unavailable Hours
@@ -1309,7 +1309,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                               </>
                             )}
                             {/* Arrow */}
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-blue-600"></div>
+                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-[#C45D3E]"></div>
                           </div>
                         )}
 
@@ -1389,11 +1389,11 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                       case 'available':
                         return 'bg-emerald-500';
                       case 'partially-available':
-                        return 'bg-blue-500';
+                        return 'bg-[#C45D3E]';
                       case 'unavailable':
                         return 'bg-red-500';
                       case 'booked':
-                        return 'bg-purple-500';
+                        return 'bg-[#C45D3E]';
                       case 'maintenance':
                         return 'bg-orange-500';
                       case 'on-hold':
@@ -1408,11 +1408,11 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                       case 'available':
                         return 'text-emerald-500';
                       case 'partially-available':
-                        return 'text-blue-500';
+                        return 'text-[#C45D3E]';
                       case 'unavailable':
                         return 'text-red-500';
                       case 'booked':
-                        return 'text-purple-500';
+                        return 'text-[#C45D3E]';
                       case 'maintenance':
                         return 'text-orange-500';
                       case 'on-hold':
@@ -1530,18 +1530,18 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                 // Hover preview colors (while selecting)
                 if (isInHoverRange) {
                   if (isHoverStart || isHoverEnd) {
-                    return 'bg-blue-400 text-white border-2 border-blue-500 shadow-lg';
+                    return 'bg-[#C45D3E] text-white border-2 border-[#C45D3E] shadow-lg';
                   } else {
-                    return 'bg-blue-50 text-blue-700 border border-blue-200';
+                    return 'bg-[#FDF8F3] text-[#C45D3E] border border-[#F5E6D3]';
                   }
                 }
                 
                 // Final selection colors
                 if (isInRange) {
                   if (isStartDate || isEndDate) {
-                    return 'bg-blue-500 text-white border-2 border-blue-600';
+                    return 'bg-[#C45D3E] text-white border-2 border-[#C45D3E]';
                   } else {
-                    return 'bg-blue-100 text-blue-800 border border-blue-300';
+                    return 'bg-[#F5E6D3] text-[#1A1A1A] border border-[#C45D3E]';
                   }
                 }
                 
@@ -1550,11 +1550,11 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                   case 'available':
                     return 'bg-emerald-500 text-white';
                   case 'partially-available':
-                    return 'bg-blue-500 text-white';
+                    return 'bg-[#C45D3E] text-white';
                   case 'unavailable':
                     return 'bg-red-500 text-white';
                   case 'booked':
-                    return 'bg-purple-500 text-white';
+                    return 'bg-[#C45D3E] text-white';
                   case 'maintenance':
                     return 'bg-orange-500 text-white';
                   case 'on-hold':
@@ -1608,7 +1608,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                     type="button"
                     onClick={() => setSelectionType('single')}
                     className={`px-3 py-1.5 font-semibold transition-all ${selectionType === 'single'
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-[#C45D3E] text-white'
                       : 'bg-white text-slate-500'
                       }`}
                   >
@@ -1618,7 +1618,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                     type="button"
                     onClick={() => setSelectionType('range')}
                     className={`px-3 py-1.5 font-semibold transition-all ${selectionType === 'range'
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-[#C45D3E] text-white'
                       : 'bg-white text-slate-500'
                       }`}
                   >
@@ -1688,19 +1688,19 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                       if (isExpired) return 'bg-slate-100 text-slate-400';
                       if (isInHoverRange) {
                         return isHoverEndpoint
-                          ? 'bg-indigo-500 text-white scale-105 shadow'
-                          : 'bg-indigo-100 text-indigo-700';
+                          ? 'bg-[#C45D3E] text-white scale-105 shadow'
+                          : 'bg-[#F5E6D3] text-[#C45D3E]';
                       }
                       if (isInRange) {
                         return (isStartDate || isEndDate)
-                          ? 'bg-indigo-600 text-white scale-105 shadow'
-                          : 'bg-indigo-100 text-indigo-700';
+                          ? 'bg-[#C45D3E] text-white scale-105 shadow'
+                          : 'bg-[#F5E6D3] text-[#C45D3E]';
                       }
                       switch (status) {
                         case 'available': return 'bg-emerald-500 text-white';
-                        case 'partially-available': return 'bg-blue-400 text-white';
+                        case 'partially-available': return 'bg-[#C45D3E] text-white';
                         case 'unavailable': return 'bg-red-400 text-white';
-                        case 'booked': return 'bg-purple-500 text-white';
+                        case 'booked': return 'bg-[#C45D3E] text-white';
                         case 'maintenance': return 'bg-orange-400 text-white';
                         case 'on-hold': return 'bg-yellow-400 text-white';
                         default: return 'bg-red-400 text-white';
@@ -1726,9 +1726,9 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
               {[
                 { label: 'Available', cls: 'bg-emerald-500' },
                 { label: 'Unavailable', cls: 'bg-red-400' },
-                { label: 'Booked', cls: 'bg-purple-500' },
+                { label: 'Booked', cls: 'bg-[#C45D3E]' },
                 { label: 'Maintenance', cls: 'bg-orange-400' },
-                { label: 'Selected', cls: 'bg-indigo-600' },
+                { label: 'Selected', cls: 'bg-[#C45D3E]' },
               ].map(({ label, cls }) => (
                 <div key={label} className="flex items-center gap-1 text-xs text-slate-600">
                   <div className={`w-2.5 h-2.5 rounded-full ${cls}`} />
@@ -1747,7 +1747,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                     addSelectionSingle();
                   }
                 }}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl py-2.5 text-sm"
+                className="flex-1 bg-[#C45D3E] hover:bg-[#A84B32] text-white font-semibold rounded-xl py-2.5 text-sm"
               >
                 <Plus className="w-4 h-4 inline mr-1" />
                 {selectionType === 'range'
@@ -2034,18 +2034,18 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                       // Hover preview colors (while selecting)
                       if (isInHoverRange) {
                         if (isHoverStart || isHoverEnd) {
-                          return 'bg-blue-400 text-white border-2 border-blue-500 shadow-lg';
+                          return 'bg-[#C45D3E] text-white border-2 border-[#C45D3E] shadow-lg';
                         } else {
-                          return 'bg-blue-50 text-blue-700 border border-blue-200';
+                          return 'bg-[#FDF8F3] text-[#C45D3E] border border-[#F5E6D3]';
                         }
                       }
 
                       // Final selection colors
                       if (isInRange) {
                         if (isStartDate || isEndDate) {
-                          return 'bg-blue-500 text-white border-2 border-blue-600';
+                          return 'bg-[#C45D3E] text-white border-2 border-[#C45D3E]';
                         } else {
-                          return 'bg-blue-100 text-blue-800 border border-blue-300';
+                          return 'bg-[#F5E6D3] text-[#1A1A1A] border border-[#C45D3E]';
                         }
                       }
 
@@ -2054,11 +2054,11 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                         case 'available':
                           return 'bg-emerald-500 text-white';
                         case 'partially-available':
-                          return 'bg-blue-500 text-white';
+                          return 'bg-[#C45D3E] text-white';
                         case 'unavailable':
                           return 'bg-red-500 text-white';
                         case 'booked':
-                          return 'bg-purple-500 text-white';
+                          return 'bg-[#C45D3E] text-white';
                         case 'maintenance':
                           return 'bg-orange-500 text-white';
                         case 'on-hold':
@@ -2118,14 +2118,14 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                   setIsCalendarOpen(false);
                 }}
                 disabled={!range.startDate || !range.endDate}
-                className="h-10 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors shadow-sm disabled:opacity-50"
+                className="h-10 px-6 bg-[#C45D3E] hover:bg-[#A84B32] text-white rounded-lg font-medium transition-colors shadow-sm disabled:opacity-50"
               >
                 {selectionType === 'range' ? 'Add Date Range' : 'Add Single Date'}
               </Button>
 
               {/* <Button
           onClick={() => setIsCalendarOpen(false)}
-          className="h-10 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors shadow-sm"
+          className="h-10 px-6 bg-[#C45D3E] hover:bg-[#A84B32] text-white rounded-lg font-medium transition-colors shadow-sm"
         >
           Done
         </Button> */}
@@ -2192,18 +2192,18 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                        // If date is in hover preview range (while selecting), use preview colors
                        if (isInHoverRange) {
                          if (isHoverStart || isHoverEnd) {
-                           return 'bg-blue-400 text-white border-2 border-blue-500 shadow-lg';
+                           return 'bg-[#C45D3E] text-white border-2 border-[#C45D3E] shadow-lg';
                          } else {
-                           return 'bg-blue-50 text-blue-700 border border-blue-200';
+                           return 'bg-[#FDF8F3] text-[#C45D3E] border border-[#F5E6D3]';
                          }
                        }
                        
                        // If date is in final selection range, use selection colors
                        if (isInRange) {
                          if (isStartDate || isEndDate) {
-                           return 'bg-blue-500 text-white border-2 border-blue-600';
+                           return 'bg-[#C45D3E] text-white border-2 border-[#C45D3E]';
                          } else {
-                           return 'bg-blue-100 text-blue-800 border border-blue-300';
+                           return 'bg-[#F5E6D3] text-[#1A1A1A] border border-[#C45D3E]';
                          }
                        }
                        
@@ -2212,11 +2212,11 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                          case 'available':
                            return 'bg-emerald-500 text-white';
                          case 'partially-available':
-                           return 'bg-blue-500 text-white';
+                           return 'bg-[#C45D3E] text-white';
                          case 'unavailable':
                            return 'bg-red-500 text-white';
                          case 'booked':
-                           return 'bg-purple-500 text-white';
+                           return 'bg-[#C45D3E] text-white';
                          case 'maintenance':
                            return 'bg-orange-500 text-white';
                          case 'on-hold':
@@ -2267,7 +2267,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                             <div className="font-semibold mb-1">Booked</div>
                             {(meta?.checkInDate || meta?.checkInTime) && (
                               <div className="flex items-center gap-1">
-                                <Clock className="w-3 h-3 text-blue-400" />
+                                <Clock className="w-3 h-3 text-[#C45D3E]" />
                                 <span>In: {meta?.checkInDate ? format(new Date(meta.checkInDate), 'MMM d') : ''}{meta?.checkInTime ? `, ${formatTime12Hour(meta.checkInTime)}` : ''}</span>
                               </div>
                             )}
@@ -2289,7 +2289,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
 
                        
                         {tooltipDate === ds && status === 'available' && !isExpired && ((meta?.availableHours && meta.availableHours.length > 0) || (meta?.unavailableHours && meta.unavailableHours.length > 0)) && (
-                          <div className="absolute z-[9999] bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-blue-600 text-white text-xs rounded-lg shadow-lg">
+                          <div className="absolute z-[9999] bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-[#C45D3E] text-white text-xs rounded-lg shadow-lg">
                             {(meta?.availableHours && meta.availableHours.length > 0) && (
                               <>
                                 <div className="font-semibold mb-1 flex items-center gap-1">
@@ -2297,7 +2297,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                                   Available Hours
                                 </div>
                                 {meta.availableHours.map((range, idx) => (
-                                  <div key={idx} className="text-blue-200">
+                                  <div key={idx} className="text-[#F5E6D3]">
                                     {formatTime12Hour(range.startTime)} - {formatTime12Hour(range.endTime)}
                                   </div>
                                 ))}
@@ -2305,7 +2305,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                             )}
                             {(meta?.unavailableHours && meta.unavailableHours.length > 0) && (
                               <>
-                                {meta?.availableHours && meta.availableHours.length > 0 && <div className="mt-2 pt-2 border-t border-blue-500"></div>}
+                                {meta?.availableHours && meta.availableHours.length > 0 && <div className="mt-2 pt-2 border-t border-[#C45D3E]"></div>}
                                 <div className="font-semibold mb-1 flex items-center gap-1">
                                   <XCircle className="w-3 h-3" />
                                   Unavailable Hours
@@ -2318,7 +2318,7 @@ export default function AvailabilityManager({ targetType, targetId }: Availabili
                               </>
                             )}
                            
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-blue-600"></div>
+                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-[#C45D3E]"></div>
                           </div>
                         )}
 

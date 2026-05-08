@@ -233,7 +233,7 @@ export default function ReviewForm({
           <button
             type="submit"
             disabled={isSubmitting || formData.rating.overall === 0 || !formData.comment.trim()}
-            className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="flex-1 bg-[#C45D3E] text-white py-3 rounded-lg font-medium hover:bg-[#A84B32] disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             {isSubmitting ? 'Submitting...' : 'Submit Review'}
           </button>

@@ -178,11 +178,11 @@ const StoryPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50">
+      <div className="min-h-screen bg-[#FDF8F3]">
         <Header />
         <div className="pt-48 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="w-16 h-16 border-4 border-[#F5E6D3] border-t-[#C45D3E] rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-gray-600">Loading story...</p>
           </div>
         </div>
@@ -192,7 +192,7 @@ const StoryPage = () => {
 
   if (error || !story) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50">
+      <div className="min-h-screen bg-[#FDF8F3]">
         <Header />
         <div className="pt-48 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
@@ -203,7 +203,7 @@ const StoryPage = () => {
             <p className="text-gray-600 mb-8">{error || 'The story you are looking for does not exist.'}</p>
             <Button 
               onClick={() => router.push('/stories')}
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105 border-0 shadow-lg"
+              className="bg-[#C45D3E] hover:bg-[#A84B32] text-white font-medium rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105 border-0 shadow-lg"
             >
               Back to Stories
             </Button>
@@ -214,7 +214,7 @@ const StoryPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50">
+    <div className="min-h-screen bg-[#FDF8F3]">
       <Header />
       
       {/* Hero Section */}
@@ -239,7 +239,7 @@ const StoryPage = () => {
           
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-2xl">
             <div className="flex items-center gap-4 mb-6">
-              <span className="px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
+              <span className="px-4 py-2 bg-[#F5E6D3] text-[#C45D3E] rounded-full text-sm font-medium">
                 {story.category}
               </span>
               <div className="flex items-center gap-2 text-gray-600">
@@ -310,10 +310,9 @@ const StoryPage = () => {
           {/* Main Content */}
           <div className="lg:col-span-2">
             <Card className="p-8 bg-white/80 backdrop-blur-sm border-0 shadow-xl rounded-2xl">
-              <div 
-                className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: story.content.replace(/\n/g, '<br>') }}
-              />
+              <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed whitespace-pre-line">
+                {story.content}
+              </div>
               
               {/* Tags */}
               {story.tags.length > 0 && (
@@ -326,7 +325,7 @@ const StoryPage = () => {
                     {story.tags.map((tag, index) => (
                       <span
                         key={index}
-                        className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm"
+                        className="px-3 py-1 bg-[#F5E6D3] text-[#C45D3E] rounded-full text-sm"
                       >
                         {tag}
                       </span>
@@ -344,8 +343,8 @@ const StoryPage = () => {
               <Card className="p-6 bg-white/80 backdrop-blur-sm border-0 shadow-xl rounded-2xl">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">About the Author</h3>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                    <User className="w-6 h-6 text-purple-600" />
+                  <div className="w-12 h-12 bg-[#F5E6D3] rounded-full flex items-center justify-center">
+                    <User className="w-6 h-6 text-[#C45D3E]" />
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900">{story.author.name}</h4>
@@ -366,7 +365,7 @@ const StoryPage = () => {
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
                       placeholder="Share your thoughts..."
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent resize-none"
                       rows={3}
                     />
                     <Button
@@ -383,8 +382,8 @@ const StoryPage = () => {
                   {story.comments.map((comment) => (
                     <div key={comment._id} className="border-b border-gray-100 pb-4 last:border-b-0">
                       <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                          <User className="w-4 h-4 text-purple-600" />
+                        <div className="w-8 h-8 bg-[#F5E6D3] rounded-full flex items-center justify-center flex-shrink-0">
+                          <User className="w-4 h-4 text-[#C45D3E]" />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">

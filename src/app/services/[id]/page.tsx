@@ -201,7 +201,7 @@ export default function ServiceDetailsPage() {
         <Header />
         <div className="pt-20 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-gray-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-6"></div>
+            <div className="w-16 h-16 border-4 border-gray-200 border-t-[#C45D3E] rounded-full animate-spin mx-auto mb-6"></div>
             <span className="text-xl text-gray-600">Loading service details...</span>
           </div>
         </div>
@@ -302,7 +302,7 @@ export default function ServiceDetailsPage() {
 
             {/* Service Type Badge */}
             <div className="absolute top-4 left-4">
-              <span className="px-3 py-2 bg-white/90 backdrop-blur-sm text-sm font-medium text-purple-700 rounded-full shadow-lg">
+              <span className="px-3 py-2 bg-white/90 backdrop-blur-sm text-sm font-medium text-[#C45D3E] rounded-full shadow-lg">
                 {formatServiceType(service.serviceType)}
               </span>
             </div>
@@ -336,12 +336,12 @@ export default function ServiceDetailsPage() {
               {/* Service Details Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div className="text-center p-4 bg-white rounded-xl shadow-sm border border-gray-100">
-                  <Users size={24} className="text-purple-600 mx-auto mb-2" />
+                  <Users size={24} className="text-[#C45D3E] mx-auto mb-2" />
                   <div className="text-sm text-gray-600">Group Size</div>
                   <div className="font-semibold text-gray-900">{service.groupSize.min}-{service.groupSize.max}</div>
                 </div>
                 <div className="text-center p-4 bg-white rounded-xl shadow-sm border border-gray-100">
-                  <Clock size={24} className="text-blue-600 mx-auto mb-2" />
+                  <Clock size={24} className="text-[#C45D3E] mx-auto mb-2" />
                   <div className="text-sm text-gray-600">Duration</div>
                   <div className="font-semibold text-gray-900">{formatDuration(service.duration.value, service.duration.unit)}</div>
                 </div>
@@ -411,7 +411,7 @@ export default function ServiceDetailsPage() {
     <div className="flex-1 flex flex-col items-center sm:items-start text-center sm:text-left w-full">
       <div className="flex items-center gap-2 mb-1">
         <h4 className="font-semibold text-gray-900 text-lg">{service.provider.name}</h4>
-        {service.provider.isVerified && <CheckCircle size={18} className="text-blue-500" />}
+        {service.provider.isVerified && <CheckCircle size={18} className="text-[#C45D3E]" />}
       </div>
 
       {service.provider.rating && (
@@ -451,7 +451,7 @@ export default function ServiceDetailsPage() {
     </div>
 
     <div className="flex gap-3">
-      <Clock className="text-blue-500 mt-1" size={16} />
+      <Clock className="text-[#C45D3E] mt-1" size={16} />
       <div>
         <p className="font-medium text-gray-900">Flexible timing</p>
         <p className="text-sm text-gray-600">Choose your preferred slot</p>
@@ -613,7 +613,7 @@ export default function ServiceDetailsPage() {
                                   ? 'bg-gray-900 text-white shadow-md'
                                   : 'hover:bg-gray-100 text-gray-800 cursor-pointer'
                               }
-                              ${isToday && !isSelected ? 'ring-2 ring-purple-500' : ''}
+                              ${isToday && !isSelected ? 'ring-2 ring-[#C45D3E]' : ''}
                             `}
                           >
                             <span className="text-base leading-none">{format(date, 'd')}</span>
@@ -667,12 +667,12 @@ export default function ServiceDetailsPage() {
 
                   {/* Selection Summary */}
                   {selectedDate && selectedSlot && (
-                    <div className="mb-4 p-3 bg-purple-50 border border-purple-100 rounded-xl text-sm">
-                      <div className="flex items-center gap-2 text-purple-700 font-semibold mb-1">
+                    <div className="mb-4 p-3 bg-[#FDF8F3] border border-[#F5E6D3] rounded-xl text-sm">
+                      <div className="flex items-center gap-2 text-[#C45D3E] font-semibold mb-1">
                         <CheckCircle size={14} />
                         Selected Session
                       </div>
-                      <div className="text-purple-600">
+                      <div className="text-[#C45D3E]">
                         {format(selectedDate, 'EEE, MMM d')} · {selectedSlot.time} – {format(selectedSlot.endDate, 'h:mm a')}
                       </div>
                     </div>
@@ -681,19 +681,19 @@ export default function ServiceDetailsPage() {
                   {/* Book Button — hidden for service providers */}
                   {isProvider ? (
                     <div className="space-y-3">
-                      <div className="p-3 bg-purple-50 border border-purple-100 rounded-xl text-center text-sm text-purple-700 font-medium">
+                      <div className="p-3 bg-[#FDF8F3] border border-[#F5E6D3] rounded-xl text-center text-sm text-[#C45D3E] font-medium">
                         You are the provider of this service
                       </div>
                       <Button
                         onClick={() => router.push(`/host/service/${id}`)}
-                        className="w-full py-3 text-base font-semibold rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+                        className="w-full py-3 text-base font-semibold rounded-xl bg-gradient-to-r from-[#C45D3E] to-[#A84B32] hover:from-[#A84B32] hover:to-[#8B3D28] text-white"
                       >
                         Edit Service
                       </Button>
                       <Button
                         variant="outline"
                         onClick={() => router.push(`/host/service/${id}/availability`)}
-                        className="w-full py-3 text-base font-semibold rounded-xl border-purple-200 text-purple-700 hover:bg-purple-50"
+                        className="w-full py-3 text-base font-semibold rounded-xl border-[#F5E6D3] text-[#C45D3E] hover:bg-[#FDF8F3]"
                       >
                         <Calendar size={16} className="mr-2" />
                         Manage Calendar
@@ -748,7 +748,7 @@ export default function ServiceDetailsPage() {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <h4 className="font-semibold text-gray-900">{service.provider.name}</h4>
-                  {service.provider.isVerified && <CheckCircle size={16} className="text-blue-500" />}
+                  {service.provider.isVerified && <CheckCircle size={16} className="text-[#C45D3E]" />}
                 </div>
                 {service.provider.rating && (
                   <div className="flex items-center gap-1 text-sm text-gray-600 mb-2">

@@ -54,7 +54,7 @@ export default function Step4Page() {
       <OnboardingLayout currentStep={4}>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <Loader2 className="w-12 h-12 animate-spin text-[#FF385C] mx-auto mb-4" />
+            <Loader2 className="w-12 h-12 animate-spin text-[#C45D3E] mx-auto mb-4" />
             <p className="text-gray-600">Checking verification status...</p>
           </div>
         </div>
@@ -101,7 +101,7 @@ export default function Step4Page() {
               >
                 <Button
                   onClick={handleContinue}
-                  className="bg-[#FF385C] hover:bg-[#E61E4D] text-white px-8 py-4 text-lg font-semibold rounded-lg"
+                  className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-8 py-4 text-lg font-semibold rounded-lg"
                   size="lg"
                 >
                   Continue to Final Step
@@ -145,7 +145,7 @@ export default function Step4Page() {
               >
                 <Button
                   onClick={handleContinue}
-                  className="bg-[#FF385C] hover:bg-[#E61E4D] text-white px-8 py-4 text-lg font-semibold rounded-lg"
+                  className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-8 py-4 text-lg font-semibold rounded-lg"
                   size="lg"
                 >
                   {isKYCRejected ? 'Resubmit KYC Documents' : 'Complete Verification'}

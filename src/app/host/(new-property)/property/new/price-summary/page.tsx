@@ -208,9 +208,9 @@ export default function PriceSummaryPage() {
 
         {/* Hourly Extension Summary */}
         {hourlyExtensionEnabled && (
-          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-6 border border-purple-200 mb-6">
+          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-6 border border-[#F5E6D3] mb-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-[#C45D3E] to-indigo-500 rounded-xl flex items-center justify-center">
                 <Clock className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -229,7 +229,7 @@ export default function PriceSummaryPage() {
                 <div key={item.label} className="bg-white rounded-xl p-3 text-center">
                   <div className="text-xl mb-1">{item.icon}</div>
                   <div className="text-sm font-medium text-gray-900">{item.label}</div>
-                  <div className="text-purple-600 font-bold">{Math.round(item.rate * 100)}%</div>
+                  <div className="text-[#C45D3E] font-bold">{Math.round(item.rate * 100)}%</div>
                   <div className="text-xs text-gray-500">₹{Math.round(basePrice * item.rate).toLocaleString()}</div>
                 </div>
               ))}
@@ -238,12 +238,12 @@ export default function PriceSummaryPage() {
         )}
 
         {/* Info Box */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <div className="bg-[#FDF8F3] border border-[#F5E6D3] rounded-xl p-4">
           <div className="flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <CheckCircle className="w-5 h-5 text-[#C45D3E] flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-medium text-blue-900">Great pricing!</p>
-              <p className="text-sm text-blue-700 mt-1">
+              <p className="text-sm text-[#C45D3E] mt-1">
                 You can adjust your prices anytime from your hosting dashboard. Competitive pricing helps you get more bookings.
               </p>
             </div>

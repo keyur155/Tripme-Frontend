@@ -402,7 +402,7 @@ export default function BookingDetailsPage() {
           Cancelled
         </span>;
       case 'completed':
-        return <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+        return <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#F5E6D3] text-[#1A1A1A]">
           <CheckCircle className="w-4 h-4 mr-1" />
           Completed
         </span>;
@@ -426,7 +426,7 @@ export default function BookingDetailsPage() {
         description: 'Free cancellation until 5 days before check-in',
         refundPercentage: 100,
         deadlineHours: 120,
-        color: 'bg-blue-100 text-blue-800',
+        color: 'bg-[#F5E6D3] text-[#1A1A1A]',
         icon: Shield
       },
       strict: {
@@ -704,22 +704,22 @@ export default function BookingDetailsPage() {
               
 
               {/* What's Next Section */}
-              <div className="bg-blue-50 rounded-xl p-6 mb-6 border border-blue-200">
+              <div className="bg-[#FDF8F3] rounded-xl p-6 mb-6 border border-[#F5E6D3]">
                 <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                  <Info className="w-5 h-5 text-blue-600" />
+                  <Info className="w-5 h-5 text-[#C45D3E]" />
                   What's Next?
                 </h3>
                 <ul className="space-y-2 text-gray-700">
                   <li className="flex items-start gap-2">
-                    <span className="text-blue-600 mt-1">•</span>
+                    <span className="text-[#C45D3E] mt-1">•</span>
                     <span>Check-in instructions will be sent to your email</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-blue-600 mt-1">•</span>
+                    <span className="text-[#C45D3E] mt-1">•</span>
                     <span>The host will confirm your booking shortly</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-blue-600 mt-1">•</span>
+                    <span className="text-[#C45D3E] mt-1">•</span>
                     <span>You can view full booking details below</span>
                   </li>
                 </ul>
@@ -745,7 +745,7 @@ export default function BookingDetailsPage() {
                       detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
                   }}
-                  className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg"
+                  className="flex items-center gap-2 px-6 py-3 bg-[#C45D3E] text-white rounded-lg font-semibold hover:bg-[#A84B32] transition-all shadow-md hover:shadow-lg"
                 >
                   <Eye className="w-5 h-5" />
                   View Full Details
@@ -810,14 +810,14 @@ export default function BookingDetailsPage() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-[#FDF8F3] rounded-lg">
                     <div className="flex items-center">
-                      <Calendar className="w-4 h-4 text-blue-600 mr-2" />
-                      <span className="text-sm font-medium text-blue-800">Check-in</span>
+                      <Calendar className="w-4 h-4 text-[#C45D3E] mr-2" />
+                      <span className="text-sm font-medium text-[#1A1A1A]">Check-in</span>
                           </div>
                     <div className="text-right">
                       <div className="text-sm font-semibold text-gray-900">{formatDate(booking.checkIn)}</div>
-                      <div className="text-xs text-blue-600">After {booking.listing?.checkInTime || '3:00 PM'}</div>
+                      <div className="text-xs text-[#C45D3E]">After {booking.listing?.checkInTime || '3:00 PM'}</div>
                     </div>
                   </div>
                   
@@ -831,7 +831,7 @@ export default function BookingDetailsPage() {
                       <div className="text-xs text-green-600">
                         Before {getCheckoutTime()}
                         {booking.hourlyExtension?.hours && (
-                          <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                          <span className="ml-2 px-2 py-1 bg-[#F5E6D3] text-[#1A1A1A] text-xs rounded-full">
                             +{booking.hourlyExtension.hours}h extension
                           </span>
                         )}
@@ -841,10 +841,10 @@ export default function BookingDetailsPage() {
                       </div>
                 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-[#FDF8F3] rounded-lg">
                     <div className="flex items-center">
-                      <Users className="w-4 h-4 text-purple-600 mr-2" />
-                      <span className="text-sm font-medium text-purple-800">Guests</span>
+                      <Users className="w-4 h-4 text-[#C45D3E] mr-2" />
+                      <span className="text-sm font-medium text-[#1A1A1A]">Guests</span>
                     </div>
                     <div className="text-sm font-semibold text-gray-900">
                       {booking.guests.adults} adults
@@ -1015,11 +1015,11 @@ export default function BookingDetailsPage() {
 
                   {/* Refund Timeline */}
                   {booking.refundAmount > 0 && (
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <h5 className="text-sm font-semibold text-blue-800 mb-2">Refund Timeline</h5>
-                      <div className="space-y-2 text-xs text-blue-700">
+                    <div className="bg-[#FDF8F3] rounded-lg p-4">
+                      <h5 className="text-sm font-semibold text-[#1A1A1A] mb-2">Refund Timeline</h5>
+                      <div className="space-y-2 text-xs text-[#C45D3E]">
                         <div className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                          <div className="w-2 h-2 bg-[#C45D3E] rounded-full"></div>
                           <span>Refund initiated: {new Date().toLocaleDateString()}</span>
                       </div>
                         <div className="flex items-center space-x-2">
@@ -1103,14 +1103,14 @@ export default function BookingDetailsPage() {
                 
                 {/* Hourly Extension */}
                 {((booking.pricingBreakdown?.customerBreakdown?.hourlyExtension ?? 0) > 0 || (booking.hourlyExtension?.hours ?? 0) > 0) && (
-                  <div className="flex justify-between items-center py-2 bg-blue-50 rounded-lg px-3 -mx-3">
+                  <div className="flex justify-between items-center py-2 bg-[#FDF8F3] rounded-lg px-3 -mx-3">
                     <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-blue-500" />
-                      <span className="text-sm text-blue-700">
+                      <Clock className="w-4 h-4 text-[#C45D3E]" />
+                      <span className="text-sm text-[#C45D3E]">
                         Hourly Extension ({booking.hourlyExtension?.hours ?? 0}h)
                       </span>
                     </div>
-                    <span className="text-sm font-medium text-blue-600">
+                    <span className="text-sm font-medium text-[#C45D3E]">
                       +{formatCurrency(booking.pricingBreakdown?.customerBreakdown?.hourlyExtension ?? 0)}
                     </span>
                   </div>

@@ -27,9 +27,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // Handle SSR - show loading until client-side hydration is complete
   if (typeof window === 'undefined') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-indigo-50 to-violet-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#FDF8F3]">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto mb-4" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#C45D3E] mx-auto mb-4" />
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
@@ -71,9 +71,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // Show loading spinner while checking authentication
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-indigo-50 to-violet-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#FDF8F3]">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto mb-4" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#C45D3E] mx-auto mb-4" />
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
@@ -83,9 +83,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // Don't render children if not authenticated (will redirect)
   if (requireAuth && !isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-indigo-50 to-violet-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#FDF8F3]">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto mb-4" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#C45D3E] mx-auto mb-4" />
           <p className="text-gray-600">Redirecting to login...</p>
         </div>
       </div>
