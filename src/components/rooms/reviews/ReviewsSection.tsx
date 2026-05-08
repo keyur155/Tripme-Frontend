@@ -127,37 +127,35 @@ const loadReviews = async () => {
 )}
 
       {/* Reviews Section */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-5 sm:p-8">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-8">
         
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10  rounded-xl flex items-center justify-center">
-              <Star className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
+            <div className="w-10 h-10 rounded-xl bg-[#F5E6D3] flex items-center justify-center">
+              <Star className="w-5 h-5 text-[#C45D3E]" />
             </div>
-            <h2 className="text-xl sm:text-2xl md:2xl font-bold text-gray-900 tracking-tight">
-              Reviews
-            </h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">Reviews</h2>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {/* Write Review Button */}
             {userBooking && !userBooking.review && (
               <button
                 onClick={() => setShowReviewForm(true)}
-                className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                className="px-4 py-2 bg-[#C45D3E] text-white text-sm font-medium rounded-xl hover:bg-[#A84B32] transition-colors"
               >
                 Write a Review
               </button>
             )}
 
             {/* Rating Display */}
-            <div className="flex items-center gap-1 text-sm sm:text-base">
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span className="font-medium">
-                {reviewSummary?.averageRating || property.rating || 0}
+            <div className="flex items-center gap-1.5 text-sm bg-[#FAFAF8] rounded-xl px-3 py-2 border border-gray-100">
+              <Star className="w-3.5 h-3.5 fill-[#B8860B] text-[#B8860B]" />
+              <span className="font-bold text-[#1A1A1A]">
+                {reviewSummary?.averageRating ? Number(reviewSummary.averageRating).toFixed(1) : property.rating || 0}
               </span>
-              <span className="text-gray-500">
+              <span className="text-gray-400 text-xs">
                 ({reviewSummary?.totalReviews || property.reviewCount || reviews.length})
               </span>
             </div>
@@ -179,11 +177,11 @@ const loadReviews = async () => {
         {/* Empty State */}
         {reviews.length === 0 && !showReviewForm && (
           <div className="text-center py-10">
-            <div className="text-5xl mb-3">⭐</div>
-            <h3 className="text-lg font-semibold">No reviews yet</h3>
-            <p className="text-sm text-gray-600">
-              Be the first to review this property!
-            </p>
+            <div className="w-16 h-16 bg-[#F5E6D3] rounded-full flex items-center justify-center mx-auto mb-4">
+              <Star className="w-8 h-8 text-[#C45D3E]" />
+            </div>
+            <h3 className="text-base font-bold text-[#1A1A1A]">No reviews yet</h3>
+            <p className="text-sm text-gray-500 mt-1">Be the first to review this property!</p>
           </div>
         )}
 

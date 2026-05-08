@@ -411,14 +411,14 @@ new PriceMarker({ lat: currentCoords.lat, lng: currentCoords.lng }).setMap(map);
 
   return (
     <div className="w-full">
-      <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-gray-100 p-4 md:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 flex items-center justify-center shrink-0">
-              <MapPin className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
+            <div className="w-10 h-10 rounded-xl bg-[#F5E6D3] flex items-center justify-center flex-shrink-0">
+              <MapPin className="w-5 h-5 text-[#C45D3E]" />
             </div>
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Property Location</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">Property Location</h2>
               <p className="text-sm text-gray-500">Get directions or view on map</p>
             </div>
           </div>
@@ -426,7 +426,7 @@ new PriceMarker({ lat: currentCoords.lat, lng: currentCoords.lng }).setMap(map);
           <div className="flex flex-col xs:flex-row gap-3 w-full sm:w-auto">
             <button
               onClick={getDirections}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-6 py-2.5 bg-[#4285f4] text-white rounded-xl hover:bg-blue-600 transition-all shadow-md shadow-blue-100 text-sm font-bold"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-6 py-2.5 bg-[#C45D3E] text-white rounded-xl hover:bg-[#A84B32] transition-all shadow-md shadow-[#C45D3E]/10 text-sm font-bold"
             >
               <Navigation className="w-4 h-4 fill-white" />
               Directions
@@ -457,7 +457,7 @@ new PriceMarker({ lat: currentCoords.lat, lng: currentCoords.lng }).setMap(map);
                 </p>
                 <button
                   onClick={openInMaps}
-                  className="text-blue-600 hover:text-blue-800 font-medium"
+                  className="text-[#C45D3E] hover:text-[#A84B32] font-medium"
                 >
                   Open in Google Maps
                 </button>
@@ -466,7 +466,7 @@ new PriceMarker({ lat: currentCoords.lat, lng: currentCoords.lng }).setMap(map);
           ) : !isClient || isLoading ? (
             <div className="h-96 bg-gray-100 rounded-xl flex items-center justify-center">
               <div className="text-center">
-                <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-3"></div>
+                <div className="w-8 h-8 border-4 border-[#F5E6D3] border-t-[#C45D3E] rounded-full animate-spin mx-auto mb-3"></div>
                 <p className="text-gray-600">Loading map...</p>
               </div>
             </div>

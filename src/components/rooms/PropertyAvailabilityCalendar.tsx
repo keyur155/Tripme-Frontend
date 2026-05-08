@@ -189,11 +189,11 @@ export default function PropertyAvailabilityCalendar({
         // If date has hour restrictions, use blue styling; otherwise green
         if (hasHourRestrictions) {
           return {
-            bg: 'bg-blue-100 hover:bg-blue-200',
-            text: 'text-blue-700',
-            border: 'border-blue-300',
-            icon: <Clock className="w-3 h-3 text-blue-600" />,
-            dot: 'bg-blue-500'
+            bg: 'bg-[#F5E6D3] hover:bg-[#EFDCC8]',
+            text: 'text-[#C45D3E]',
+            border: 'border-[#EFDCC8]',
+            icon: <Clock className="w-3 h-3 text-[#C45D3E]" />,
+            dot: 'bg-[#C45D3E]'
           };
         }
         return {
@@ -245,11 +245,11 @@ export default function PropertyAvailabilityCalendar({
         };
       case 'partially-available':
         return {
-          bg: 'bg-blue-100 hover:bg-blue-200',
-          text: 'text-blue-700',
-          border: 'border-blue-300',
-          icon: <Clock className="w-3 h-3 text-blue-600" />,
-          dot: 'bg-blue-500'
+          bg: 'bg-[#F5E6D3] hover:bg-[#EFDCC8]',
+          text: 'text-[#C45D3E]',
+          border: 'border-[#EFDCC8]',
+          icon: <Clock className="w-3 h-3 text-[#C45D3E]" />,
+          dot: 'bg-[#C45D3E]'
         };
       default: {
         // For both host and guest view: unavailable by default (host must explicitly set availability)
@@ -401,10 +401,10 @@ export default function PropertyAvailabilityCalendar({
 
   /* ================= MOBILE STYLES ================= */
 
-  ${isCheckIn ? 'bg-[#4285f4] text-blue-700 font-bold' : ''}
-  ${isCheckOut ? 'bg-[#4285f4] text-blue-700 font-bold' : ''}
-  ${isInRange ? 'bg-indigo-100' : ''}
-  // ${isTodayDate && !isCheckIn && !isCheckOut && !isInRange ? 'bg-blue-50' : ''}
+  ${isCheckIn ? 'bg-[#C45D3E] text-[#C45D3E] font-bold' : ''}
+  ${isCheckOut ? 'bg-[#C45D3E] text-[#C45D3E] font-bold' : ''}
+  ${isInRange ? 'bg-[#F5E6D3]' : ''}
+  // ${isTodayDate && !isCheckIn && !isCheckOut && !isInRange ? 'bg-[#FDF8F3]' : ''}
 
   /* No borders / rings on mobile */
   
@@ -433,7 +433,7 @@ ${isCurrentMonth && !isPastDate && !isCheckIn && !isCheckOut && !isInRange
           >
             {/* Check-in/Check-out labels */}
             {/* {isCheckIn && isCurrentMonth && (
-              <div className="absolute top-0 left-0 right-0 text-[8px] font-bold text-blue-700 bg-blue-200 rounded-t-lg px-1 text-center">
+              <div className="absolute top-0 left-0 right-0 text-[8px] font-bold text-[#C45D3E] bg-[#F5E6D3] rounded-t-lg px-1 text-center">
                 Check-in
               </div>
             )}
@@ -444,7 +444,7 @@ ${isCurrentMonth && !isPastDate && !isCheckIn && !isCheckOut && !isInRange
             )} */}
 {/* ..... */}
             {/* {isCheckIn && (
-  <span className="hidden lg:absolute bottom-1 w-1.5 h-1.5 rounded-full bg-blue-600" />
+  <span className="hidden lg:absolute bottom-1 w-1.5 h-1.5 rounded-full bg-[#C45D3E]" />
 )}
 
 {isCheckOut && (
@@ -472,13 +472,13 @@ ${isCurrentMonth && !isPastDate && !isCheckIn && !isCheckOut && !isInRange
       absolute bottom-1
       w-1.5 h-1.5 rounded-full
 
-      ${isCheckIn ? 'bg-[#4285f4]' : ''}
-      ${isCheckOut ? 'bg-[#4285f4]' : ''}
+      ${isCheckIn ? 'bg-[#C45D3E]' : ''}
+      ${isCheckOut ? 'bg-[#C45D3E]' : ''}
       ${!isCheckIn && !isCheckOut && status === 'available' ? 'bg-green-500' : ''}
       ${status === 'unavailable' ? '' : ''}
       ${status === 'booked' ? 'bg-purple-500' : ''}
       ${status === 'maintenance' ? 'bg-orange-500' : ''}
-      ${status === 'partially-available' ? 'bg-blue-500' : ''}
+      ${status === 'partially-available' ? 'bg-[#C45D3E]' : ''}
     `}
   />
 )}
@@ -498,7 +498,7 @@ ${isCurrentMonth && !isPastDate && !isCheckIn && !isCheckOut && !isInRange
                 <div className="font-semibold mb-1">Booked</div>
                 {(dayData?.checkInDate || dayData?.checkInTime) && (
                   <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3 text-blue-400" />
+                    <Clock className="w-3 h-3 text-[#EFDCC8]" />
                     <span>In: {dayData?.checkInDate ? format(new Date(dayData.checkInDate), 'MMM d') : ''}{dayData?.checkInTime ? `, ${formatTime12Hour(dayData.checkInTime)}` : ''}</span>
                   </div>
                 )}
@@ -536,40 +536,40 @@ ${isCurrentMonth && !isPastDate && !isCheckIn && !isCheckOut && !isInRange
 
             {/* Tooltip for partially available dates - available after maintenance */}
             {hoveredDate === dateKey && status === 'partially-available' && isCurrentMonth && dayData?.maintenance?.availableAfter && (
-              <div className="absolute z-50 bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-blue-600 text-white text-xs rounded-lg shadow-lg whitespace-nowrap">
+              <div className="absolute z-50 bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-[#C45D3E] text-white text-xs rounded-lg shadow-lg whitespace-nowrap">
                 <div className="font-semibold mb-1 flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   Partially Available
                 </div>
                 <div className="flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-blue-200" />
+                  <Clock className="w-3 h-3 text-[#F5E6D3]" />
                   <span>Available after: {format(new Date(dayData.maintenance.availableAfter), 'h:mm a')}</span>
                 </div>
-                <div className="text-blue-200 text-[10px] mt-1">
+                <div className="text-[#F5E6D3] text-[10px] mt-1">
                   Select check-in time after maintenance period
                 </div>
                
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-blue-600"></div>
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-[#C45D3E]"></div>
               </div>
             )}
 
             {/* Tooltip for dates with hour restrictions - GUEST VIEW */}
             {!isHostView && hoveredDate === dateKey && status === 'available' && isCurrentMonth && hasHourRestrictions && (
-              <div className="absolute z-50 bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-blue-600 text-white text-xs rounded-lg shadow-lg">
+              <div className="absolute z-50 bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-[#C45D3E] text-white text-xs rounded-lg shadow-lg">
                 <div className="font-semibold mb-1 flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   Available Hours
                 </div>
                 {dayData.availableHours?.map((range, idx) => (
-                  <div key={idx} className="text-blue-200">
+                  <div key={idx} className="text-[#F5E6D3]">
                     {formatTime12Hour(range.startTime)} - {formatTime12Hour(range.endTime)}
                   </div>
                 ))}
-                <div className="text-blue-200 text-[10px] mt-1">
+                <div className="text-[#F5E6D3] text-[10px] mt-1">
                   Select check-in time within these hours
                 </div>
                
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-blue-600"></div>
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-[#C45D3E]"></div>
               </div>
             )}
 
@@ -620,7 +620,7 @@ ${isCurrentMonth && !isPastDate && !isCheckIn && !isCheckOut && !isInRange
     return (
       <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-[#4285f4] rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-[#C45D3E] rounded-xl flex items-center justify-center">
             <CalendarIcon className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -629,7 +629,7 @@ ${isCurrentMonth && !isPastDate && !isCheckIn && !isCheckOut && !isInRange
           </div>
         </div>
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#C45D3E]"></div>
         </div>
       </div>
     );
@@ -645,7 +645,7 @@ ${isCurrentMonth && !isPastDate && !isCheckIn && !isCheckOut && !isInRange
       p-5 md:p-6">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 rounded-xl flex items-center justify-center">
-          <CalendarIcon className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4] " />
+          <CalendarIcon className="w-5 h-5 sm:w-8 sm:h-8 text-[#C45D3E] " />
         </div>
         <div>
           <h3 className="text-xl sm:text-2xl md:text-2xl  font-bold text-gray-900">Availability Calendar</h3>
@@ -702,16 +702,16 @@ ${isCurrentMonth && !isPastDate && !isCheckIn && !isCheckOut && !isInRange
 
       {/* Selected Date Info */}
       {selectedDate && (
-        <div className="mt-4 p-4 bg-indigo-50 rounded-xl border border-indigo-200">
+        <div className="mt-4 p-4 bg-[#FDF8F3] rounded-xl border border-[#F5E6D3]">
           <div className="flex items-center gap-2 mb-2">
-            <CalendarIcon className="w-4 h-4 text-indigo-600" />
-            <span className="font-medium text-indigo-900">Selected Date</span>
+            <CalendarIcon className="w-4 h-4 text-[#C45D3E]" />
+            <span className="font-medium text-[#1A1A1A]">Selected Date</span>
           </div>
-          <p className="text-indigo-800">
+          <p className="text-[#1A1A1A]">
             {format(selectedDate, 'EEEE, MMMM do, yyyy')}
           </p>
           {availability[format(selectedDate, 'yyyy-MM-dd')]?.price && (
-            <p className="text-sm text-indigo-600 mt-1">
+            <p className="text-sm text-[#C45D3E] mt-1">
               Price: ₹{availability[format(selectedDate, 'yyyy-MM-dd')].price}
             </p>
           )}

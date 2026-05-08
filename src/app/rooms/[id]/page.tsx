@@ -1998,150 +1998,122 @@ const FloatingInsightBadge = ({ badge }) => {
           <div ref={bookingSentinelRef} className="h-px w-full" aria-hidden="true" />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Left Column - Main Content */}
-            <div className="lg:col-span-2 space-y-8">
+            <div className="lg:col-span-2 space-y-6">
               {/* Header Section */}
-              <div className="mb-8">
-                <div className="mb-2">
-
-                  {/* TOP ROW — TITLE + ACTIONS */}
-
-                  <div className="flex items-start justify-between gap-3">
-
-                    {/* LEFT CONTENT */}
-                    <div className="flex-1">
-                      <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
-                        {property.title}
-                      </h1>
-
-                      {/* SUBTITLE (Airbnb mobile style) */}
-                      <p className="mt-2 text-gray-600 text-sm sm:text-base">
-                        {property.placeType === "entire"
-                          ? "Entire apartment"
-                          : property.placeType === "room"
-                            ? "A room"
-                            : "Shared room"}{" "}
-                        in {property.location?.city}, {property.location?.country || "India"}
-                      </p>
-
-
-                    </div>
-
-                    {/* RIGHT ACTIONS — MOBILE AIRBNB STYLE */}
-                    <div className="hidden md:flex items-center gap-1 sm:gap-2">
-                      <button
-                        onClick={handleShare}
-                        className="p-2 rounded-full hover:bg-gray-100 transition"
-                      >
-                        <Share2 className="w-5 h-5 text-gray-700" />
-                      </button>
-
-                      <button
-                        onClick={() => handleFavorite(property._id)}
-                        className="p-2 rounded-full hover:bg-gray-100 transition"
-                      >
-                        <Heart
-                          className={`w-5 h-5 ${isFavorite
-                            ? "fill-red-500 text-red-500"
-                            : "text-gray-700"
-                            }`}
-                        />
-                      </button>
-                    </div>
-                  </div>
-
-
-
-                  {/* AIRBNB RATING STRIP */}
-                  <div
-                    onClick={() => setIsOpen(true)}
-                    className="cursor-pointer bg-[#FAFAF8] rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 mt-5 flex items-center justify-between gap-3 sm:gap-8"
-                  >
-                    {/* LEFT SECTION */}
-                    <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                      {heroBadge && (
-                        <span className="text-green-500 text-lg sm:text-2xl">
-                          {heroBadge.icon}
-                        </span>
-                      )}
-                      <div className="text-left">
-                        <p className="text-sm sm:text-2xl font-bold text-gray-900 leading-tight">
-                          {heroBadge?.label}
-                        </p>
-                      </div>
-                      {heroBadge && (
-                        <span className="hidden sm:inline text-green-500 text-2xl">
-                          {heroBadge.icon}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* DESCRIPTION */}
-                    <div className="hidden md:block flex-1 min-w-[180px]">
-                      <p className="text-sm text-gray-600 leading-snug">
-                        {heroBadge?.description || "One of the most loved properties by guests"}
-                      </p>
-                    </div>
-
-                    {/* STATS */}
-                    <div className="flex items-center gap-5 sm:gap-8 flex-shrink-0">
-                      <div className="flex flex-col items-start text-xs sm:text-sm">
-                        <p className="text-xs sm:text-xl font-semibold text-gray-900">
-                          {property.rating ? Number(property.rating).toFixed(1) : "New"}
-                        </p>
-                        <div className="flex gap-[1px] mt-1">
-                          {[1, 2, 3, 4, 5].map((s) => (
-                            <Star
-                              key={s}
-                              className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${
-                                s <= Math.round(property.rating || 0)
-                                  ? "fill-black text-black"
-                                  : "text-gray-300"
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="hidden sm:block w-px h-10 bg-gray-200" />
-
-                      <div className="flex flex-col items-start text-xs sm:text-sm">
-                        <p className="text-base sm:text-xl font-semibold text-gray-900">
-                          {property.reviewCount || 0}
-                        </p>
-                        <p className="text-[10px] sm:text-xs text-gray-500">Reviews</p>
-                      </div>
-                    </div>
-                  </div>
-
+              <div>
+                {/* LOCATION BREADCRUMB */}
+                <div className="flex items-center gap-1.5 mb-3">
+                  <MapPin className="w-3.5 h-3.5 text-[#C45D3E]" />
+                  <span className="text-xs font-medium text-gray-500 tracking-wide uppercase">
+                    {property.location?.city}{property.location?.state ? `, ${property.location?.state}` : ''} · India
+                  </span>
                 </div>
 
+                {/* TOP ROW — TITLE + ACTIONS */}
+                <div className="flex items-start justify-between gap-3">
+                  {/* LEFT CONTENT */}
+                  <div className="flex-1">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1A1A1A] leading-tight tracking-tight">
+                      {property.title}
+                    </h1>
+                    {/* PROPERTY TYPE BADGE */}
+                    <div className="flex items-center flex-wrap gap-2 mt-2">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#F5E6D3] rounded-full text-xs font-semibold text-[#C45D3E]">
+                        <Home className="w-3 h-3" />
+                        {property.placeType === "entire"
+                          ? "Entire place"
+                          : property.placeType === "room"
+                          ? "Private room"
+                          : "Shared room"}
+                      </span>
+                      {property.cancellationPolicy === "flexible" && (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#F0F7F1] rounded-full text-xs font-semibold text-[#2D5F3A]">
+                          <CheckCircle className="w-3 h-3" />
+                          Free cancellation
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* RIGHT ACTIONS */}
+                  <div className="hidden md:flex items-center gap-1">
+                    <button
+                      onClick={handleShare}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-gray-100 transition text-sm font-medium text-gray-700"
+                    >
+                      <Share2 className="w-4 h-4" />
+                      <span className="hidden lg:inline">Share</span>
+                    </button>
+                    <button
+                      onClick={() => handleFavorite(property._id)}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-gray-100 transition text-sm font-medium text-gray-700"
+                    >
+                      <Heart className={`w-4 h-4 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
+                      <span className="hidden lg:inline">{isFavorite ? "Saved" : "Save"}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* RATING STRIP */}
+                <div
+                  onClick={() => setIsOpen(true)}
+                  className="cursor-pointer mt-5 rounded-2xl border border-gray-100 bg-[#FAFAF8] p-4 sm:p-5 flex items-center gap-4 sm:gap-6 hover:border-gray-200 transition-colors"
+                >
+                  {/* Rating score */}
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Star className="w-5 h-5 fill-[#B8860B] text-[#B8860B]" />
+                    <span className="text-lg font-bold text-[#1A1A1A]">
+                      {property.rating ? Number(property.rating).toFixed(1) : "New"}
+                    </span>
+                  </div>
+
+                  {property.reviewCount > 0 && (
+                    <>
+                      <div className="w-px h-8 bg-gray-200 flex-shrink-0" />
+                      <div className="flex-shrink-0">
+                        <p className="text-sm font-semibold text-[#1A1A1A]">{property.reviewCount} reviews</p>
+                      </div>
+                    </>
+                  )}
+
+                  {heroBadge && (
+                    <>
+                      <div className="hidden sm:block w-px h-8 bg-gray-200 flex-shrink-0" />
+                      <div className="hidden sm:flex items-center gap-2 flex-1 min-w-0">
+                        <span className="text-lg flex-shrink-0">{heroBadge.icon}</span>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-[#1A1A1A] truncate">{heroBadge.label}</p>
+                          <p className="text-xs text-gray-500 truncate">{heroBadge.description}</p>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {property.reviewCount === 0 && (
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-gray-500">Be the first to review this property</p>
+                    </div>
+                  )}
+
+                  <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0 ml-auto" />
+                </div>
               </div>
 
               {/* Property Highlights */}
-            <div className="mb-8 mt-6 border-t border-b border-gray-100 py-5">
-              <div className="flex flex-row items-center divide-x divide-gray-200">
-                <div className="flex-1 flex flex-col items-center gap-1 px-2">
-                  <Users className="w-5 h-5 text-gray-700" />
-                  <span className="text-xs sm:text-sm font-semibold text-[#1A1A1A]">{property.maxGuests}</span>
-                  <span className="text-[10px] sm:text-xs text-gray-500">guests</span>
-                </div>
-                <div className="flex-1 flex flex-col items-center gap-1 px-2">
-                  <BedDouble className="w-5 h-5 text-gray-700" />
-                  <span className="text-xs sm:text-sm font-semibold text-[#1A1A1A]">{property.bedrooms}</span>
-                  <span className="text-[10px] sm:text-xs text-gray-500">{property.bedrooms > 1 ? 'bedrooms' : 'bedroom'}</span>
-                </div>
-                <div className="flex-1 flex flex-col items-center gap-1 px-2">
-                  <Bed className="w-5 h-5 text-gray-700" />
-                  <span className="text-xs sm:text-sm font-semibold text-[#1A1A1A]">{property.beds}</span>
-                  <span className="text-[10px] sm:text-xs text-gray-500">{property.beds > 1 ? 'beds' : 'bed'}</span>
-                </div>
-                <div className="flex-1 flex flex-col items-center gap-1 px-2">
-                  <Bath className="w-5 h-5 text-gray-700" />
-                  <span className="text-xs sm:text-sm font-semibold text-[#1A1A1A]">{property.bathrooms}</span>
-                  <span className="text-[10px] sm:text-xs text-gray-500">bath</span>
-                </div>
+              <div className="grid grid-cols-4 gap-3">
+                {[
+                  { icon: Users, value: property.maxGuests, label: "guests" },
+                  { icon: BedDouble, value: property.bedrooms, label: property.bedrooms > 1 ? "bedrooms" : "bedroom" },
+                  { icon: Bed, value: property.beds, label: property.beds > 1 ? "beds" : "bed" },
+                  { icon: Bath, value: property.bathrooms, label: property.bathrooms > 1 ? "baths" : "bath" },
+                ].map(({ icon: Icon, value, label }) => (
+                  <div key={label} className="flex flex-col items-center gap-1.5 bg-[#FAFAF8] rounded-2xl p-3 sm:p-4 border border-gray-100">
+                    <Icon className="w-5 h-5 text-[#C45D3E]" />
+                    <span className="text-base sm:text-lg font-bold text-[#1A1A1A] leading-none">{value}</span>
+                    <span className="text-[10px] sm:text-xs text-gray-500">{label}</span>
+                  </div>
+                ))}
               </div>
-            </div>
 
             
                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-8">
@@ -2153,55 +2125,42 @@ const FloatingInsightBadge = ({ badge }) => {
 
 
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-8">
-
-                {/* HEADER */}
-
-                <div className="flex items-center gap-3 sm:gap-3 mb-4 sm:mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-[#F5E6D3] flex items-center justify-center">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-[#F5E6D3] flex items-center justify-center flex-shrink-0">
                     <Home className="w-5 h-5 text-[#C45D3E]" />
                   </div>
-
-                  <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A] tracking-tight">
-                    About this place
-                  </h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">About this place</h2>
                 </div>
 
-                {/* DESCRIPTION */}
-                <div className="text-gray-700 leading-relaxed text-sm sm:text-base break-words">
-
+                <div className="text-gray-600 leading-relaxed text-sm sm:text-[15px] break-words">
                   {showFullDescription ? (
-                    <div>
-                      <p className="whitespace-pre-line break-words">
-                        {property.description}
-                      </p>
-
+                    <>
+                      <p className="whitespace-pre-line break-words">{property.description}</p>
                       <button
                         onClick={() => setShowFullDescription(false)}
-                        className="text-[#C45D3E] font-medium mt-3 hover:underline"
+                        className="flex items-center gap-1 text-[#C45D3E] font-semibold mt-4 hover:text-[#A84B32] transition-colors text-sm"
                       >
-                        Show less
+                        <ChevronUp className="w-4 h-4" /> Show less
                       </button>
-                    </div>
+                    </>
                   ) : (
-                    <div>
+                    <>
                       <p className="whitespace-pre-line break-words">
                         {property.description?.length > 300
                           ? `${property.description.substring(0, 300)}...`
                           : property.description}
                       </p>
-
                       {property.description?.length > 300 && (
                         <button
                           onClick={() => setShowFullDescription(true)}
-                          className="text-[#C45D3E] font-medium mt-3 hover:underline"
+                          className="flex items-center gap-1 text-[#C45D3E] font-semibold mt-4 hover:text-[#A84B32] transition-colors text-sm"
                         >
-                          Show more
+                          <ChevronDown className="w-4 h-4" /> Show more
                         </button>
                       )}
-                    </div>
+                    </>
                   )}
                 </div>
-
               </div>
 
 
@@ -2209,40 +2168,31 @@ const FloatingInsightBadge = ({ badge }) => {
 
 
               {/* Amenities Section */}
-
               <div ref={amenitiesRef} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 md:p-8">
-                {/* HEADER */}
-                <div className="flex items-center gap-3 sm:gap-3 mb-4 sm:mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-[#F5E6D3] flex items-center justify-center shrink-0">
-                    <CheckCircle className="w-5 h-5 text-[#C45D3E]" />
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-[#F5E6D3] flex items-center justify-center flex-shrink-0">
+                    <Sparkles className="w-5 h-5 text-[#C45D3E]" />
                   </div>
-                  <h2 className="text-xl md:text-2xl font-bold text-[#1A1A1A]">
-                    What this place offers
-                  </h2>
+                  <h2 className="text-xl md:text-2xl font-bold text-[#1A1A1A]">What this place offers</h2>
                 </div>
 
-                {/* AMENITIES GRID */}
-                <div className="grid grid-cols-2 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-y-4 gap-x-3">
                   {(property.amenities
-                    ?.slice(0, isMobile ? 4 : showAllAmenities ? property.amenities.length : 8)
+                    ?.slice(0, isMobile ? 6 : showAllAmenities ? property.amenities.length : 10)
                   )?.map((amenity: string) => (
-                    <div
-                      key={amenity}
-                      className="flex items-center gap-3"
-                    >
-                      {getAmenityIcon(amenity)}
-                      <span className="text-sm md:text-base text-gray-700 capitalize">
+                    <div key={amenity} className="flex items-center gap-3 py-1">
+                      <div className="flex-shrink-0">{getAmenityIcon(amenity)}</div>
+                      <span className="text-sm text-gray-700 capitalize leading-tight">
                         {amenity.replace(/-/g, " ")}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                {/* SHOW ALL BUTTON */}
-                {property.amenities?.length > 4 && (
+                {property.amenities?.length > (isMobile ? 6 : 10) && !showAllAmenities && (
                   <button
                     onClick={() => setShowAllAmenities(true)}
-                    className="mt-5 w-full md:w-auto text-center border border-gray-300 rounded-xl px-6 py-3 text-sm font-medium hover:bg-gray-100 transition"
+                    className="mt-5 flex items-center gap-2 border border-[#1A1A1A] text-[#1A1A1A] rounded-xl px-5 py-2.5 text-sm font-semibold hover:bg-[#1A1A1A] hover:text-white transition-colors"
                   >
                     Show all {property.amenities.length} amenities
                   </button>
@@ -2427,20 +2377,34 @@ const FloatingInsightBadge = ({ badge }) => {
 
               <div className="sticky top-2">
                 
-                <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6">
+                <div className="bg-white border border-gray-100 rounded-2xl shadow-xl p-6">
                   {/* Price */}
-                  <div className="mb-6">
-                    <div className="flex items-baseline gap-2 mb-2">
-                      <span className="text-2xl font-bold text-gray-900">
+                  <div className="mb-5 pb-5 border-b border-gray-100">
+                    <div className="flex items-baseline gap-2 mb-1.5">
+                      <span className="text-3xl font-bold text-[#1A1A1A]">
                         {formatPrice(effectiveBasePrice, property.pricing?.currency || 'INR')}
                       </span>
-                      <span className="text-gray-600">{property.minNights ? `${property.minNights} night` : 'No minimum stay'}</span>
+                      <span className="text-gray-500 text-sm">/ night</span>
                     </div>
-                    <div className="flex items-center gap-1 text-sm text-gray-600 mb-4">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span>{property.rating || 0}</span>
-                      <span>•</span>
-                      <span>{property.reviewCount || 0} reviews</span>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <Star className="w-3.5 h-3.5 fill-[#B8860B] text-[#B8860B]" />
+                        <span className="font-semibold text-[#1A1A1A]">{property.rating ? Number(property.rating).toFixed(1) : "New"}</span>
+                      </div>
+                      {property.reviewCount > 0 && (
+                        <>
+                          <span className="text-gray-300">·</span>
+                          <span className="underline cursor-pointer hover:text-[#1A1A1A]" onClick={() => setIsOpen(true)}>
+                            {property.reviewCount} reviews
+                          </span>
+                        </>
+                      )}
+                      {property.minNights && property.minNights > 1 && (
+                        <>
+                          <span className="text-gray-300">·</span>
+                          <span>{property.minNights} night min.</span>
+                        </>
+                      )}
                     </div>
                   </div>
 
@@ -3437,26 +3401,29 @@ const FloatingInsightBadge = ({ badge }) => {
                     </div>
                   )}
 
-                  {/* Cancellation Policy */}
-                  <div className="mt-6 pt-6 border-t border-gray-200">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-900">
-                        {property.cancellationPolicy || 'Moderate'} cancellation policy
-                      </span>
-                      <span className="text-sm text-[#C45D3E] underline cursor-pointer">Learn more</span>
-                    </div>
-                  </div>
-
-                  {/* Check-in/Check-out Times */}
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <div className="font-medium text-gray-900 mb-1">Check-in</div>
-                        <div className="text-gray-600">{property.checkInTime }</div>
+                  {/* Cancellation + Times footer */}
+                  <div className="mt-5 pt-5 border-t border-gray-100 space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Calendar className="w-3.5 h-3.5 text-[#C45D3E]" />
+                        <span className="capitalize">{property.cancellationPolicy || 'Moderate'} cancellation</span>
                       </div>
-                      <div>
-                        <div className="font-medium text-gray-900 mb-1">Check-out</div>
-                        <div className="text-gray-600">{property.checkOutTime }</div>
+                      <span className="text-[#C45D3E] underline cursor-pointer text-xs font-medium">Learn more</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-[#FAFAF8] rounded-xl p-3 border border-gray-100">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <Clock className="w-3 h-3 text-[#C45D3E]" />
+                          <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Check-in</p>
+                        </div>
+                        <p className="text-sm font-bold text-[#1A1A1A]">{property.checkInTime || "15:00"}</p>
+                      </div>
+                      <div className="bg-[#FAFAF8] rounded-xl p-3 border border-gray-100">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <Clock className="w-3 h-3 text-[#2D5F3A]" />
+                          <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Check-out</p>
+                        </div>
+                        <p className="text-sm font-bold text-[#1A1A1A]">{property.checkOutTime || "11:00"}</p>
                       </div>
                     </div>
                   </div>
@@ -3643,7 +3610,7 @@ const FloatingInsightBadge = ({ badge }) => {
           </div>
 
           {/* Host Section */}
-          <div className="mb-20  bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-5 sm:p-8">
+          <div className="mb-20 bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-8">
             <HostCard host={property.host} />
           </div>
         </div>

@@ -134,8 +134,8 @@ export default function HostBottomSheet({ host }: { host: any }) {
                   )}
                   {host.responseRate && (
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
-                        <MessageCircle className="w-4 h-4 text-blue-600" />
+                      <div className="w-9 h-9 rounded-full bg-[#FDF8F3] flex items-center justify-center flex-shrink-0">
+                        <MessageCircle className="w-4 h-4 text-[#C45D3E]" />
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-900">{host.responseRate}% response rate</p>
