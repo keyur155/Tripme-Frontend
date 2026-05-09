@@ -1,9 +1,10 @@
 "use client";
 
+import React, { useState } from "react";
 import Button from "@/shared/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Calendar, CheckCircle, Clock, Zap } from "lucide-react";
+import { AlertCircle, Calendar, CheckCircle, Clock, Zap, ChevronDown, ChevronUp } from "lucide-react";
 
 interface MobileBookingBarProps {
   property: any;
@@ -62,6 +63,7 @@ export default function MobileBookingBar({
   isHourlyProperty = false,
 }: MobileBookingBarProps) {
   const router = useRouter();
+  const [showBreakdown, setShowBreakdown] = useState(false);
 
   /* 🔔 Haptic Feedback (mobile safe) */
   const haptic = (type: "light" | "medium" = "light") => {
@@ -71,13 +73,18 @@ export default function MobileBookingBar({
   };
 
   /* 💰 Price logic */
-  const pricingTotal = pricing?.total ?? pricing?.totalAmount;
-  const hasPricingTotal = typeof pricingTotal === "number" && pricingTotal > 0;
-  const displayPrice = hasPricingTotal
-    ? formatPrice(pricingTotal)
+  const pricingBaseAmount = pricing?.baseAmount;
+  const hasBaseAmount = typeof pricingBaseAmount === "number" && pricingBaseAmount > 0;
+  const displayPrice = hasBaseAmount
+    ? formatPrice(pricingBaseAmount)
     : formatPrice(property?.pricing?.basePrice || 0);
 
-  const priceLabel = hasPricingTotal ? " total" : " / night";
+  const priceLabel = hasBaseAmount ? " total" : " / night";
+
+  // Debug: log pricing object when breakdown is shown
+  if (showBreakdown) {
+    console.log('MobileBookingBar pricing object:', pricing);
+  }
 
   /* 🕐 Parse next available time from error */
   const maintenanceMatch = availabilityError?.match(/after\s+([\d:]+\s*[AP]M)/i);
@@ -125,18 +132,87 @@ export default function MobileBookingBar({
                 )}
               </div>
 
-              <button
-                onClick={() => {
-                  haptic();
-                  setShowDatePicker(true);
-                  setTimeConfirmed(true);
-                  setSelectionStep("checkin");
-                }}
-                className="text-sm font-semibold text-indigo-600 px-2 py-1"
-              >
-                Edit
-              </button>
+              <div className="flex items-center gap-2">
+                {hasBaseAmount && (
+                  <button
+                    onClick={() => {
+                      haptic();
+                      setShowBreakdown(!showBreakdown);
+                    }}
+                    className="text-sm font-semibold text-orange-600 px-2 py-1 flex items-center gap-1"
+                  >
+                    {showBreakdown ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    Breakdown
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    haptic();
+                    setShowDatePicker(true);
+                    setTimeConfirmed(true);
+                    setSelectionStep("checkin");
+                  }}
+                  className="text-sm font-semibold text-orange-600 px-2 py-1"
+                >
+                  Edit
+                </button>
+              </div>
             </div>
+
+            {/* ─── Pricing Breakdown (collapsible) ─── */}
+            <AnimatePresence>
+              {showBreakdown && hasBaseAmount && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 space-y-2"
+                >
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Base amount</span>
+                    <span className="font-medium">{formatPrice(pricing?.baseAmount || pricing?.basePrice || 0)}</span>
+                  </div>
+                  {pricing?.extraGuestCost > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Extra guests</span>
+                      <span className="font-medium">{formatPrice(pricing?.extraGuestCost)}</span>
+                    </div>
+                  )}
+                  {pricing?.cleaningFee > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Cleaning fee</span>
+                      <span className="font-medium">{formatPrice(pricing?.cleaningFee)}</span>
+                    </div>
+                  )}
+                  {pricing?.securityDeposit > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Security deposit</span>
+                      <span className="font-medium">{formatPrice(pricing?.securityDeposit)}</span>
+                    </div>
+                  )}
+                  <div className="border-t border-gray-200 pt-2 flex justify-between text-sm">
+                    <span className="text-gray-700 font-medium">Subtotal</span>
+                    <span className="font-bold">{formatPrice(pricing?.subtotal || pricing?.hostSubtotal || 0)}</span>
+                  </div>
+                  {pricing?.gst > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">GST</span>
+                      <span className="font-medium">{formatPrice(pricing?.gst)}</span>
+                    </div>
+                  )}
+                  {pricing?.processingFee > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Processing fee</span>
+                      <span className="font-medium">{formatPrice(pricing?.processingFee)}</span>
+                    </div>
+                  )}
+                  <div className="border-t border-gray-200 pt-2 flex justify-between text-sm">
+                    <span className="text-gray-900 font-bold">Total</span>
+                    <span className="font-bold text-orange-600">{formatPrice(pricing?.totalAmount || pricing?.total || 0)}</span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* ─── Inline Time Picker (compact stepper — visible when dates selected + hourly property) ─── */}
             {datesSelected && isHourlyProperty && checkInTimeStr && setCheckInTimeStr && timeOptions.length > 0 && (
