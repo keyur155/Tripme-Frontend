@@ -70,13 +70,13 @@ export default function PricingBreakdown({
     hostEarning: passedHostEarning
   } = pricing;
 
-  // Calculate baseAmount from basePrice * nights to exclude extra guest charges
-  const baseAmount = basePrice * nights;
-  // Use backend-calculated extraGuestCost if available, otherwise calculate from extraGuestPrice * extraGuests * nights
-  const extraGuestCost = passedExtraGuestCost ?? (extraGuestPrice * extraGuests * nights);
-  const hostFees = cleaningFee + serviceFee; // Simple display calculation only
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ALL values come from backend - NO frontend calculations
+  // ═══════════════════════════════════════════════════════════════════════════
   
-  // Use ONLY passed values from backend - these are already calculated correctly
+  const baseAmount = passedBaseAmount ?? 0;
+  const extraGuestCost = passedExtraGuestCost ?? 0;
+  const hostFees = cleaningFee + serviceFee; // Display-only sum
   const subtotal = passedSubtotal ?? 0;
   const hostSubtotal = passedHostSubtotal ?? 0;
   const platformFee = passedPlatformFee ?? 0;
@@ -101,9 +101,12 @@ export default function PricingBreakdown({
       {extraGuestCost > 0 && (
         <div className="flex justify-between items-center py-2">
           <span className="text-gray-600">
-            {extraGuests > 0
+            {/* {extraGuests > 0
               ? `Extra guest${extraGuests > 1 ? 's' : ''} (${extraGuests} × ${formatPrice(extraGuestPrice)})`
-              : 'Extra guest charges'}
+              : 'Extra guest charges'} */}
+        {extraGuests > 0
+        ? `Extra guest${extraGuests > 1 ? 's' : ''} (${formatPrice(extraGuestPrice)}/night × ${extraGuests} guest${extraGuests > 1 ? 's' : ''} × ${nights} night${nights > 1 ? 's' : ''})`
+        : 'Extra guest charges'}
           </span>
           <span className="text-gray-900">{formatPrice(extraGuestCost)}</span>
         </div>

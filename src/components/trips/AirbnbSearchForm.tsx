@@ -1172,25 +1172,6 @@ const isStartOrEnd = (day, monthDate) => {
                       setSearchInputValue('');
                       setPlaceResults([]);
                       setActiveField('checkin');
-<<<<<<< HEAD
-                    }, 100);
-                  }}
-                  onFocus={() => {
-                    // Clear input when focused
-                    setSearchInputValue('');
-                  }}
-                  placeholder="Search destinations"
-                  styles={{
-                    ...customSelectStyles,
-                    menuPortal: (base: any) => ({ ...base, zIndex: 9999 })
-                  }}
-                  menuPortalTarget={typeof window !== 'undefined' ? document.body : undefined}
-                  isSearchable
-                  menuPlacement="auto"
-                  className="w-full"
-                  components={{ DropdownIndicator: () => null }}
-                />
-=======
                     }}
                   >
                     <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 flex-shrink-0">
@@ -1201,7 +1182,6 @@ const isStartOrEnd = (day, monthDate) => {
                     </div>
                   </button>
                 ))}
->>>>>>> upstream/main
               </div>
             ) : searchInputValue.length >= 2 && placeResults.length === 0 ? (
               <div className="px-3 py-6 text-center text-gray-400 text-sm">Searching...</div>
