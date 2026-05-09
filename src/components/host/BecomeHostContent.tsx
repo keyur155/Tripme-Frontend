@@ -110,12 +110,12 @@ const BecomeHostContent: React.FC = () => {
       description: "Turn your property or skills into income. Set your own prices and earn on your terms."
     },
     {
-      icon: <Users className="w-6 h-6 text-blue-600" />,
+      icon: <Users className="w-6 h-6 text-[#C45D3E]" />,
       title: "Meet Travelers",
       description: "Connect with people from around the world and share your local knowledge."
     },
     {
-      icon: <Shield className="w-6 h-6 text-purple-600" />,
+      icon: <Shield className="w-6 h-6 text-[#C45D3E]" />,
       title: "Secure Platform",
       description: "Our secure payment system and insurance protect both hosts and guests."
     },
@@ -163,7 +163,7 @@ const BecomeHostContent: React.FC = () => {
 
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 pb-16">
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-[#FDF8F3] to-[#F5E6D3] pb-16">
       {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0, y: -40 }}
@@ -172,7 +172,7 @@ const BecomeHostContent: React.FC = () => {
         className="text-center mb-16 pt-8"
       >
         <div className="max-w-4xl mx-auto px-4">
-          <h1 className="text-6xl md:text-7xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-6 drop-shadow-lg font-display">
+          <h1 className="text-6xl md:text-7xl font-extrabold bg-gradient-to-r from-[#C45D3E] via-[#A84B32] to-[#A84B32] bg-clip-text text-transparent mb-6 drop-shadow-lg font-display">
           Become a Host
         </h1>
           <p className="text-2xl text-gray-700 max-w-3xl mx-auto font-medium font-body leading-relaxed">
@@ -202,10 +202,10 @@ const BecomeHostContent: React.FC = () => {
         transition={{ duration: 0.7, delay: 0.2 }}
         className="max-w-6xl mx-auto px-4 mb-16"
       >
-        <Card className="p-8 bg-gradient-to-br from-white to-blue-50 shadow-2xl rounded-3xl border border-blue-100">
+        <Card className="p-8 bg-gradient-to-br from-white to-[#FDF8F3] shadow-2xl rounded-3xl border border-[#F5E6D3]">
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <Calculator className="w-8 h-8 text-blue-600" />
+              <Calculator className="w-8 h-8 text-[#C45D3E]" />
               <h2 className="text-3xl font-bold text-gray-900 font-display">Earnings Calculator</h2>
             </div>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -229,8 +229,8 @@ const BecomeHostContent: React.FC = () => {
                       onClick={() => setSelectedCity(city)}
                       className={`p-4 rounded-xl border-2 transition-all duration-200 ${
                         selectedCity === city
-                          ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-lg'
-                          : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-25'
+                          ? 'border-[#C45D3E] bg-[#FDF8F3] text-[#C45D3E] shadow-lg'
+                          : 'border-gray-200 bg-white text-gray-700 hover:border-[#C45D3E] hover:bg-[#FDF8F3]'
                       }`}
                     >
                       <div className="text-center">
@@ -271,28 +271,28 @@ const BecomeHostContent: React.FC = () => {
             </div>
 
             {/* Earnings Display */}
-            <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
+            <div className="bg-gradient-to-br from-[#C45D3E] to-[#A84B32] rounded-2xl p-8 text-white">
               <h3 className="text-2xl font-bold mb-6 text-center">Your Potential Earnings</h3>
               
               <div className="space-y-6">
                 <div className="bg-white/20 rounded-xl p-6 text-center">
                   <div className="text-4xl font-bold mb-2">₹{earnings.daily.toLocaleString()}</div>
-                  <div className="text-blue-100">per day</div>
+                  <div className="text-[#F5E6D3]">per day</div>
                 </div>
                 
                 <div className="bg-white/20 rounded-xl p-6 text-center">
                   <div className="text-4xl font-bold mb-2">₹{earnings.monthly.toLocaleString()}</div>
-                  <div className="text-blue-100">per month</div>
+                  <div className="text-[#F5E6D3]">per month</div>
                 </div>
                 
                 <div className="bg-white/20 rounded-xl p-6 text-center">
                   <div className="text-4xl font-bold mb-2">₹{earnings.yearly.toLocaleString()}</div>
-                  <div className="text-blue-100">per year</div>
+                  <div className="text-[#F5E6D3]">per year</div>
                 </div>
               </div>
 
               <div className="mt-6 p-4 bg-white/10 rounded-xl">
-                <div className="text-sm text-blue-100 text-center">
+                <div className="text-sm text-[#F5E6D3] text-center">
                   <div className="font-semibold mb-2">Based on {selectedCity}</div>
                   <div>Average price: ₹{cityData[selectedCity as keyof typeof cityData].basePrice.toLocaleString()}/night</div>
                   <div>Occupancy rate: {Math.round(cityData[selectedCity as keyof typeof cityData].occupancyRate * 100)}%</div>
@@ -331,7 +331,7 @@ const BecomeHostContent: React.FC = () => {
                 <Card className="p-6 bg-white shadow-lg hover:shadow-2xl rounded-2xl border border-gray-100 transition-all duration-300 h-full">
                   <div className="text-center">
                     <motion.div
-                      className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300"
+                      className="w-16 h-16 bg-gradient-to-br from-[#F5E6D3] to-[#F5E6D3] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300"
                       whileHover={{ rotate: 5 }}
                     >
                       {benefit.icon}
@@ -352,24 +352,24 @@ const BecomeHostContent: React.FC = () => {
           transition={{ duration: 0.7, delay: 0.5 }}
           className="mb-16"
         >
-          <Card className="p-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl text-white">
+          <Card className="p-8 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] rounded-3xl text-white">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold mb-4">Join Our Success Stories</h2>
-              <p className="text-blue-100 text-lg">See what our hosts are achieving</p>
+              <p className="text-[#F5E6D3] text-lg">See what our hosts are achieving</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="text-center">
                 <div className="text-4xl font-bold mb-2">₹25,000+</div>
-                <div className="text-blue-100">Average monthly earnings</div>
+                <div className="text-[#F5E6D3]">Average monthly earnings</div>
               </div>
               <div className="text-center">
                 <div className="text-4xl font-bold mb-2">98%</div>
-                <div className="text-blue-100">Host satisfaction rate</div>
+                <div className="text-[#F5E6D3]">Host satisfaction rate</div>
               </div>
               <div className="text-center">
                 <div className="text-4xl font-bold mb-2">24/7</div>
-                <div className="text-blue-100">Dedicated support</div>
+                <div className="text-[#F5E6D3]">Dedicated support</div>
               </div>
             </div>
             </Card>
@@ -401,13 +401,13 @@ const BecomeHostContent: React.FC = () => {
                 <Card className="p-8 text-center bg-white shadow-xl rounded-3xl border border-gray-100 hover:shadow-2xl transition-all duration-300 h-full">
                   {index < steps.length - 1 && (
                     <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <ArrowRight className="w-4 h-4 text-blue-600" />
+                      <div className="w-8 h-8 bg-[#F5E6D3] rounded-full flex items-center justify-center">
+                        <ArrowRight className="w-4 h-4 text-[#C45D3E]" />
                       </div>
                     </div>
                   )}
                   
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <div className="w-20 h-20 bg-gradient-to-br from-[#C45D3E] to-[#A84B32] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                     <span className="text-2xl font-bold text-white">{step.number}</span>
                   </div>
                   
@@ -426,7 +426,7 @@ const BecomeHostContent: React.FC = () => {
           transition={{ duration: 0.7, delay: 0.7 }}
           className="mb-16"
         >
-          <Card className="p-8 bg-gradient-to-br from-gray-50 to-blue-50 shadow-xl rounded-3xl border border-gray-200">
+          <Card className="p-8 bg-gradient-to-br from-gray-50 to-[#FDF8F3] shadow-xl rounded-3xl border border-gray-200">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-gray-900 mb-4 font-display">Host Requirements</h2>
               <p className="text-lg text-gray-600">What you need to get started as a host</p>
@@ -461,15 +461,15 @@ const BecomeHostContent: React.FC = () => {
           transition={{ duration: 0.7, delay: 0.8 }}
           className="mb-16"
         >
-          <Card className="p-12 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 shadow-2xl rounded-3xl text-center text-white relative overflow-hidden">
+          <Card className="p-12 bg-gradient-to-br from-[#C45D3E] via-[#A84B32] to-[#A84B32] shadow-2xl rounded-3xl text-center text-white relative overflow-hidden">
             {/* Background decoration */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#C45D3E]/20 to-[#A84B32]/20"></div>
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
             
             <div className="relative z-10">
               <h2 className="text-4xl font-bold mb-6 font-display">Ready to Start Your Hosting Journey?</h2>
-              <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-xl text-[#F5E6D3] mb-8 max-w-2xl mx-auto leading-relaxed">
                 Join thousands of successful hosts and start earning from your space today
               </p>
             <AnimatePresence>
@@ -497,11 +497,11 @@ const BecomeHostContent: React.FC = () => {
                 <Button
                   onClick={handleBecomeHost}
                   disabled={isApplying}
-                  className="bg-white text-blue-600 hover:bg-blue-50 font-bold px-12 py-6 rounded-2xl shadow-2xl text-xl transition-all duration-300 relative overflow-hidden border-2 border-white/20 hover:shadow-3xl transform hover:scale-105"
+                  className="bg-white text-[#C45D3E] hover:bg-[#FDF8F3] font-bold px-12 py-6 rounded-2xl shadow-2xl text-xl transition-all duration-300 relative overflow-hidden border-2 border-white/20 hover:shadow-3xl transform hover:scale-105"
                 >
                   {isApplying ? (
                       <span className="flex items-center justify-center gap-3">
-                        <span className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></span>
+                        <span className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#C45D3E]"></span>
                       Applying...
                     </span>
                   ) : (
@@ -517,7 +517,7 @@ const BecomeHostContent: React.FC = () => {
                     disabled={isKYCPending}
                     className={`font-bold px-12 py-6 rounded-2xl shadow-2xl text-xl transition-all duration-300 relative overflow-hidden border-2 hover:shadow-3xl transform hover:scale-105 ${
                       isKYCPending
-                        ? 'bg-blue-400 text-blue-100 cursor-not-allowed border-blue-300'
+                        ? 'bg-[#C45D3E] text-[#F5E6D3] cursor-not-allowed border-[#C45D3E]'
                         : isKYCRejected
                         ? 'bg-red-500 text-white hover:bg-red-600 border-red-400'
                         : 'bg-yellow-500 text-white hover:bg-yellow-600 border-yellow-400'
@@ -548,7 +548,7 @@ const BecomeHostContent: React.FC = () => {
             {!isHost && !success && !isKYCVerified && user && (
               <div className="mt-6 text-center">
                 <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 max-w-lg mx-auto">
-                  <p className="text-blue-100 text-lg">
+                  <p className="text-[#F5E6D3] text-lg">
                     {isKYCPending 
                       ? 'Your KYC documents are under review. We\'ll notify you once verification is complete.'
                       : isKYCRejected
@@ -613,7 +613,7 @@ const BecomeHostContent: React.FC = () => {
                   initial={{ y: -100, opacity: 0 }}
                   animate={{ y: [0, 300, 0], opacity: [1, 1, 0] }}
                   transition={{ duration: 2, delay: i * 0.05 }}
-                  className="w-3 h-3 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 m-2"
+                  className="w-3 h-3 rounded-full bg-gradient-to-br from-[#C45D3E] to-[#A84B32] m-2"
                 />
               ))}
             </div>

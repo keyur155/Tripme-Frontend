@@ -83,7 +83,7 @@ export default function Step2Page() {
             <Button
               onClick={handleNext}
               disabled={!data.propertyType}
-              className="bg-[#FF385C] hover:bg-[#E61E4D] text-white px-8 py-4 text-lg font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-8 py-4 text-lg font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
               size="lg"
             >
               Continue

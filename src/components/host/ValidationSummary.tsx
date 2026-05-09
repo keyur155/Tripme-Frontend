@@ -115,27 +115,27 @@ const ValidationSummary: React.FC<ValidationSummaryProps> = ({ type, rules }) =>
   const optionalFields = Object.entries(rules).filter(([_, rule]) => !rule.required);
 
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 mb-6">
+    <div className="bg-gradient-to-r from-[#FDF8F3] to-[#FDF8F3] border border-[#F5E6D3] rounded-xl p-6 mb-6">
       <div className="flex items-center space-x-3 mb-4">
-        <Info className="w-6 h-6 text-blue-600" />
-        <h3 className="text-lg font-semibold text-blue-900">
+        <Info className="w-6 h-6 text-[#C45D3E]" />
+        <h3 className="text-lg font-semibold text-[#1A1A1A]">
           {type === 'property' ? 'Property' : 'Service'} Requirements Summary
         </h3>
       </div>
       
-      <p className="text-blue-700 mb-4">
+      <p className="text-[#C45D3E] mb-4">
         Before you start, here's what you'll need to provide. Required fields are marked with a red asterisk (*).
       </p>
 
       {requiredFields.length > 0 && (
         <div className="mb-6">
-          <h4 className="text-md font-semibold text-blue-800 mb-3 flex items-center">
+          <h4 className="text-md font-semibold text-[#1A1A1A] mb-3 flex items-center">
             <AlertCircle className="w-4 h-4 mr-2" />
             Required Fields ({requiredFields.length})
           </h4>
           <div className="space-y-3">
             {requiredFields.map(([field, rule]) => (
-              <div key={field} className="bg-white rounded-lg p-3 border border-blue-100">
+              <div key={field} className="bg-white rounded-lg p-3 border border-[#F5E6D3]">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h5 className="font-medium text-gray-900 mb-1">
@@ -144,7 +144,7 @@ const ValidationSummary: React.FC<ValidationSummaryProps> = ({ type, rules }) =>
                     <p className="text-sm text-gray-600 mb-2">
                       {getFieldDescription(field, rule)}
                     </p>
-                    <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                    <div className="text-xs text-[#C45D3E] bg-[#FDF8F3] px-2 py-1 rounded">
                       {getValidationText(field, rule)}
                     </div>
                   </div>
@@ -157,13 +157,13 @@ const ValidationSummary: React.FC<ValidationSummaryProps> = ({ type, rules }) =>
 
       {optionalFields.length > 0 && (
         <div>
-          <h4 className="text-md font-semibold text-blue-800 mb-3 flex items-center">
+          <h4 className="text-md font-semibold text-[#1A1A1A] mb-3 flex items-center">
             <CheckCircle className="w-4 h-4 mr-2" />
             Optional Fields ({optionalFields.length})
           </h4>
           <div className="space-y-3">
             {optionalFields.map(([field, rule]) => (
-              <div key={field} className="bg-white rounded-lg p-3 border border-blue-100">
+              <div key={field} className="bg-white rounded-lg p-3 border border-[#F5E6D3]">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h5 className="font-medium text-gray-900 mb-1">
@@ -172,7 +172,7 @@ const ValidationSummary: React.FC<ValidationSummaryProps> = ({ type, rules }) =>
                     <p className="text-sm text-gray-600 mb-2">
                       {getFieldDescription(field, rule)}
                     </p>
-                    <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                    <div className="text-xs text-[#C45D3E] bg-[#FDF8F3] px-2 py-1 rounded">
                       {getValidationText(field, rule)}
                     </div>
                   </div>
@@ -183,9 +183,9 @@ const ValidationSummary: React.FC<ValidationSummaryProps> = ({ type, rules }) =>
         </div>
       )}
 
-      <div className="mt-6 p-4 bg-blue-100 rounded-lg">
-        <h4 className="font-semibold text-blue-900 mb-2">💡 Tips for Success</h4>
-        <ul className="text-sm text-blue-800 space-y-1">
+      <div className="mt-6 p-4 bg-[#F5E6D3] rounded-lg">
+        <h4 className="font-semibold text-[#1A1A1A] mb-2">💡 Tips for Success</h4>
+        <ul className="text-sm text-[#1A1A1A] space-y-1">
           <li>• Fill out all required fields to proceed to the next step</li>
           <li>• Use descriptive titles and detailed descriptions to attract guests</li>
           <li>• Upload high-quality images to showcase your {type === 'property' ? 'property' : 'service'}</li>

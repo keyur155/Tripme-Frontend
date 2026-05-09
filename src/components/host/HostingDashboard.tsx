@@ -202,7 +202,7 @@ const HostingDashboard: React.FC<HostingDashboardProps> = ({ onCreateNewListing 
               ))}
               <path
                 d="M 100 40 L 100 180 L 110 175 L 100 180 L 90 175 Z"
-                fill="#FF385C"
+                fill="#C45D3E"
               />
             </svg>
           </div>
@@ -238,7 +238,7 @@ const HostingDashboard: React.FC<HostingDashboardProps> = ({ onCreateNewListing 
               <h2 className="text-xl font-semibold text-gray-900">Your listings</h2>
               <button
                 onClick={onCreateNewListing}
-                className="text-sm text-[#FF385C] font-medium hover:underline"
+                className="text-sm text-[#C45D3E] font-medium hover:underline"
               >
                 + Create new listing
               </button>
@@ -366,7 +366,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const getStatusBadge = () => {
     if (listing.status === 'draft' && listing.approvalStatus === 'pending') {
       return (
-        <span className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+        <span className="flex items-center gap-1 px-2 py-1 bg-[#F5E6D3] text-[#1A1A1A] text-xs font-medium rounded-full">
           <Clock className="w-3 h-3" />
           Pending approval
         </span>

@@ -126,7 +126,7 @@ export default function LocationPage() {
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
         scale: 10,
-        fillColor: '#FF385C',
+        fillColor: '#C45D3E',
         fillOpacity: 1,
         strokeColor: '#fff',
         strokeWeight: 3,

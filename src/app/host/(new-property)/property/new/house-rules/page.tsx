@@ -216,7 +216,7 @@ const handleAdditionalRuleChange = (ruleId: string, value: string) => {
         {/* Additional Rules */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-            <Home className="w-5 h-5 text-blue-600" />
+            <Home className="w-5 h-5 text-[#C45D3E]" />
             Additional rules
           </h2>
           
@@ -228,8 +228,8 @@ const handleAdditionalRuleChange = (ruleId: string, value: string) => {
   return (
     <div key={rule.id} className="bg-white p-6 rounded-2xl border border-gray-200">
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2 bg-blue-50 rounded-lg">
-          <Icon className="w-5 h-5 text-blue-600" />
+        <div className="p-2 bg-[#FDF8F3] rounded-lg">
+          <Icon className="w-5 h-5 text-[#C45D3E]" />
         </div>
         <h3 className="font-semibold text-gray-900">
           {rule.title}
@@ -304,14 +304,14 @@ const handleAdditionalRuleChange = (ruleId: string, value: string) => {
         </div>
 
         {/* Tips */}
-        <div className="p-6 bg-blue-50 rounded-2xl border border-blue-200">
+        <div className="p-6 bg-[#FDF8F3] rounded-2xl border border-[#F5E6D3]">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-[#C45D3E] flex-shrink-0 mt-0.5" />
             <div>
               <h3 className="font-semibold text-blue-900 mb-2">
                 House rules tips
               </h3>
-              <ul className="space-y-2 text-sm text-blue-800">
+              <ul className="space-y-2 text-sm text-[#1A1A1A]">
                 <li>• Be clear and specific about your expectations</li>
                 <li>• Focus on rules that are essential for your property</li>
                 <li>• Consider local laws and regulations</li>

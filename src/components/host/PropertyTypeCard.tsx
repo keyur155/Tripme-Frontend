@@ -32,7 +32,7 @@ export default function PropertyTypeCard({
       <Card
         className={`h-full transition-all duration-300 ${
           selected
-            ? 'border-2 border-[#FF385C] bg-[#FFF5F5] shadow-lg'
+            ? 'border-2 border-[#C45D3E] bg-[#FFF5F5] shadow-lg'
             : 'border-2 border-gray-200 hover:border-gray-300 hover:shadow-md'
         }`}
         padding="lg"
@@ -41,7 +41,7 @@ export default function PropertyTypeCard({
           <div
             className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-colors duration-300 ${
               selected
-                ? 'bg-[#FF385C] text-white'
+                ? 'bg-[#C45D3E] text-white'
                 : 'bg-gray-100 text-gray-600'
             }`}
           >
@@ -53,7 +53,7 @@ export default function PropertyTypeCard({
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="mt-4 w-6 h-6 rounded-full bg-[#FF385C] flex items-center justify-center"
+              className="mt-4 w-6 h-6 rounded-full bg-[#C45D3E] flex items-center justify-center"
             >
               <svg
                 className="w-4 h-4 text-white"

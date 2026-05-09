@@ -88,9 +88,9 @@ const PolicyHeader = () => {
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-purple-400 focus:outline-none transition-all duration-200 border border-gray-300 rounded-full"
+                  className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-[#C45D3E]/40 focus:outline-none transition-all duration-200 border border-gray-300 rounded-full"
                 >
-                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center overflow-hidden">
+                  <div className="w-8 h-8 bg-[#F5E6D3] rounded-full flex items-center justify-center overflow-hidden">
                     {user?.profileImage ? (
                       <img 
                         src={user.profileImage} 
@@ -98,7 +98,7 @@ const PolicyHeader = () => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <User className="w-4 h-4 text-purple-600" />
+                      <User className="w-4 h-4 text-[#C45D3E]" />
                     )}
                   </div>
                   <span className="text-sm font-medium">{user?.name}</span>
@@ -109,7 +109,7 @@ const PolicyHeader = () => {
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
                     <Link 
                       href="/user/profile" 
-                      className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                      className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <User size={20} />
@@ -117,7 +117,7 @@ const PolicyHeader = () => {
                     </Link>
                     <Link 
                       href="/bookings" 
-                      className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                      className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <Calendar size={20} />
@@ -128,7 +128,7 @@ const PolicyHeader = () => {
                         <div className="border-t border-gray-200 my-2"></div>
                         <Link 
                           href="/admin/dashboard" 
-                          className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                          className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                           onClick={() => setUserMenuOpen(false)}
                         >
                           <Shield size={20} />
@@ -154,11 +154,11 @@ const PolicyHeader = () => {
               <Dropdown
                 trigger={
                   <button
-                    className="flex items-center justify-center gap-2 p-2 rounded-full text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-purple-400 focus:outline-none transition-all duration-200 border border-gray-300"
+                    className="flex items-center justify-center gap-2 p-2 rounded-full text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:ring-2 focus:ring-[#C45D3E]/40 focus:outline-none transition-all duration-200 border border-gray-300"
                     aria-haspopup="true"
                   >
                     <Menu size={20} className="text-gray-700" />
-                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center shadow-sm overflow-hidden">
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#C45D3E] to-[#A84B32] rounded-full flex items-center justify-center shadow-sm overflow-hidden">
                       <User size={16} className="text-white flex-shrink-0" />
                     </div>
                   </button>
@@ -174,7 +174,7 @@ const PolicyHeader = () => {
                   </Link>
                   <Link 
                     href="/auth/signup" 
-                    className="block w-full text-center px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium transition-all duration-200"
+                    className="block w-full text-center px-4 py-2 rounded-xl bg-gradient-to-r from-[#C45D3E] to-[#A84B32] text-white font-medium transition-all duration-200"
                   >
                     Sign Up
                   </Link>
@@ -204,7 +204,7 @@ const PolicyHeader = () => {
                 <>
                   <Link 
                     href="/user/profile" 
-                    className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                    className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <User size={20} />
@@ -212,7 +212,7 @@ const PolicyHeader = () => {
                   </Link>
                   <Link 
                     href="/bookings" 
-                    className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                    className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Calendar size={20} />
@@ -221,7 +221,7 @@ const PolicyHeader = () => {
                   {user?.role === 'admin' && (
                     <Link 
                       href="/admin/dashboard" 
-                      className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                      className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Shield size={20} />
@@ -252,7 +252,7 @@ const PolicyHeader = () => {
                   </Link>
                   <Link 
                     href="/auth/signup" 
-                    className="block w-full text-center px-4 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium transition-all duration-200"
+                    className="block w-full text-center px-4 py-3 rounded-2xl bg-gradient-to-r from-[#C45D3E] to-[#A84B32] text-white font-medium transition-all duration-200"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Sign Up

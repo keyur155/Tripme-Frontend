@@ -80,7 +80,7 @@ export default function Error({ error, reset }: ErrorProps) {
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
           <Button
             onClick={handleReset}
-            className="flex items-center px-6 py-3 bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 rounded-xl shadow-lg"
+            className="flex items-center px-6 py-3 bg-[#C45D3E] text-white hover:bg-[#A84B32] transition-all duration-200 rounded-xl shadow-lg"
           >
             <RefreshCw className="w-5 h-5 mr-2" />
             Try Again
@@ -96,7 +96,7 @@ export default function Error({ error, reset }: ErrorProps) {
           
           <Button
             onClick={handleGoHome}
-            className="flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-200 rounded-xl shadow-lg shadow-purple-500/25"
+            className="flex items-center px-6 py-3 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] text-white hover:from-[#A84B32] hover:to-[#A84B32] transition-all duration-200 rounded-xl shadow-lg shadow-[#C45D3E]/25"
           >
             <Home className="w-5 h-5 mr-2" />
             Go Home
@@ -114,7 +114,7 @@ export default function Error({ error, reset }: ErrorProps) {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button
               onClick={() => router.push('/support')}
-              className="px-6 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors rounded-lg"
+              className="px-6 py-2 bg-[#F5E6D3] text-[#C45D3E] hover:bg-[#F5E6D3] transition-colors rounded-lg"
             >
               Contact Support
             </Button>

@@ -1,10 +1,9 @@
 "use client";
 import { ChevronLeft, X, Search } from "lucide-react";
-import React, { useState, useRef,useEffect,useCallback  } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSearchState } from '@/hooks/useSearchState';
 import { useRouter, useSearchParams } from 'next/navigation';
-import AsyncSelect from 'react-select/async';
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'AIzaSyB9JgH59f8fK3xzaBfFB6T19u4qGEUeLOM';
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
 function CategoryTabs({ onClose, activeCategory, setActiveCategory }: { 
   onClose: () => void;
@@ -100,7 +99,7 @@ function Calendar({
     setDateRange({ startDate: nextStart, endDate: nextEnd, key: 'selection' });
 
     if (nextStart && nextEnd) {
-      onNext();
+      setTimeout(() => onNext?.(), 300);
     }
   };
 
@@ -127,83 +126,6 @@ function Calendar({
    const today = new Date();
 today.setHours(0, 0, 0, 0);
 
-const customSelectStyles = {
-  control: (provided: any, state: any) => ({
-    ...provided,
-    background: 'transparent',
-    border: 'none',
-    boxShadow: 'none',
-    minHeight: 'unset',
-    height: '2.5rem',
-    fontSize: '1rem',
-    fontWeight: 500,
-    color: '#1e293b',
-    paddingLeft: 0,
-    '&:hover': {
-      border: 'none',
-    },
-    '&:focus-within': {
-      border: 'none',
-      boxShadow: 'none',
-    },
-  }),
-  valueContainer: (provided: any) => ({
-    ...provided,
-    padding: 0,
-    paddingLeft: 0,
-  }),
-  input: (provided: any) => ({
-    ...provided,
-    margin: 0,
-    padding: 0,
-  }),
-  placeholder: (provided: any) => ({
-    ...provided,
-    color: '#94a3b8',
-    fontWeight: 400,
-  }),
-  singleValue: (provided: any) => ({
-    ...provided,
-    color: '#1e293b',
-  }),
-  dropdownIndicator: (provided: any) => ({
-    ...provided,
-    color: '#6366f1',
-    paddingRight: 0,
-  }),
-  indicatorSeparator: () => ({ display: 'none' }),
-  menu: (provided: any) => ({
-    ...provided,
-    zIndex: 50,
-    borderRadius: '16px',
-    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-    background: '#fff',
-    padding: '8px 0',
-    marginTop: 8,
-    border: '1px solid #e5e7eb',
-    animation: 'slideDown 0.2s ease-out',
-  }),
-  option: (provided: any, state: any) => ({
-    ...provided,
-    backgroundColor: state.isSelected
-      ? 'rgba(99,102,241,0.1)'
-      : '#fff',
-    color: state.isSelected ? '#6366f1' : '#1e293b',
-    padding: '12px 16px',
-    fontWeight: state.isSelected ? 600 : 500,
-    fontSize: '1rem',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    margin: '0 8px',
-    transition: 'all 0.15s ease',
-    '&:hover': {
-      backgroundColor: state.isSelected ? 'rgba(99,102,241,0.15)' : '#f3f4f6',
-    },
-  }),
-};
-
-
-
   return (
     <div className="space-y-4">
       <div className="space-y-3">
@@ -211,7 +133,7 @@ const customSelectStyles = {
 
         {/* Tabs */}
         <div className="flex justify-center  items-center">
-          <button className="px-4 py-2 border  rounded-full text-sm font-medium bg-[#4285f4] text-white">
+          <button className="px-4 py-2 border  rounded-full text-sm font-medium bg-[#C45D3E] text-white">
             Dates
           </button>
           {/* <button className="px-4 py-2 rounded-full text-sm font-medium text-gray-500 hover:bg-gray-100">
@@ -284,7 +206,7 @@ const customSelectStyles = {
                "text-gray-300 cursor-not-allowed pointer-events-none" :
                   isStartOrEndDay
                     
-                     ? "bg-[#4285f4] text-white font-bold"
+                     ? "bg-[#C45D3E] text-white font-bold"
                       : inRange
                       ? "bg-[#ECF2FD] text-black"
                       : "text-gray-900 hover:bg-gray-100"
@@ -312,81 +234,6 @@ const customSelectStyles = {
     </div>
   );
 }
-
-const customSelectStyles = {
-  control: (provided: any, state: any) => ({
-    ...provided,
-    background: 'transparent',
-    border: 'none',
-    boxShadow: 'none',
-    minHeight: 'unset',
-    height: '2.5rem',
-    fontSize: '1rem',
-    fontWeight: 500,
-    color: '#1e293b',
-    paddingLeft: 0,
-    '&:hover': {
-      border: 'none',
-    },
-    '&:focus-within': {
-      border: 'none',
-      boxShadow: 'none',
-    },
-  }),
-  valueContainer: (provided: any) => ({
-    ...provided,
-    padding: 0,
-    paddingLeft: 0,
-  }),
-  input: (provided: any) => ({
-    ...provided,
-    margin: 0,
-    padding: 0,
-  }),
-  placeholder: (provided: any) => ({
-    ...provided,
-    color: '#94a3b8',
-    fontWeight: 400,
-  }),
-  singleValue: (provided: any) => ({
-    ...provided,
-    color: '#1e293b',
-  }),
-  dropdownIndicator: (provided: any) => ({
-    ...provided,
-    color: '#6366f1',
-    paddingRight: 0,
-  }),
-  indicatorSeparator: () => ({ display: 'none' }),
-  menu: (provided: any) => ({
-    ...provided,
-    zIndex: 50,
-    borderRadius: '16px',
-    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-    background: '#fff',
-    padding: '8px 0',
-    marginTop: 8,
-    border: '1px solid #e5e7eb',
-    animation: 'slideDown 0.2s ease-out',
-  }),
-  option: (provided: any, state: any) => ({
-    ...provided,
-    backgroundColor: state.isSelected
-      ? 'rgba(99,102,241,0.1)'
-      : '#fff',
-    color: state.isSelected ? '#6366f1' : '#1e293b',
-    padding: '12px 16px',
-    fontWeight: state.isSelected ? 600 : 500,
-    fontSize: '1rem',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    margin: '0 8px',
-    transition: 'all 0.15s ease',
-    '&:hover': {
-      backgroundColor: state.isSelected ? 'rgba(99,102,241,0.15)' : '#f3f4f6',
-    },
-  }),
-};
 
 export default function MobileSearchSheet({
   open,
@@ -424,8 +271,8 @@ export default function MobileSearchSheet({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
-  
-
+  const [placeResults, setPlaceResults] = useState<any[]>([]);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Ensure Google Maps script is loaded
 function loadGoogleMapsScript(): Promise<void> {
@@ -538,24 +385,18 @@ function loadGoogleMapsScript(): Promise<void> {
   }
 }
 
-// Debounce utility
-function debounce<F extends (...args: any[]) => void>(func: F, wait: number) {
-  let timeout: ReturnType<typeof setTimeout>;
-  return (...args: Parameters<F>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-}
+  useEffect(() => {
+    if (!whereSearch || whereSearch.length < 2) {
+      setPlaceResults([]);
+      return;
+    }
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = setTimeout(() => {
+      fetchPlacesGoogle(whereSearch).then((results) => setPlaceResults(results || []));
+    }, 350);
+    return () => { if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current); };
+  }, [whereSearch]);
 
-
-
-   // Debounced loadOptions for react-select/async
-    const debouncedLoadOptions = useRef(
-      debounce((inputValue: string, callback: (options: any[]) => void) => {
-        fetchPlacesGoogle(inputValue).then(callback);
-      }, 400)
-    ).current;
-  
     // Detect user's current location
     const detectCurrentLocation = async () => {
       console.log('🚀 detectCurrentLocation function called!');
@@ -832,41 +673,44 @@ useEffect(() => {
                   {/* Search Input */}
                   <div className="flex items-center bg-gray-100 rounded-xl px-4 py-3 mb-4">
                     <Search className="text-gray-400 mr-3" size={20} />
-                    <AsyncSelect
-                      cacheOptions
-                      loadOptions={debouncedLoadOptions}
-                      defaultOptions
-                      value={null}
-                      inputValue={whereSearch}
-                      onInputChange={(value) => setWhereSearch(value)}
-                      onChange={(option) => {
-                        const opt = option as {
-                          value: string;
-                          label: string;
-                          coordinates?: [number, number];
-                          type?: string;
-                          placeId?: string;
-                        };
-                        setSelectedCity({
-                          value: opt.value,
-                          label: opt.label,
-                          coordinates: opt.coordinates,
-                          type: opt.type,
-                        });
-                        setWhereSearch("");
-                        setActiveStep("when");
-                      }}
+                    <input
+                      type="text"
+                      autoFocus
+                      value={whereSearch}
+                      onChange={(e) => setWhereSearch(e.target.value)}
                       placeholder="Search destinations"
-                      styles={{
-                        ...customSelectStyles,
-                        menuPortal: (base: any) => ({ ...base, zIndex: 60 })
-                      }}
-                      className="flex-1"
-                      components={{ DropdownIndicator: () => null }}
+                      className="flex-1 text-sm text-gray-800 placeholder-gray-400 outline-none bg-transparent"
                     />
                   </div>
 
+                  {/* Google Places Results */}
+                  {whereSearch.length >= 2 && placeResults.length > 0 && (
+                    <div className="space-y-1 mb-4">
+                      {placeResults.map((result: any, idx: number) => (
+                        <button
+                          key={result.placeId || idx}
+                          onClick={() => {
+                            setSelectedCity({ value: result.value, label: result.label, type: result.type });
+                            setWhereSearch('');
+                            setPlaceResults([]);
+                            setActiveStep("when");
+                          }}
+                          className="w-full text-left px-3 py-3 hover:bg-gray-50 rounded-xl transition flex items-center gap-3"
+                        >
+                          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Search className="text-gray-500" size={16} />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-gray-900 font-medium truncate">{result.label}</div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Suggested Destinations */}
+                  {whereSearch.length < 2 && (
+                  <>
                   <p className="text-sm text-gray-500 font-medium mb-3">Suggested destinations</p>
                   <div className="space-y-1">
                     {destinations.map((dest, idx) => (
@@ -893,6 +737,8 @@ useEffect(() => {
                       </button>
                     ))}
                   </div>
+                  </>
+                  )}
                 </div>
               </div>
             ) : (
@@ -923,7 +769,7 @@ useEffect(() => {
                 onClick={() => setActiveStep("when")}
               >
                 <div className="flex justify-between items-center">
-                  <span className="text-[#4285F4] font-semibold">When</span>
+                  <span className="text-[#C45D3E] font-semibold">When</span>
                   <span className="text-gray-900 font-semibold">
                     {dateRange.startDate && dateRange.endDate 
                       ? `${dateRange.startDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} - ${dateRange.endDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}`
@@ -1021,7 +867,7 @@ useEffect(() => {
                 onClick={() => setActiveStep("who")}
               >
                 <div className="flex justify-between items-center">
-                  <span className="text-[#4285F4] font-semibold">Who</span>
+                  <span className="text-[#C45D3E] font-semibold">Who</span>
                   <span className="text-gray-900 font-semibold">
                     {totalGuests > 0 ? getGuestDisplayText() : 'Add guests'}
                   </span>
@@ -1049,43 +895,44 @@ useEffect(() => {
                            <div className="relative">
   
  <div className="flex items-center  bg-gray-100 rounded-xl px-2 py-2">
-  <Search className="text-[#4285F4] " size={20}    />
-  <AsyncSelect
-    cacheOptions
-    loadOptions={debouncedLoadOptions}
-    defaultOptions
-    value={null}
-    inputValue={whereSearch}
-    onInputChange={(value) => setWhereSearch(value)}
-    onChange={(option) => {
-      const opt = option as {
-        value: string;
-        label: string;
-        coordinates?: [number, number];
-        type?: string;
-        placeId?: string;
-      };
-
-      setSelectedCity({
-        value: opt.value,
-        label: opt.label,
-        coordinates: opt.coordinates,
-        type: opt.type,
-      });
-
-      setWhereSearch("");
-      setActiveStep("when");
-    }}
+  <Search className="text-[#C45D3E] " size={20}    />
+  <input
+    type="text"
+    autoFocus
+    value={whereSearch}
+    onChange={(e) => setWhereSearch(e.target.value)}
     placeholder="Search destinations"
-      styles={{
-                    ...customSelectStyles,
-                    menuPortal: (base: any) => ({ ...base, zIndex: 60 })
-                  }}
-    className="w-full pl-2"
-    components={{ DropdownIndicator: () => null }}
+    className="flex-1 text-sm text-gray-800 placeholder-gray-400 outline-none bg-transparent pl-2"
   />
   </div>
                  </div>
+
+                          {/* Google Places Results */}
+                          {whereSearch.length >= 2 && placeResults.length > 0 && (
+                            <div className="space-y-1 mb-4">
+                              {placeResults.map((result: any, idx: number) => (
+                                <button
+                                  key={result.placeId || idx}
+                                  onClick={() => {
+                                    setSelectedCity({ value: result.value, label: result.label, type: result.type });
+                                    setWhereSearch('');
+                                    setPlaceResults([]);
+                                    setActiveStep("when");
+                                  }}
+                                  className="w-full text-left px-3 py-3 hover:bg-gray-50 rounded-xl transition flex items-center gap-3"
+                                >
+                                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <Search className="text-gray-500" size={16} />
+                                  </div>
+                                  <div className="min-w-0">
+                                    <div className="text-gray-900 font-medium truncate">{result.label}</div>
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+
+                          {whereSearch.length < 2 && (
                           <div className="space-y-2">
                             {destinations.map((dest, idx) => (
                               <button
@@ -1106,6 +953,7 @@ useEffect(() => {
                               </button>
                             ))}
                           </div>
+                          )}
                         </div>
                       ) : (
                         <div className="flex justify-between items-center">
@@ -1258,43 +1106,44 @@ useEffect(() => {
                                <div className="relative">
   
  <div className="flex items-center  bg-gray-100 rounded-xl px-2 py-2">
-  <Search className="text-[#4285F4] " size={20}    />
-  <AsyncSelect
-    cacheOptions
-    loadOptions={debouncedLoadOptions}
-    defaultOptions
-    value={null}
-    inputValue={whereSearch}
-    onInputChange={(value) => setWhereSearch(value)}
-    onChange={(option) => {
-      const opt = option as {
-        value: string;
-        label: string;
-        coordinates?: [number, number];
-        type?: string;
-        placeId?: string;
-      };
-
-      setSelectedCity({
-        value: opt.value,
-        label: opt.label,
-        coordinates: opt.coordinates,
-        type: opt.type,
-      });
-
-      setWhereSearch("");
-      setActiveStep("when");
-    }}
+  <Search className="text-[#C45D3E] " size={20}    />
+  <input
+    type="text"
+    autoFocus
+    value={whereSearch}
+    onChange={(e) => setWhereSearch(e.target.value)}
     placeholder="Search destinations"
-      styles={{
-                    ...customSelectStyles,
-                    menuPortal: (base: any) => ({ ...base, zIndex: 60 })
-                  }}
-    className="w-full pl-2"
-    components={{ DropdownIndicator: () => null }}
+    className="flex-1 text-sm text-gray-800 placeholder-gray-400 outline-none bg-transparent pl-2"
   />
   </div>
                  </div>
+
+                              {/* Google Places Results */}
+                              {whereSearch.length >= 2 && placeResults.length > 0 && (
+                                <div className="space-y-1 mb-4">
+                                  {placeResults.map((result: any, idx: number) => (
+                                    <button
+                                      key={result.placeId || idx}
+                                      onClick={() => {
+                                        setSelectedCity({ value: result.value, label: result.label, type: result.type });
+                                        setWhereSearch('');
+                                        setPlaceResults([]);
+                                        setActiveStep("when");
+                                      }}
+                                      className="w-full text-left px-3 py-3 hover:bg-gray-50 rounded-xl transition flex items-center gap-3"
+                                    >
+                                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <Search className="text-gray-500" size={16} />
+                                      </div>
+                                      <div className="min-w-0">
+                                        <div className="text-gray-900 font-medium truncate">{result.label}</div>
+                                      </div>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+
+                              {whereSearch.length < 2 && (
                               <div className="space-y-2">
                                 {destinations.map((dest, idx) => (
                                   <button
@@ -1315,6 +1164,7 @@ useEffect(() => {
                                   </button>
                                 ))}
                               </div>
+                              )}
                             </div>
                           ) : (
                             <div className="flex justify-between items-center">
@@ -1482,7 +1332,7 @@ useEffect(() => {
                 handleSearch();
               }
             }}
-            className="bg-[#4285F4] hover:bg-[#3367D6] text-white px-6 py-3 rounded-xl font-semibold transition flex items-center gap-2"
+            className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-6 py-3 rounded-xl font-semibold transition flex items-center gap-2"
           >
             <Search size={18} />
             Search

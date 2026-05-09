@@ -7,14 +7,14 @@ import Footer from '@/components/shared/Footer';
 
 export default function ShippingPolicyPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+    <div className="min-h-screen bg-[#FDF8F3]">
       <PolicyHeader />
       <div className="pt-20 sm:pt-24 pb-12 sm:pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button */}
           <Link
             href="/"
-            className="inline-flex items-center text-purple-600 hover:text-purple-700 mb-6 sm:mb-8 transition-colors group"
+            className="inline-flex items-center text-[#C45D3E] hover:text-[#A84B32] mb-6 sm:mb-8 transition-colors group"
           >
             <ArrowLeft size={18} className="mr-2 group-hover:-translate-x-1 transition-transform" />
             <span className="text-sm font-medium">Back to Home</span>
@@ -22,8 +22,8 @@ export default function ShippingPolicyPage() {
 
           {/* Header */}
           <div className="mb-8 sm:mb-12">
-            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl sm:rounded-2xl mb-4 sm:mb-6">
-              <Package className="text-purple-600 w-6 h-6 sm:w-8 sm:h-8" />
+            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-[#F5E6D3] rounded-xl sm:rounded-2xl mb-4 sm:mb-6">
+              <Package className="text-[#C45D3E] w-6 h-6 sm:w-8 sm:h-8" />
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-2 sm:mb-3 tracking-tight">
               Shipping Policy
@@ -39,12 +39,12 @@ export default function ShippingPolicyPage() {
           </div>
 
           {/* Content */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-gray-100 p-6 sm:p-8 md:p-12 lg:p-16">
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8 md:p-12 lg:p-16">
             <div className="prose prose-lg max-w-none">
               <div className="space-y-8 text-gray-700 leading-relaxed">
 
                 {/* Intro */}
-                <section className="border-l-4 border-purple-500 pl-4 sm:pl-6">
+                <section className="border-l-4 border-[#C45D3E] pl-4 sm:pl-6">
                   <p className="text-base sm:text-lg text-gray-600 mb-4">
                     At <strong>Tripme</strong> ("Tripme", "we", "our", "us"), we operate exclusively as a
                     <strong> digital travel and accommodation marketplace</strong>. We connect guests with hosts
@@ -59,7 +59,7 @@ export default function ShippingPolicyPage() {
                 {/* Section 1 */}
                 <section>
                   <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center">
-                    <span className="w-2 h-2 bg-purple-500 rounded-full mr-2 sm:mr-3 flex-shrink-0"></span>
+                    <span className="w-2 h-2 bg-[#C45D3E] rounded-full mr-2 sm:mr-3 flex-shrink-0"></span>
                     1. No Physical Shipping
                   </h2>
                   <p className="text-sm sm:text-base text-gray-600 mb-4">
@@ -74,7 +74,7 @@ export default function ShippingPolicyPage() {
                       'Electronic receipts and payment records',
                     ].map((item) => (
                       <li key={item} className="flex items-start">
-                        <CheckCircle size={16} className="text-purple-500 mr-3 mt-1 flex-shrink-0" />
+                        <CheckCircle size={16} className="text-[#C45D3E] mr-3 mt-1 flex-shrink-0" />
                         <span className="text-sm sm:text-base">{item}</span>
                       </li>
                     ))}
@@ -88,25 +88,25 @@ export default function ShippingPolicyPage() {
                 {/* Section 2 */}
                 <section>
                   <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center">
-                    <span className="w-2 h-2 bg-purple-500 rounded-full mr-2 sm:mr-3 flex-shrink-0"></span>
+                    <span className="w-2 h-2 bg-[#C45D3E] rounded-full mr-2 sm:mr-3 flex-shrink-0"></span>
                     2. Booking Confirmation Delivery
                   </h2>
                   <p className="text-sm sm:text-base text-gray-600 mb-4">
                     Upon successful payment, your booking confirmation is delivered digitally:
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-                    <div className="bg-purple-50 rounded-xl p-4 text-center">
-                      <Mail className="text-purple-600 mx-auto mb-2" size={24} />
+                    <div className="bg-[#FDF8F3] rounded-xl p-4 text-center">
+                      <Mail className="text-[#C45D3E] mx-auto mb-2" size={24} />
                       <p className="text-sm font-semibold text-gray-800">Email</p>
                       <p className="text-xs text-gray-500 mt-1">Confirmation sent to your registered email instantly</p>
                     </div>
-                    <div className="bg-purple-50 rounded-xl p-4 text-center">
-                      <MapPin className="text-purple-600 mx-auto mb-2" size={24} />
+                    <div className="bg-[#FDF8F3] rounded-xl p-4 text-center">
+                      <MapPin className="text-[#C45D3E] mx-auto mb-2" size={24} />
                       <p className="text-sm font-semibold text-gray-800">Dashboard</p>
                       <p className="text-xs text-gray-500 mt-1">Booking details available in your account under My Bookings</p>
                     </div>
-                    <div className="bg-purple-50 rounded-xl p-4 text-center">
-                      <Clock className="text-purple-600 mx-auto mb-2" size={24} />
+                    <div className="bg-[#FDF8F3] rounded-xl p-4 text-center">
+                      <Clock className="text-[#C45D3E] mx-auto mb-2" size={24} />
                       <p className="text-sm font-semibold text-gray-800">Instant</p>
                       <p className="text-xs text-gray-500 mt-1">Access your booking confirmation within minutes of payment</p>
                     </div>
@@ -116,7 +116,7 @@ export default function ShippingPolicyPage() {
                 {/* Section 3 */}
                 <section>
                   <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center">
-                    <span className="w-2 h-2 bg-purple-500 rounded-full mr-2 sm:mr-3 flex-shrink-0"></span>
+                    <span className="w-2 h-2 bg-[#C45D3E] rounded-full mr-2 sm:mr-3 flex-shrink-0"></span>
                     3. Service Fulfilment
                   </h2>
                   <p className="text-sm sm:text-base text-gray-600 mb-3">
@@ -133,12 +133,12 @@ export default function ShippingPolicyPage() {
                 {/* Section 4 */}
                 <section>
                   <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center">
-                    <span className="w-2 h-2 bg-purple-500 rounded-full mr-2 sm:mr-3 flex-shrink-0"></span>
+                    <span className="w-2 h-2 bg-[#C45D3E] rounded-full mr-2 sm:mr-3 flex-shrink-0"></span>
                     4. Cancellations & Refunds
                   </h2>
                   <p className="text-sm sm:text-base text-gray-600">
                     For cancellations, refunds, or issues related to your booking, please refer to our{' '}
-                    <Link href="/refund-cancellation" className="text-purple-600 hover:text-purple-700 font-medium underline underline-offset-2">
+                    <Link href="/refund-cancellation" className="text-[#C45D3E] hover:text-[#A84B32] font-medium underline underline-offset-2">
                       Refund & Cancellation Policy
                     </Link>
                     . Since all transactions are digital, refunds (where applicable) are processed back to the
@@ -149,7 +149,7 @@ export default function ShippingPolicyPage() {
                 {/* Section 5 */}
                 <section>
                   <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center">
-                    <span className="w-2 h-2 bg-purple-500 rounded-full mr-2 sm:mr-3 flex-shrink-0"></span>
+                    <span className="w-2 h-2 bg-[#C45D3E] rounded-full mr-2 sm:mr-3 flex-shrink-0"></span>
                     5. Contact Us
                   </h2>
                   <p className="text-sm sm:text-base text-gray-600 mb-4">
@@ -159,13 +159,13 @@ export default function ShippingPolicyPage() {
                   <div className="bg-gray-50 rounded-xl p-4 sm:p-6 space-y-2">
                     <p className="text-sm sm:text-base text-gray-700">
                       <strong>Email:</strong>{' '}
-                      <a href="mailto:support@tripmeglobal.com" className="text-purple-600 hover:text-purple-700">
+                      <a href="mailto:support@tripmeglobal.com" className="text-[#C45D3E] hover:text-[#A84B32]">
                         support@tripmeglobal.com
                       </a>
                     </p>
                     <p className="text-sm sm:text-base text-gray-700">
                       <strong>Website:</strong>{' '}
-                      <Link href="/contact" className="text-purple-600 hover:text-purple-700">
+                      <Link href="/contact" className="text-[#C45D3E] hover:text-[#A84B32]">
                         tripme.in/contact
                       </Link>
                     </p>

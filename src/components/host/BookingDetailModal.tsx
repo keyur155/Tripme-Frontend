@@ -191,7 +191,7 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
       case 'cancelled':
         return 'bg-red-100 text-red-800 border-red-200';
       case 'completed':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-[#F5E6D3] text-[#1A1A1A] border-[#F5E6D3]';
       case 'expired':
         return 'bg-gray-100 text-gray-800 border-gray-200';
       default:
@@ -224,7 +224,7 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] rounded-xl flex items-center justify-center">
               <Receipt className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -245,7 +245,7 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
-                <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto mb-4" />
+                <Loader2 className="w-8 h-8 animate-spin text-[#C45D3E] mx-auto mb-4" />
                 <p className="text-gray-600">Loading booking details...</p>
               </div>
             </div>
@@ -254,7 +254,7 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
               <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Error</h3>
               <p className="text-gray-600 mb-4">{error}</p>
-              <Button onClick={fetchBookingDetails} className="bg-purple-600 hover:bg-purple-700 text-white">
+              <Button onClick={fetchBookingDetails} className="bg-[#C45D3E] hover:bg-[#A84B32] text-white">
                 Try Again
               </Button>
             </div>
@@ -329,7 +329,7 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
                     <Button
                       onClick={() => handleStatusUpdate('completed')}
                       disabled={updatingStatus}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                      className="bg-[#C45D3E] hover:bg-[#A84B32] text-white"
                     >
                       {updatingStatus ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -403,7 +403,7 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
                     
                     <div className="space-y-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center overflow-hidden">
+                        <div className="w-12 h-12 bg-[#F5E6D3] rounded-full flex items-center justify-center overflow-hidden">
                           {booking.user.profileImage ? (
                             <img
                               src={booking.user.profileImage}
@@ -411,7 +411,7 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <User className="w-6 h-6 text-purple-600" />
+                            <User className="w-6 h-6 text-[#C45D3E]" />
                           )}
                         </div>
                         <div>
@@ -454,7 +454,7 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
                           </p>
                           {/* Show check-in time if available */}
                           {booking.checkInTime && (
-                            <p className="text-sm text-blue-600 font-medium flex items-center gap-1 mt-1">
+                            <p className="text-sm text-[#C45D3E] font-medium flex items-center gap-1 mt-1">
                               <Clock className="w-3 h-3" />
                               {(() => {
                                 const [h, m] = booking.checkInTime.split(':').map(Number);
@@ -472,7 +472,7 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
                           </p>
                           {/* Show check-out time if available */}
                           {booking.checkOutTime && (
-                            <p className="text-sm text-purple-600 font-medium flex items-center gap-1 mt-1">
+                            <p className="text-sm text-[#C45D3E] font-medium flex items-center gap-1 mt-1">
                               <Clock className="w-3 h-3" />
                               {(() => {
                                 const [h, m] = booking.checkOutTime.split(':').map(Number);
@@ -502,23 +502,23 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
 
                     {/* Hourly Extension Details */}
                     {booking.hourlyExtension && (
-                      <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                      <div className="mt-4 p-4 bg-[#FDF8F3] border border-[#F5E6D3] rounded-xl">
                         <div className="flex items-center gap-2 mb-3">
-                          <Clock className="w-4 h-4 text-blue-600" />
-                          <h4 className="font-semibold text-blue-900">Hourly Extension</h4>
+                          <Clock className="w-4 h-4 text-[#C45D3E]" />
+                          <h4 className="font-semibold text-[#1A1A1A]">Hourly Extension</h4>
                         </div>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span className="text-blue-700">Extension requested:</span>
-                            <span className="text-blue-900 font-medium">{booking.hourlyExtension.hours} hours</span>
+                            <span className="text-[#C45D3E]">Extension requested:</span>
+                            <span className="text-[#1A1A1A] font-medium">{booking.hourlyExtension.hours} hours</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-blue-700">Rate:</span>
-                            <span className="text-blue-900 font-medium">{Math.round(booking.hourlyExtension.rate * 100)}% of daily rate</span>
+                            <span className="text-[#C45D3E]">Rate:</span>
+                            <span className="text-[#1A1A1A] font-medium">{Math.round(booking.hourlyExtension.rate * 100)}% of daily rate</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-blue-700">Total extension hours:</span>
-                            <span className="text-blue-900 font-medium">{booking.hourlyExtension.totalHours} hours</span>
+                            <span className="text-[#C45D3E]">Total extension hours:</span>
+                            <span className="text-[#1A1A1A] font-medium">{booking.hourlyExtension.totalHours} hours</span>
                           </div>
                         </div>
                       </div>

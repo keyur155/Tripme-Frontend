@@ -339,12 +339,12 @@ const [cancellationPolicy, setCancellationPolicy] = useState(data.cancellationPo
 </div>
 
         {/* Info box */}
-        <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+        <div className="mt-8 p-4 bg-[#FDF8F3] border border-[#F5E6D3] rounded-xl">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-[#C45D3E] flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-medium text-blue-900">You're in control</p>
-              <p className="text-sm text-blue-700 mt-1">
+              <p className="text-sm text-[#C45D3E] mt-1">
                 You can block specific dates, set custom pricing for seasons, and adjust all these settings anytime from your hosting dashboard.
               </p>
             </div>

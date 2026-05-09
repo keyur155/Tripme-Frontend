@@ -74,7 +74,7 @@ export default function ServicesPage() {
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-6"></div>
+            <div className="w-16 h-16 border-4 border-[#F5E6D3] border-t-[#C45D3E] rounded-full animate-spin mx-auto mb-6"></div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">Loading services</h2>
             <p className="text-gray-600">Finding amazing experiences for you...</p>
           </div>
@@ -92,18 +92,18 @@ export default function ServicesPage() {
           
           {/* Search Summary */}
           {(searchParams.get('city') || searchParams.get('serviceType')) && (
-            <div className="mb-8 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl border border-purple-100">
+            <div className="mb-8 p-4 bg-[#FDF8F3] rounded-2xl border border-[#F5E6D3]">
               <div className="flex flex-wrap items-center gap-4">
                 <span className="text-sm font-medium text-gray-700">Filtered by:</span>
                 {searchParams.get('city') && (
                   <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm">
-                    <span className="text-purple-600">📍</span>
+                    <MapPin className="w-4 h-4 text-[#C45D3E]" />
                     <span className="font-semibold text-gray-900">{searchParams.get('city')}</span>
                   </div>
                 )}
                 {searchParams.get('serviceType') && (
                   <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm">
-                    <span className="text-purple-600">🔧</span>
+                    <Wrench className="w-4 h-4 text-[#C45D3E]" />
                     <span className="font-semibold text-gray-900 capitalize">{searchParams.get('serviceType')?.replace('-', ' ')}</span>
                   </div>
                 )}
@@ -116,19 +116,19 @@ export default function ServicesPage() {
               <div className="text-center py-16 px-6">
                 {/* Animated Illustration */}
                 <div className="relative mb-12">
-                  <div className="w-40 h-40 bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 rounded-full flex items-center justify-center mx-auto shadow-2xl">
-                    <div className="w-24 h-24 bg-gradient-to-br from-orange-100 to-pink-100 rounded-full flex items-center justify-center relative">
-                      <Wrench className="w-12 h-12 text-orange-600" />
+                  <div className="w-40 h-40 bg-gradient-to-br from-[#FDF8F3] via-[#F5E6D3] to-[#FDF8F3] rounded-full flex items-center justify-center mx-auto shadow-2xl">
+                    <div className="w-24 h-24 bg-[#F5E6D3] rounded-full flex items-center justify-center relative">
+                      <Wrench className="w-12 h-12 text-[#C45D3E]" />
                       {/* Floating elements */}
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full animate-bounce"></div>
-                      <div className="absolute -bottom-1 -left-2 w-4 h-4 bg-pink-400 rounded-full animate-pulse"></div>
-                      <div className="absolute top-1/2 -right-4 w-3 h-3 bg-red-400 rounded-full animate-ping"></div>
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-[#B8860B] rounded-full animate-bounce"></div>
+                      <div className="absolute -bottom-1 -left-2 w-4 h-4 bg-[#C45D3E] rounded-full animate-pulse"></div>
+                      <div className="absolute top-1/2 -right-4 w-3 h-3 bg-[#2D5F3A] rounded-full animate-ping"></div>
                     </div>
                     {/* Background decorative elements */}
                     <div className="absolute inset-0 -z-10">
-                      <div className="absolute top-8 left-8 w-16 h-16 bg-orange-100 rounded-full opacity-30 animate-pulse"></div>
-                      <div className="absolute bottom-8 right-8 w-12 h-12 bg-pink-100 rounded-full opacity-40 animate-bounce"></div>
-                      <div className="absolute top-1/2 left-4 w-8 h-8 bg-red-100 rounded-full opacity-50 animate-ping"></div>
+                      <div className="absolute top-8 left-8 w-16 h-16 bg-[#F5E6D3] rounded-full opacity-30 animate-pulse"></div>
+                      <div className="absolute bottom-8 right-8 w-12 h-12 bg-[#F5E6D3] rounded-full opacity-40 animate-bounce"></div>
+                      <div className="absolute top-1/2 left-4 w-8 h-8 bg-[#F5E6D3] rounded-full opacity-50 animate-ping"></div>
                     </div>
                   </div>
                 </div>
@@ -147,22 +147,22 @@ export default function ServicesPage() {
 
               {/* Search Summary Card */}
               {(searchParams.get('city') || searchParams.get('serviceType')) && (
-                <div className="mb-12 p-6 bg-gradient-to-r from-orange-50 to-pink-50 rounded-2xl border border-orange-200 shadow-lg">
+                <div className="mb-12 p-6 bg-[#FDF8F3] rounded-2xl border border-[#F5E6D3] shadow-lg">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-[#C45D3E] rounded-full"></div>
                     Your Search Details
                   </h3>
                   <div className="flex flex-wrap gap-3">
                     {searchParams.get('city') && (
-                      <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-orange-200">
-                        <MapPin className="w-4 h-4 text-orange-600" />
-                        <span className="text-orange-700 font-medium">{searchParams.get('city')}</span>
+                      <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-[#F5E6D3]">
+                        <MapPin className="w-4 h-4 text-[#C45D3E]" />
+                        <span className="text-[#C45D3E] font-medium">{searchParams.get('city')}</span>
                       </div>
                     )}
                     {searchParams.get('serviceType') && (
-                      <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-pink-200">
-                        <Wrench className="w-4 h-4 text-pink-600" />
-                        <span className="text-pink-700 font-medium capitalize">{searchParams.get('serviceType')?.replace('-', ' ')}</span>
+                      <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-[#F5E6D3]">
+                        <Wrench className="w-4 h-4 text-[#C45D3E]" />
+                        <span className="text-[#1A1A1A] font-medium capitalize">{searchParams.get('serviceType')?.replace('-', ' ')}</span>
                       </div>
                     )}
                   </div>
@@ -174,14 +174,14 @@ export default function ServicesPage() {
                 {/* Try Different Service Type */}
                 <div className="p-6 bg-white rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                      <Wrench className="w-5 h-5 text-green-600" />
+                    <div className="w-10 h-10 bg-[#F5E6D3] rounded-full flex items-center justify-center">
+                      <Wrench className="w-5 h-5 text-[#C45D3E]" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900">Try Different Service Type</h3>
                   </div>
                   <p className="text-gray-600 mb-4">Explore other types of services that might be available in your area.</p>
                   <Button 
-                    className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition-colors"
+                    className="w-full bg-[#C45D3E] hover:bg-[#A84B32] text-white py-2 rounded-lg transition-colors"
                     onClick={() => router.push('/services')}
                   >
                     Browse All Services
@@ -191,14 +191,14 @@ export default function ServicesPage() {
                 {/* Explore Nearby Areas */}
                 <div className="p-6 bg-white rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <MapPin className="w-5 h-5 text-blue-600" />
+                    <div className="w-10 h-10 bg-[#F5E6D3] rounded-full flex items-center justify-center">
+                      <MapPin className="w-5 h-5 text-[#C45D3E]" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900">Explore Nearby Areas</h3>
                   </div>
                   <p className="text-gray-600 mb-4">Consider looking for services in nearby cities or regions.</p>
                   <Button 
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors"
+                    className="w-full bg-[#2D5F3A] hover:bg-[#1E4A2B] text-white py-2 rounded-lg transition-colors"
                     onClick={() => router.push('/')}
                   >
                     Search Other Locations
@@ -213,10 +213,10 @@ export default function ServicesPage() {
                   {['Photography', 'Transportation', 'Tour Guide', 'Catering', 'Entertainment', 'Wellness', 'Adventure', 'Cultural'].map((serviceType) => (
                     <button
                       key={serviceType}
-                      className="p-4 bg-white rounded-xl border border-gray-200 hover:border-orange-300 hover:shadow-lg transition-all duration-200 text-center group"
+                      className="p-4 bg-white rounded-xl border border-gray-200 hover:border-[#C45D3E] hover:shadow-lg transition-all duration-200 text-center group"
                       onClick={() => router.push(`/services?serviceType=${serviceType.toLowerCase()}`)}
                     >
-                      <div className="text-sm font-medium text-gray-900 group-hover:text-orange-600 transition-colors">
+                      <div className="text-sm font-medium text-gray-900 group-hover:text-[#C45D3E] transition-colors">
                         {serviceType}
                       </div>
                     </button>
@@ -231,10 +231,10 @@ export default function ServicesPage() {
                   {['Mumbai', 'Delhi', 'Bangalore', 'Goa', 'Jaipur', 'Kerala', 'Himachal Pradesh', 'Rajasthan'].map((destination) => (
                     <button
                       key={destination}
-                      className="p-4 bg-white rounded-xl border border-gray-200 hover:border-orange-300 hover:shadow-lg transition-all duration-200 text-center group"
+                      className="p-4 bg-white rounded-xl border border-gray-200 hover:border-[#C45D3E] hover:shadow-lg transition-all duration-200 text-center group"
                       onClick={() => router.push(`/services?city=${destination}`)}
                     >
-                      <div className="text-sm font-medium text-gray-900 group-hover:text-orange-600 transition-colors">
+                      <div className="text-sm font-medium text-gray-900 group-hover:text-[#C45D3E] transition-colors">
                         {destination}
                       </div>
                     </button>
@@ -245,13 +245,13 @@ export default function ServicesPage() {
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                 <Button 
-                  className="bg-gradient-to-r from-orange-600 to-pink-600 hover:from-orange-700 hover:to-pink-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 text-lg"
+                  className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 text-lg"
                   onClick={() => router.push('/services')}
                 >
                   Browse All Services
                 </Button>
                 <Button 
-                  className="bg-white border-2 border-orange-200 text-orange-600 hover:bg-orange-50 px-8 py-4 rounded-xl font-semibold transition-all duration-200 text-lg"
+                  className="bg-white border-2 border-[#F5E6D3] text-[#C45D3E] hover:bg-[#FDF8F3] px-8 py-4 rounded-xl font-semibold transition-all duration-200 text-lg"
                   onClick={() => router.push('/')}
                 >
                   Start New Search
@@ -259,18 +259,18 @@ export default function ServicesPage() {
               </div>
 
               {/* Service Provider CTA */}
-              <div className="bg-gradient-to-br from-orange-50 to-pink-50 rounded-2xl p-8 border border-orange-200">
+              <div className="bg-[#FDF8F3] rounded-2xl p-8 border border-[#F5E6D3]">
                 <div className="text-center max-w-2xl mx-auto">
                   <div className="flex justify-center mb-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-pink-100 rounded-full flex items-center justify-center">
-                      <Sparkles className="w-8 h-8 text-orange-600" />
+                    <div className="w-16 h-16 bg-[#F5E6D3] rounded-full flex items-center justify-center">
+                      <Sparkles className="w-8 h-8 text-[#C45D3E]" />
                     </div>
                   </div>
                   <h4 className="text-2xl font-bold text-gray-900 mb-3">Are you a service provider?</h4>
                   <p className="text-gray-600 mb-6">Join our platform and start offering your services to travelers around the world.</p>
                   <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
                     <Button 
-                      className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                      className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
                       onClick={() => router.push('/become-host')}
                     >
                       <Compass className="w-4 h-4" />
@@ -284,7 +284,7 @@ export default function ServicesPage() {
           )}
           {Object.entries(servicesByCategory).map(([category, services]) => (
             <section key={category} className="mb-12">
-              <h2 className="text-2xl font-bold text-indigo-700 mb-4 font-heading">{category}</h2>
+              <h2 className="text-2xl font-bold text-[#1A1A1A] mb-4 font-heading">{category}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {services.map((service) => (
                   <ServiceCard 

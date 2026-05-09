@@ -276,7 +276,7 @@ export default function HostBookingDetailPage() {
           Cancelled
         </span>;
       case 'completed':
-        return <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+        return <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#F5E6D3] text-[#1A1A1A]">
           <CheckCircle className="w-4 h-4 mr-1" />
           Completed
         </span>;
@@ -447,14 +447,14 @@ export default function HostBookingDetailPage() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-[#FDF8F3] rounded-lg">
                     <div className="flex items-center">
-                      <Calendar className="w-4 h-4 text-blue-600 mr-2" />
-                      <span className="text-sm font-medium text-blue-800">Check-in</span>
+                      <Calendar className="w-4 h-4 text-[#C45D3E] mr-2" />
+                      <span className="text-sm font-medium text-[#1A1A1A]">Check-in</span>
                             </div>
                     <div className="text-right">
                       <div className="text-sm font-semibold text-gray-900">{formatDate(booking.checkIn)}</div>
-                      <div className="text-xs text-blue-600">
+                      <div className="text-xs text-[#C45D3E]">
                         {booking.timeSlot ? formatTime(booking.timeSlot.startTime) : (() => {
                           // Use booking's custom check-in time, fallback to property default
                           const timeStr = booking.checkInTime || booking.listing?.checkInTime || '15:00';
@@ -484,7 +484,7 @@ export default function HostBookingDetailPage() {
                           return `${hour}:${(m || 0).toString().padStart(2, '0')} ${period}`;
                         })()}
                         {booking.hourlyExtension?.hours && (
-                          <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                          <span className="ml-2 px-2 py-1 bg-[#F5E6D3] text-[#1A1A1A] text-xs rounded-full">
                             +{booking.hourlyExtension.hours}h extension
                           </span>
                         )}
@@ -494,9 +494,9 @@ export default function HostBookingDetailPage() {
                       </div>
                       
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-[#FDF8F3] rounded-lg">
                     <div className="flex items-center">
-                      <Users className="w-4 h-4 text-purple-600 mr-2" />
+                      <Users className="w-4 h-4 text-[#C45D3E] mr-2" />
                       <span className="text-sm font-medium text-purple-800">Guests</span>
                         </div>
                     <div className="text-sm font-semibold text-gray-900">
@@ -610,8 +610,8 @@ export default function HostBookingDetailPage() {
                 </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-blue-50 rounded-lg p-4">
-                    <div className="text-sm font-medium text-blue-800 mb-1">Extension Hours</div>
+                  <div className="bg-[#FDF8F3] rounded-lg p-4">
+                    <div className="text-sm font-medium text-[#1A1A1A] mb-1">Extension Hours</div>
                     <div className="text-lg font-bold text-blue-900">{booking.hourlyExtension.hours} hours</div>
                     </div>
                     
@@ -622,7 +622,7 @@ export default function HostBookingDetailPage() {
                               </div>
                           </div>
                   
-                  <div className="bg-purple-50 rounded-lg p-4">
+                  <div className="bg-[#FDF8F3] rounded-lg p-4">
                     <div className="text-sm font-medium text-purple-800 mb-1">Total Hours</div>
                     <div className="text-lg font-bold text-purple-900">{booking.hourlyExtension.totalHours} hours</div>
                           </div>
@@ -778,8 +778,8 @@ export default function HostBookingDetailPage() {
               
                       <div className="space-y-4">
                 {/* Revenue Section */}
-                <div className="bg-blue-50 rounded-lg p-4">
-                  <h4 className="text-sm font-semibold text-blue-800 mb-3">Revenue Breakdown</h4>
+                <div className="bg-[#FDF8F3] rounded-lg p-4">
+                  <h4 className="text-sm font-semibold text-[#1A1A1A] mb-3">Revenue Breakdown</h4>
                   <div className="space-y-2">
                     {/* Base Amount */}
                     <div className="flex justify-between items-center py-1">
@@ -838,10 +838,10 @@ export default function HostBookingDetailPage() {
                           )}
                     
                     {/* Subtotal */}
-                    <div className="border-t border-blue-200 pt-2 mt-2">
+                    <div className="border-t border-[#F5E6D3] pt-2 mt-2">
                       <div className="flex justify-between items-center py-1">
-                        <span className="text-sm font-semibold text-blue-800">Subtotal</span>
-                        <span className="text-sm font-bold text-blue-800">
+                        <span className="text-sm font-semibold text-[#1A1A1A]">Subtotal</span>
+                        <span className="text-sm font-bold text-[#1A1A1A]">
                           {formatCurrency(booking.pricingBreakdown?.hostBreakdown?.subtotal || booking.subtotal || 0)}
                               </span>
                         </div>
@@ -896,7 +896,7 @@ export default function HostBookingDetailPage() {
                         </div>
                         
                 {/* Customer Payment Section */}
-                <div className="bg-purple-50 rounded-lg p-4">
+                <div className="bg-[#FDF8F3] rounded-lg p-4">
                   <h4 className="text-sm font-semibold text-purple-800 mb-3">Customer Payment</h4>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center py-1">
@@ -1039,7 +1039,7 @@ export default function HostBookingDetailPage() {
                   <button
                     onClick={handleCheckIn}
                     disabled={updatingStatus}
-                    className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50"
+                    className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-[#C45D3E] hover:bg-[#A84B32] rounded-lg transition-colors disabled:opacity-50"
                   >
                     {updatingStatus ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                     <span>Check In Guest</span>

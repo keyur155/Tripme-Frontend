@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function ProfilePage() {
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-[#FAFAF8]">
         <UserHeader />
         <main className="pt-20">
           <ProfileRouter />

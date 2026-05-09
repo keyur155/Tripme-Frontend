@@ -1,19 +1,12 @@
-// AirbnbFilters.tsx - Updated version with props
+import {
+  Home, Building2, DoorOpen, Hotel, Warehouse, TentTree, Trees, Ship,
+  Building, Castle, Zap, Key, RefreshCcw, X, SlidersHorizontal,
+  Wifi, Tv, UtensilsCrossed, WashingMachine, Wind, Snowflake, Flame,
+  Monitor, Waves, ParkingCircle, Dumbbell, Coffee, Shield, Sparkles,
+  Eye, Mountain, TreePine, Flower2, Fence, Sun, Accessibility, PawPrint, Cigarette, Calendar
+} from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
 
-import { Home, Building2, DoorOpen,
-  Hotel,
-  Warehouse,
-  TentTree,
-  Trees,
-  Building,
-  Castle,
-   Zap, Key, RefreshCcw
-
- } from 'lucide-react';
-import React, { useState ,useEffect } from 'react';
-import AmenityGroup from './AmenityGroup';
-
-// FilterModal component (keep this in the same file or separate)
 interface FilterModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -22,161 +15,149 @@ interface FilterModalProps {
 
 const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
-// fixed inset-0 z-[9999] flex items-center justify-center
-//                 bg-black/30 backdrop-blur-[2px]
+
   return (
-    <div className="fixed inset-0  bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-blur-[1px]">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] md:max-h-[90vh] overflow-hidden">
+    <div
+      className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+      <div className="relative w-full sm:max-w-2xl sm:mx-4 bg-white sm:rounded-2xl rounded-t-2xl max-h-[92vh] sm:max-h-[85vh] overflow-hidden animate-in slide-in-from-bottom duration-300 shadow-2xl">
         {children}
       </div>
     </div>
   );
 };
 
-// Main AirbnbFilters component
 interface AirbnbFiltersProps {
   isOpen: boolean;
   onClose: () => void;
-  onApplyFilters?: (filters: any) => void; 
-   resultsCount?: number;
-  onResultsCountChange?: (count: number) => void; 
+  onApplyFilters?: (filters: any) => void;
+  resultsCount?: number;
+  onResultsCountChange?: (count: number) => void;
 }
 
-const AirbnbFilters: React.FC<AirbnbFiltersProps> = ({ isOpen, onClose, onApplyFilters , resultsCount = 0,onResultsCountChange  }) => {
-  // Price range
+const AirbnbFilters: React.FC<AirbnbFiltersProps> = ({
+  isOpen, onClose, onApplyFilters, resultsCount = 0, onResultsCountChange
+}) => {
   const [priceRange, setPriceRange] = useState({ min: 900, max: 100000 });
-  
-  // Type of place
   const [placeType, setPlaceType] = useState<string>('any');
-  
-  // Rooms & Beds
   const [bedrooms, setBedrooms] = useState<number | null>(null);
   const [beds, setBeds] = useState<number | null>(null);
   const [bathrooms, setBathrooms] = useState<number | null>(null);
-  
-  // Property type
   const [propertyTypes, setPropertyTypes] = useState<string[]>([]);
-  
-  // Amenities
   const [amenities, setAmenities] = useState<string[]>([]);
-  
-  // Booking options
+  const [features, setFeatures] = useState<string[]>([]);
+  const [style, setStyle] = useState<string[]>([]);
   const [instantBook, setInstantBook] = useState(false);
-  const [selfCheckIn, setSelfCheckIn] = useState(false);
-  const [freeCancel, setFreeCancel] = useState(false);
-  
-  // Host language
-  const [hostLanguage, setHostLanguage] = useState<string[]>([]);
+  const [cancellationPolicy, setCancellationPolicy] = useState<string>('any');
 
   const handleClearAll = () => {
-    setPriceRange({ min: 10, max: 500 });
+    setPriceRange({ min: 900, max: 100000 });
     setPlaceType('any');
     setBedrooms(null);
     setBeds(null);
     setBathrooms(null);
     setPropertyTypes([]);
     setAmenities([]);
+    setFeatures([]);
+    setStyle([]);
     setInstantBook(false);
-    setSelfCheckIn(false);
-    setFreeCancel(false);
-    setHostLanguage([]);
+    setCancellationPolicy('any');
   };
 
-  const getFilteredCount = async () => {
-  try {
-    // Build params from current filter state
-    const params = new URLSearchParams();
-    
-    // Price range
-    if (priceRange.min) params.append('minPrice', priceRange.min);
-    if (priceRange.max) params.append('maxPrice', priceRange.max);
-    
-    // Rooms & beds
-    if (bedrooms) params.append('guests', bedrooms);
-    if (beds) params.append('beds', beds);
-    if (bathrooms) params.append('bathrooms', bathrooms);
-    
-    // Property types
-    if (propertyTypes.length > 0) {
-      params.append('type', propertyTypes.join(','));
+  const getFilteredCount = useCallback(async () => {
+    try {
+      const params = new URLSearchParams();
+      if (priceRange.min > 900) params.append('minPrice', String(priceRange.min));
+      if (priceRange.max < 100000) params.append('maxPrice', String(priceRange.max));
+      if (bedrooms) params.append('bedrooms', String(bedrooms));
+      if (beds) params.append('beds', String(beds));
+      if (bathrooms) params.append('bathrooms', String(bathrooms));
+      if (propertyTypes.length > 0) params.append('type', propertyTypes.join(','));
+      if (placeType !== 'any') params.append('placeType', placeType);
+      if (amenities.length > 0) params.append('amenities', amenities.join(','));
+      if (features.length > 0) params.append('features', features.join(','));
+      if (style.length > 0) params.append('style', style.join(','));
+      if (instantBook) params.append('instantBook', 'true');
+      if (cancellationPolicy !== 'any') params.append('cancellationPolicy', cancellationPolicy);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/listings?${params}`
+      );
+      const data = await response.json();
+      if (data.success) {
+        const count = data.data?.pagination?.totalItems || data.data?.listings?.length || 0;
+        onResultsCountChange?.(count);
+      }
+    } catch (error) {
+      console.error('Error getting filtered count:', error);
+      onResultsCountChange?.(0);
     }
-    
-    // Amenities
-    if (amenities.length > 0) {
-      params.append('amenities', amenities.join(','));
+  }, [priceRange, placeType, bedrooms, beds, bathrooms, propertyTypes, amenities, features, style, instantBook, cancellationPolicy, onResultsCountChange]);
+
+  useEffect(() => {
+    if (isOpen) {
+      const timeoutId = setTimeout(() => { getFilteredCount(); }, 400);
+      return () => clearTimeout(timeoutId);
     }
-    
-    // Booking options
-    if (instantBook) params.append('instantBook', 'true');
-    if (selfCheckIn) params.append('selfCheckIn', 'true');
-    if (freeCancel) params.append('freeCancel', 'true');
-    
-    // Add limit=0 to just get count without data
-    params.append('limit', '0');
-    
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/listings?${params}`);
-    const data = await response.json();
-    
-    if (data.success) {
-      const count = data.data?.listings?.length || 0;
-      console.log('🔢 Extracted count:', count);
-      // console.log('📊 Full API Response:', JSON.stringify(data, null, 2));
-      onResultsCountChange?.(count);
-    }
-  } catch (error) {
-    console.error('Error getting filtered count:', error);
-    onResultsCountChange?.(0);
-  }
-};
- 
-// Call this whenever filters change
-useEffect(() => {
-  if (isOpen) {
-    // Debounce to avoid too many API calls
-    const timeoutId = setTimeout(() => {
-      getFilteredCount();
-    }, 300);
-    
-    return () => clearTimeout(timeoutId);
-  }
-}, [priceRange, placeType, bedrooms, beds, bathrooms, propertyTypes, amenities, instantBook, selfCheckIn, freeCancel, isOpen]);
+  }, [isOpen, getFilteredCount]);
 
   const handleApplyFilters = () => {
-    // Collect all filters
     const filters = {
-      priceRange,
-      placeType,
-      bedrooms,
-      beds,
-      bathrooms,
-      propertyTypes,
-      amenities,
-      instantBook,
-      selfCheckIn,
-      freeCancel,
-      hostLanguage
+      priceRange, placeType, bedrooms, beds, bathrooms,
+      propertyTypes, amenities, features, style, instantBook, cancellationPolicy
     };
-
-    // Call the callback if provided
-    if (onApplyFilters) {
-      onApplyFilters(filters);
-    }
-
-    // Close the modal
+    if (onApplyFilters) onApplyFilters(filters);
     onClose();
   };
 
+  // Matches backend: enum ['villa', 'apartment', 'hostel', 'house', 'cottage', 'cabin', 'treehouse', 'boat']
   const PROPERTY_TYPE_OPTIONS = [
-  { label: "House", icon: Home },
-  { label: "Apartment", icon: Building2 },
-  { label: "Guesthouse", icon: Building },
-  { label: "Hotel", icon: Hotel },
-  { label: "Condo", icon: Warehouse },
-  { label: "Villa", icon: Castle },
-  { label: "Cottage", icon: Trees },
-  { label: "Cabin", icon: TentTree },
-];
+    { value: "villa", label: "Villa", icon: Castle },
+    { value: "apartment", label: "Apartment", icon: Building2 },
+    { value: "house", label: "House", icon: Home },
+    { value: "hostel", label: "Hostel", icon: Hotel },
+    { value: "cottage", label: "Cottage", icon: Trees },
+    { value: "cabin", label: "Cabin", icon: TentTree },
+    { value: "treehouse", label: "Treehouse", icon: TreePine },
+    { value: "boat", label: "Boat", icon: Ship },
+  ];
 
+  // Matches backend amenities enum
+  const AMENITY_OPTIONS = [
+    { value: "wifi", label: "Wifi", icon: Wifi },
+    { value: "tv", label: "TV", icon: Tv },
+    { value: "kitchen", label: "Kitchen", icon: UtensilsCrossed },
+    { value: "washer", label: "Washer", icon: WashingMachine },
+    { value: "dryer", label: "Dryer", icon: Wind },
+    { value: "ac", label: "AC", icon: Snowflake },
+    { value: "heating", label: "Heating", icon: Flame },
+    { value: "workspace", label: "Workspace", icon: Monitor },
+    { value: "pool", label: "Pool", icon: Waves },
+    { value: "hot-tub", label: "Hot Tub", icon: Sparkles },
+    { value: "parking", label: "Parking", icon: ParkingCircle },
+    { value: "gym", label: "Gym", icon: Dumbbell },
+    { value: "breakfast", label: "Breakfast", icon: Coffee },
+    { value: "fireplace", label: "Fireplace", icon: Flame },
+    { value: "security", label: "Security", icon: Shield },
+    { value: "essentials", label: "Essentials", icon: Key },
+  ];
+
+  // Matches backend features enum
+  const FEATURE_OPTIONS = [
+    { value: "ocean-view", label: "Ocean View", icon: Eye },
+    { value: "mountain-view", label: "Mountain View", icon: Mountain },
+    { value: "city-view", label: "City View", icon: Building },
+    { value: "garden", label: "Garden", icon: Flower2 },
+    { value: "balcony", label: "Balcony", icon: Fence },
+    { value: "terrace", label: "Terrace", icon: Sun },
+    { value: "elevator", label: "Elevator", icon: Building2 },
+    { value: "wheelchair-accessible", label: "Accessible", icon: Accessibility },
+    { value: "pet-friendly", label: "Pet Friendly", icon: PawPrint },
+    { value: "smoking-allowed", label: "Smoking OK", icon: Cigarette },
+    { value: "long-term-stays", label: "Long Term", icon: Calendar },
+  ];
 
   const toggleArrayItem = (array: string[], setArray: (arr: string[]) => void, item: string) => {
     if (array.includes(item)) {
@@ -186,367 +167,329 @@ useEffect(() => {
     }
   };
 
-  const CounterButton = ({ 
-    label, 
-    value, 
-    onChange, 
-    subtitle 
-  }: { 
-    label: string; 
-    value: number | null; 
+  const CounterButton = ({
+    label, value, onChange
+  }: {
+    label: string;
+    value: number | null;
     onChange: (val: number | null) => void;
-    subtitle?: string;
   }) => (
-    <div className="flex items-center justify-between py-4 border-b">
-      <div>
-        <div className="font-medium">{label}</div>
-        {subtitle && <div className="text-sm text-gray-500">{subtitle}</div>}
-      </div>
+    <div className="flex items-center justify-between py-3.5 border-b border-gray-100 last:border-b-0">
+      <span className="text-[15px] font-medium text-[#1A1A1A]">{label}</span>
       <div className="flex items-center gap-3">
         <button
           onClick={() => onChange(value ? Math.max(0, value - 1) : 0)}
-          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-gray-900 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-[#C45D3E] hover:text-[#C45D3E] transition disabled:opacity-30 disabled:cursor-not-allowed"
           disabled={!value}
         >
-          −
+          <span className="text-base leading-none">−</span>
         </button>
-        <span className="w-8 text-center">{value || 'Any'}</span>
+        <span className="w-6 text-center text-sm font-medium text-[#1A1A1A]">
+          {value || '–'}
+        </span>
         <button
           onClick={() => onChange((value || 0) + 1)}
-          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-gray-900"
+          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-[#C45D3E] hover:text-[#C45D3E] transition"
         >
-          +
+          <span className="text-base leading-none">+</span>
         </button>
       </div>
     </div>
   );
 
+  const activeFilterCount = [
+    priceRange.min > 900 || priceRange.max < 100000,
+    placeType !== 'any',
+    bedrooms !== null,
+    beds !== null,
+    bathrooms !== null,
+    propertyTypes.length > 0,
+    amenities.length > 0,
+    features.length > 0,
+    style.length > 0,
+    instantBook,
+    cancellationPolicy !== 'any',
+  ].filter(Boolean).length;
+
+  const [showAllAmenities, setShowAllAmenities] = useState(false);
+  const [showAllFeatures, setShowAllFeatures] = useState(false);
+
+  const visibleAmenities = showAllAmenities ? AMENITY_OPTIONS : AMENITY_OPTIONS.slice(0, 8);
+  const visibleFeatures = showAllFeatures ? FEATURE_OPTIONS : FEATURE_OPTIONS.slice(0, 6);
+
   return (
     <FilterModal isOpen={isOpen} onClose={onClose}>
-      <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between z-55">
-        <button onClick={onClose} className="text-2xl hover:bg-gray-100 w-8 h-8 rounded-full">×</button>
-        <h2 className="font-semibold text-lg">Filters</h2>
-        <div className="w-6"></div>
+      {/* Header */}
+      <div className="sticky top-0 bg-white border-b border-gray-100 z-10">
+        <div className="flex items-center justify-between px-5 py-4">
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-100 transition"
+          >
+            <X size={18} className="text-gray-700" />
+          </button>
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal size={16} className="text-[#C45D3E]" />
+            <h2 className="font-semibold text-[17px] text-[#1A1A1A]">Filters</h2>
+            {activeFilterCount > 0 && (
+              <span className="ml-1 w-5 h-5 rounded-full bg-[#C45D3E] text-white text-[11px] font-bold flex items-center justify-center">
+                {activeFilterCount}
+              </span>
+            )}
+          </div>
+          <div className="w-8" />
+        </div>
       </div>
 
-      <div className="px-6 py-6 space-y-8 overflow-y-auto max-h-[calc(90vh-200px)]">
-        {/* Type of Place */}
-       
+      {/* Scrollable Content */}
+      <div className="overflow-y-auto overscroll-contain px-5 py-5 space-y-7" style={{ maxHeight: 'calc(92vh - 130px)' }}>
+
+        {/* Place Type */}
         <section>
-  <h3 className="font-semibold text-lg mb-4">Type of place</h3>
-
-  <div className="grid grid-cols-3 gap-3">
-    {[
-      { key: 'any', label: 'Any type', icon: Building2 },
-      { key: 'room', label: 'Room', icon: DoorOpen },
-      { key: 'entire', label: 'Entire home', icon: Home },
-    ].map(({ key, label, icon: Icon }) => {
-      const active = placeType === key;
-
-      return (
-        <button
-          key={key}
-          onClick={() => setPlaceType(key)}
-          className={`flex flex-col items-center justify-center gap-2
-                      py-4 px-4 rounded-xl border transition
-                      ${
-                        active
-                          ? 'border-gray-900 bg-gray-50 shadow-sm'
-                          : 'border-gray-300 hover:border-gray-900'
-                      }`}
-        >
-          <Icon
-            size={28}
-            className={active ? 'text-gray-900' : 'text-gray-500'}
-          />
-          <span className="text-sm font-medium">{label}</span>
-        </button>
-      );
-    })}
-  </div>
-</section>
+          <h3 className="text-[15px] font-semibold text-[#1A1A1A] mb-3">Type of place</h3>
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { key: 'any', label: 'Any', icon: Building2 },
+              { key: 'entire', label: 'Entire', icon: Home },
+              { key: 'room', label: 'Room', icon: DoorOpen },
+              { key: 'shared', label: 'Shared', icon: Hotel },
+            ].map(({ key, label, icon: Icon }) => {
+              const active = placeType === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setPlaceType(key)}
+                  className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border transition-all
+                    ${active
+                      ? 'border-[#C45D3E] bg-[#FDF8F3] shadow-sm ring-1 ring-[#C45D3E]/20'
+                      : 'border-gray-200 hover:border-gray-400'
+                    }`}
+                >
+                  <Icon size={20} className={active ? 'text-[#C45D3E]' : 'text-gray-500'} />
+                  <span className={`text-xs font-medium ${active ? 'text-[#C45D3E]' : 'text-gray-700'}`}>
+                    {label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
         {/* Price Range */}
-        <section className="border-t pt-8">
-          <h3 className="font-semibold text-lg mb-4">Price range</h3>
-          <p className="text-sm text-gray-500 mb-4">Trip price, includes all fees</p>
-          
+        <section className="border-t border-gray-100 pt-6">
+          <h3 className="text-[15px] font-semibold text-[#1A1A1A] mb-1">Price range</h3>
+          <p className="text-xs text-gray-500 mb-4">Per night, includes all fees</p>
+
           <div className="space-y-4">
-            <input 
-              type="range" 
-              min="1000" 
-              max="100000" 
-              value={priceRange.max}
-              onChange={(e) => setPriceRange({...priceRange, max: parseInt(e.target.value)})}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-900"
-            />
-            
-            <div className="flex gap-4">
+            <div className="px-1">
+              <input
+                type="range"
+                min="900"
+                max="100000"
+                step="500"
+                value={priceRange.max}
+                onChange={(e) => setPriceRange({ ...priceRange, max: parseInt(e.target.value) })}
+                className="w-full h-1.5 bg-gray-200 rounded-full appearance-none cursor-pointer
+                  [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5
+                  [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#C45D3E]
+                  [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer
+                  [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white"
+              />
+            </div>
+
+            <div className="flex gap-3">
               <div className="flex-1">
-                <label className="block text-xs text-gray-500 mb-1">Minimum</label>
-                <input 
-                  type="number"
-                  value={priceRange.min}
-                  onChange={(e) => setPriceRange({...priceRange, min: parseInt(e.target.value)})}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
-                  placeholder="1000"
-                />
+                <label className="block text-xs font-medium text-gray-500 mb-1">Min</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">₹</span>
+                  <input
+                    type="number"
+                    value={priceRange.min}
+                    onChange={(e) => setPriceRange({ ...priceRange, min: parseInt(e.target.value) || 0 })}
+                    className="w-full pl-7 pr-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C45D3E] focus:ring-1 focus:ring-[#C45D3E]/30 transition"
+                  />
+                </div>
               </div>
+              <div className="flex items-end pb-2.5 text-gray-300">–</div>
               <div className="flex-1">
-                <label className="block text-xs text-gray-500 mb-1">Maximum</label>
-                <input 
-                  type="number"
-                  value={priceRange.max}
-                  onChange={(e) => setPriceRange({...priceRange, max: parseInt(e.target.value)})}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
-                  placeholder="100000"
-                />
+                <label className="block text-xs font-medium text-gray-500 mb-1">Max</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">₹</span>
+                  <input
+                    type="number"
+                    value={priceRange.max}
+                    onChange={(e) => setPriceRange({ ...priceRange, max: parseInt(e.target.value) || 0 })}
+                    className="w-full pl-7 pr-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C45D3E] focus:ring-1 focus:ring-[#C45D3E]/30 transition"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         {/* Rooms and Beds */}
-        <section className="border-t pt-8">
-          <h3 className="font-semibold text-lg mb-4">Rooms and beds</h3>
-          <CounterButton 
-            label="Bedrooms" 
-            value={bedrooms} 
-            onChange={setBedrooms}
-          />
-          <CounterButton 
-            label="Beds" 
-            value={beds} 
-            onChange={setBeds}
-          />
-          <CounterButton 
-            label="Bathrooms" 
-            value={bathrooms} 
-            onChange={setBathrooms}
-          />
+        <section className="border-t border-gray-100 pt-6">
+          <h3 className="text-[15px] font-semibold text-[#1A1A1A] mb-2">Rooms and beds</h3>
+          <CounterButton label="Bedrooms" value={bedrooms} onChange={setBedrooms} />
+          <CounterButton label="Beds" value={beds} onChange={setBeds} />
+          <CounterButton label="Bathrooms" value={bathrooms} onChange={setBathrooms} />
         </section>
 
         {/* Property Type */}
-       <section className="border-t pt-8">
-  <h3 className="font-semibold text-lg mb-4">Property type</h3>
-
-  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-    {PROPERTY_TYPE_OPTIONS.map(({ label, icon: Icon }) => {
-      const active = propertyTypes.includes(label);
-
-      return (
-        <button
-          key={label}
-          onClick={() =>
-            toggleArrayItem(propertyTypes, setPropertyTypes, label)
-          }
-          className={`flex items-center gap-3 px-4 py-4
-                      border rounded-xl transition
-                      ${
-                        active
-                          ? "border-gray-900 bg-gray-50 shadow-sm"
-                          : "border-gray-300 hover:border-gray-900"
-                      }`}
-        >
-          <Icon
-            size={22}
-            className={active ? "text-gray-900" : "text-gray-500"}
-          />
-          <span className="text-sm font-medium">{label}</span>
-        </button>
-      );
-    })}
-  </div>
-</section>
+        <section className="border-t border-gray-100 pt-6">
+          <h3 className="text-[15px] font-semibold text-[#1A1A1A] mb-3">Property type</h3>
+          <div className="grid grid-cols-4 sm:grid-cols-4 gap-2">
+            {PROPERTY_TYPE_OPTIONS.map(({ value, label, icon: Icon }) => {
+              const active = propertyTypes.includes(value);
+              return (
+                <button
+                  key={value}
+                  onClick={() => toggleArrayItem(propertyTypes, setPropertyTypes, value)}
+                  className={`flex flex-col items-center gap-1.5 p-3 border rounded-xl transition-all
+                    ${active
+                      ? 'border-[#C45D3E] bg-[#FDF8F3] shadow-sm ring-1 ring-[#C45D3E]/20'
+                      : 'border-gray-200 hover:border-gray-400'
+                    }`}
+                >
+                  <Icon size={20} className={active ? 'text-[#C45D3E]' : 'text-gray-500'} />
+                  <span className={`text-[11px] sm:text-xs font-medium ${active ? 'text-[#C45D3E]' : 'text-gray-700'}`}>
+                    {label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
         {/* Amenities */}
-        {/* <section className="border-t pt-8">
-          <h3 className="font-semibold text-lg mb-4">Amenities</h3>
-          
-          <div className="space-y-3">
-            <h4 className="font-medium text-sm">Essentials</h4>
-            {['Wifi', 'Kitchen', 'Washer', 'Dryer', 'Air conditioning', 'Heating'].map((amenity) => (
-              <label key={amenity} className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 -mx-2 px-2 rounded">
-                <input
-                  type="checkbox"
-                  checked={amenities.includes(amenity)}
-                  onChange={() => toggleArrayItem(amenities, setAmenities, amenity)}
-                  className="w-5 h-5 rounded accent-gray-900"
-                />
-                <span>{amenity}</span>
-              </label>
-            ))}
+        <section className="border-t border-gray-100 pt-6">
+          <h3 className="text-[15px] font-semibold text-[#1A1A1A] mb-3">Amenities</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {visibleAmenities.map(({ value, label, icon: Icon }) => {
+              const active = amenities.includes(value);
+              return (
+                <button
+                  key={value}
+                  onClick={() => toggleArrayItem(amenities, setAmenities, value)}
+                  className={`flex items-center gap-2 px-3 py-2.5 border rounded-lg transition-all text-left
+                    ${active
+                      ? 'border-[#C45D3E] bg-[#FDF8F3] ring-1 ring-[#C45D3E]/20'
+                      : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                >
+                  <Icon size={15} className={`shrink-0 ${active ? 'text-[#C45D3E]' : 'text-gray-500'}`} />
+                  <span className={`text-xs font-medium truncate ${active ? 'text-[#C45D3E]' : 'text-gray-700'}`}>
+                    {label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
+          {!showAllAmenities && AMENITY_OPTIONS.length > 8 && (
+            <button
+              onClick={() => setShowAllAmenities(true)}
+              className="mt-3 text-sm font-medium text-[#C45D3E] hover:text-[#A84B32] transition"
+            >
+              Show all {AMENITY_OPTIONS.length} amenities
+            </button>
+          )}
+        </section>
 
-          <div className="space-y-3 mt-6">
-            <h4 className="font-medium text-sm">Features</h4>
-            {['Pool', 'Hot tub', 'Free parking', 'EV charger', 'Gym', 'BBQ grill'].map((amenity) => (
-              <label key={amenity} className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 -mx-2 px-2 rounded">
-                <input
-                  type="checkbox"
-                  checked={amenities.includes(amenity)}
-                  onChange={() => toggleArrayItem(amenities, setAmenities, amenity)}
-                  className="w-5 h-5 rounded accent-gray-900"
-                />
-                <span>{amenity}</span>
-              </label>
-            ))}
+        {/* Features */}
+        <section className="border-t border-gray-100 pt-6">
+          <h3 className="text-[15px] font-semibold text-[#1A1A1A] mb-3">Standout features</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {visibleFeatures.map(({ value, label, icon: Icon }) => {
+              const active = features.includes(value);
+              return (
+                <button
+                  key={value}
+                  onClick={() => toggleArrayItem(features, setFeatures, value)}
+                  className={`flex items-center gap-2 px-3 py-2.5 border rounded-lg transition-all text-left
+                    ${active
+                      ? 'border-[#C45D3E] bg-[#FDF8F3] ring-1 ring-[#C45D3E]/20'
+                      : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                >
+                  <Icon size={15} className={`shrink-0 ${active ? 'text-[#C45D3E]' : 'text-gray-500'}`} />
+                  <span className={`text-xs font-medium truncate ${active ? 'text-[#C45D3E]' : 'text-gray-700'}`}>
+                    {label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
-
-          <div className="space-y-3 mt-6">
-            <h4 className="font-medium text-sm">Location</h4>
-            {['Beachfront', 'Waterfront', 'Ski-in/Ski-out'].map((amenity) => (
-              <label key={amenity} className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 -mx-2 px-2 rounded">
-                <input
-                  type="checkbox"
-                  checked={amenities.includes(amenity)}
-                  onChange={() => toggleArrayItem(amenities, setAmenities, amenity)}
-                  className="w-5 h-5 rounded accent-gray-900"
-                />
-                <span>{amenity}</span>
-              </label>
-            ))}
-          </div>
-        </section> */}
-
-        <section className="border-t pt-8">
-    <h3 className="font-semibold text-lg mb-4">Amenities</h3>
-
-  <div className="space-y-6">
-    <AmenityGroup
-      title="Essentials"
-      items={[
-        "Wifi",
-        "Kitchen",
-        "Washer",
-        "Dryer",
-        "Air conditioning",
-        "Heating",
-        "TV",
-      ]}
-      amenities={amenities}
-      setAmenities={setAmenities}
-      toggleArrayItem={toggleArrayItem}
-    />
-
-    <AmenityGroup
-      title="Features"
-      items={[
-        "Pool",
-        "Hot tub",
-        "Free parking",
-        "EV charger",
-        "Gym",
-        "BBQ grill",
-      ]}
-      amenities={amenities}
-      setAmenities={setAmenities}
-      toggleArrayItem={toggleArrayItem}
-    />
-
-    <AmenityGroup
-      title="Location"
-      items={[
-        "Beachfront",
-        "Waterfront",
-        "Ski-in/Ski-out",
-      ]}
-      amenities={amenities}
-      setAmenities={setAmenities}
-      toggleArrayItem={toggleArrayItem}
-    />
-  </div>
-</section>
-
+          {!showAllFeatures && FEATURE_OPTIONS.length > 6 && (
+            <button
+              onClick={() => setShowAllFeatures(true)}
+              className="mt-3 text-sm font-medium text-[#C45D3E] hover:text-[#A84B32] transition"
+            >
+              Show all {FEATURE_OPTIONS.length} features
+            </button>
+          )}
+        </section>
 
         {/* Booking Options */}
-        <section className="border-t pt-8">
-  <h3 className="font-semibold text-lg mb-4">Booking options</h3>
+        <section className="border-t border-gray-100 pt-6">
+          <h3 className="text-[15px] font-semibold text-[#1A1A1A] mb-3">Booking options</h3>
+          <div className="space-y-2">
+            <button
+              onClick={() => setInstantBook(v => !v)}
+              className={`w-full flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all
+                ${instantBook
+                  ? 'border-[#C45D3E] bg-[#FDF8F3] ring-1 ring-[#C45D3E]/20'
+                  : 'border-gray-200 hover:border-gray-400'
+                }`}
+            >
+              <Zap size={18} className={`shrink-0 ${instantBook ? 'text-[#C45D3E]' : 'text-gray-500'}`} />
+              <div className="flex-1">
+                <div className={`text-sm font-medium ${instantBook ? 'text-[#C45D3E]' : 'text-[#1A1A1A]'}`}>Instant Book</div>
+                <div className="text-xs text-gray-500">Book without waiting for host approval</div>
+              </div>
+            </button>
+          </div>
+        </section>
 
-  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-    {/* Instant Book */}
-    <button
-      onClick={() => setInstantBook((v) => !v)}
-      className={`flex items-start gap-3 p-4 rounded-xl border text-left transition
-        ${
-          instantBook
-            ? "border-gray-900 bg-gray-50 shadow-sm"
-            : "border-gray-300 hover:border-gray-900"
-        }`}
-    >
-      <Zap
-        size={22}
-        className={instantBook ? "text-gray-900" : "text-gray-500"}
-      />
-      <div>
-        <div className="font-medium">Instant Book</div>
-        <div className="text-sm text-gray-500">
-          Book without waiting for host approval
-        </div>
-      </div>
-    </button>
-
-    {/* Self check-in */}
-    <button
-      onClick={() => setSelfCheckIn((v) => !v)}
-      className={`flex items-start gap-3 p-4 rounded-xl border text-left transition
-        ${
-          selfCheckIn
-            ? "border-gray-900 bg-gray-50 shadow-sm"
-            : "border-gray-300 hover:border-gray-900"
-        }`}
-    >
-      <Key
-        size={22}
-        className={selfCheckIn ? "text-gray-900" : "text-gray-500"}
-      />
-      <div>
-        <div className="font-medium">Self check-in</div>
-        <div className="text-sm text-gray-500">
-          Easy access when you arrive
-        </div>
-      </div>
-    </button>
-
-    {/* Free cancellation */}
-    <button
-      onClick={() => setFreeCancel((v) => !v)}
-      className={`flex items-start gap-3 p-4 rounded-xl border text-left transition
-        ${
-          freeCancel
-            ? "border-gray-900 bg-gray-50 shadow-sm"
-            : "border-gray-300 hover:border-gray-900"
-        }`}
-    >
-      <RefreshCcw
-        size={22}
-        className={freeCancel ? "text-gray-900" : "text-gray-500"}
-      />
-      <div>
-        <div className="font-medium">Free cancellation</div>
-        <div className="text-sm text-gray-500">
-          Cancel before check-in for a full refund
-        </div>
-      </div>
-    </button>
-  </div>
-</section>
-
-
-      
+        {/* Cancellation Policy */}
+        <section className="border-t border-gray-100 pt-6">
+          <h3 className="text-[15px] font-semibold text-[#1A1A1A] mb-3">Cancellation policy</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {[
+              { key: 'any', label: 'Any' },
+              { key: 'flexible', label: 'Flexible' },
+              { key: 'moderate', label: 'Moderate' },
+              { key: 'strict', label: 'Strict' },
+            ].map(({ key, label }) => {
+              const active = cancellationPolicy === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setCancellationPolicy(key)}
+                  className={`py-2.5 px-3 rounded-lg border text-xs font-medium transition-all
+                    ${active
+                      ? 'border-[#C45D3E] bg-[#FDF8F3] text-[#C45D3E] ring-1 ring-[#C45D3E]/20'
+                      : 'border-gray-200 text-gray-700 hover:border-gray-400'
+                    }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        </section>
       </div>
 
       {/* Footer */}
-      <div className="sticky bottom-0 bg-white border-t px-6 py-4 flex items-center justify-between">
-        <button 
+      <div className="sticky bottom-0 bg-white border-t border-gray-100 px-5 py-4 flex items-center justify-between gap-4">
+        <button
           onClick={handleClearAll}
-          className="text-sm underline font-medium hover:text-gray-600"
+          className="text-sm font-medium text-gray-700 hover:text-[#C45D3E] transition underline underline-offset-2"
         >
           Clear all
         </button>
         <button
           onClick={handleApplyFilters}
-          className="bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 font-medium transition"
+          className="bg-[#C45D3E] text-white px-6 py-3 rounded-xl hover:bg-[#A84B32] font-medium text-sm transition-all shadow-sm active:scale-[0.98]"
         >
           Show {resultsCount || 0} places
         </button>

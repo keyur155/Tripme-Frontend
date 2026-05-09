@@ -1013,8 +1013,8 @@ const PropertyImageCarousel = ({ images, onFavorite, isFavorite, onClick }: {
             </div>
           ))
         ) : (
-          <div className="w-full h-full bg-[#4285f4] justify-center">
-            <MapPin className="w-12 h-12 text-gray-400" />
+          <div className="w-full h-full bg-[#F5E6D3] flex items-center justify-center">
+            <MapPin className="w-12 h-12 text-[#C45D3E]/40" />
           </div>
         )}
       </div>
@@ -1142,8 +1142,8 @@ function SearchPageContent() {
 
   const SHEET_HEIGHTS = {
     peek: '12vh',
-    half: '60vh',
-    full: '96vh'
+    half: '45vh',
+    full: '92vh'
   };
 
   const handleListScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -1270,16 +1270,26 @@ function SearchPageContent() {
       
       const params = new URLSearchParams();
       
-      if (filters.priceRange.min) params.append('minPrice', filters.priceRange.min);
-      if (filters.priceRange.max) params.append('maxPrice', filters.priceRange.max);
-      if (filters.bedrooms) params.append('guests', filters.bedrooms);
-      if (filters.beds) params.append('beds', filters.beds);
-      if (filters.bathrooms) params.append('bathrooms', filters.bathrooms);
-      if (filters.propertyTypes.length > 0) params.append('type', filters.propertyTypes.join(','));
-      if (filters.amenities.length > 0) params.append('amenities', filters.amenities.join(','));
+      if (filters.priceRange.min) params.append('minPrice', String(filters.priceRange.min));
+      if (filters.priceRange.max) params.append('maxPrice', String(filters.priceRange.max));
+      if (filters.bedrooms) params.append('bedrooms', String(filters.bedrooms));
+      if (filters.beds) params.append('beds', String(filters.beds));
+      if (filters.bathrooms) params.append('bathrooms', String(filters.bathrooms));
+      if (filters.guests) params.append('guests', String(filters.guests));
+      if (filters.propertyTypes?.length > 0) params.append('type', filters.propertyTypes.join(','));
+      if (filters.placeType && filters.placeType !== 'any') params.append('placeType', filters.placeType);
+      if (filters.amenities?.length > 0) params.append('amenities', filters.amenities.join(','));
+      if (filters.features?.length > 0) params.append('features', filters.features.join(','));
+      if (filters.style?.length > 0) params.append('style', filters.style.join(','));
       if (filters.instantBook) params.append('instantBook', 'true');
-      if (filters.selfCheckIn) params.append('selfCheckIn', 'true');
-      if (filters.freeCancel) params.append('freeCancel', 'true');
+      if (filters.cancellationPolicy && filters.cancellationPolicy !== 'any') {
+        params.append('cancellationPolicy', filters.cancellationPolicy);
+      }
+
+      // Preserve location/coordinates from current search
+      if (lng) params.append('lng', lng);
+      if (lat) params.append('lat', lat);
+      if (city) params.append('city', city);
       
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/listings?${params}`);
       const data = await response.json();
@@ -1289,6 +1299,7 @@ function SearchPageContent() {
         if (data.data && data.data.listings) listingsData = data.data.listings;
         if (!Array.isArray(listingsData)) listingsData = [];
         setListings(listingsData);
+        setAllProperties(listingsData);
       }
     } catch (error) {
       console.error('Error applying filters:', error);
@@ -1680,17 +1691,15 @@ function SearchPageContent() {
       <div className={`hidden lg:block ${hideHeader ? "pt-20" : "pt-20"}`}>
         <div className="flex h-[calc(100vh-5rem)]">
           <div className="w-1/2 overflow-y-auto pb-8">
-            <div className="px-6 pt-6 pb-4">
+            <div className="px-6 pt-6 pb-4 border-b border-gray-100">
               <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-semibold text-gray-900">
-                  {listings.length > 0 ? `Over ${listings.length} homes` : 'No homes found'}
-                </h1>
-                <div className="flex items-center gap-1">
-                  <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-gray-600">Prices include all fees</span>
+                <div>
+                  <h1 className="text-2xl font-bold text-[#1A1A1A]">
+                    {listings.length > 0 ? `${listings.length} stays` : 'No stays found'}
+                  </h1>
+                  {city && <p className="text-sm text-gray-500 mt-0.5">in {city}</p>}
                 </div>
+                <span className="text-xs text-gray-500">Prices include all fees</span>
               </div>
             </div>
 
@@ -1698,12 +1707,12 @@ function SearchPageContent() {
               {loading ? (
                 <div className="flex items-center justify-center py-16">
                   <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading places...</p>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#C45D3E] mx-auto mb-4"></div>
+                    <p className="text-gray-600">Finding the best stays...</p>
                   </div>
                 </div>
               ) : stayListings.length > 0 ? (
-                <div className="grid grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                   {stayListings.map((stay) => (
                     <div 
                       key={stay.id} 
@@ -1725,12 +1734,12 @@ function SearchPageContent() {
                 </div>
               ) : (
                 <div className="text-center py-16">
-                  <MapPin className="w-12 h-12 text-[#4285f4] mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No places found</h3>
+                  <MapPin className="w-12 h-12 text-[#C45D3E] mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-[#1A1A1A] mb-2">No places found</h3>
                   <p className="text-gray-600 mb-6">Try adjusting your search location or dates.</p>
                   <button
                     onClick={() => router.push('/')}
-                    className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+                    className="bg-[#1A1A1A] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#333] transition-colors"
                   >
                     Search again
                   </button>
@@ -1781,11 +1790,8 @@ function SearchPageContent() {
           />
 
           <div className="absolute top-20 left-0 right-0 z-10 flex justify-center pointer-events-none">
-            <div className="bg-white rounded-full px-4 py-2 shadow-lg flex items-center gap-2">
-              <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-              </svg>
-              <span className="text-sm font-medium text-gray-700">Prices include all fees</span>
+            <div className="bg-white/95 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg flex items-center gap-2">
+              <span className="text-xs font-medium text-gray-600">Prices include all fees</span>
             </div>
           </div>
 
@@ -1847,7 +1853,7 @@ function SearchPageContent() {
                         if (checkOut) params.set('checkOut', checkOut);
                         router.push(`/rooms/${selectedProperty._id || selectedProperty.id}?${params.toString()}`);
                       }}
-                      className="text-xs font-bold text-red-600 hover:text-red-700 underline underline-offset-2"
+                      className="text-xs font-bold text-[#C45D3E] hover:text-[#A84B32] underline underline-offset-2"
                     >
                       View Details
                     </button>
@@ -1905,8 +1911,8 @@ function SearchPageContent() {
                 className="flex-1 overflow-y-auto pb-20 touch-pan-y"
               >
                 <div className="px-4 pt-2 pb-4">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                    {listings.length} places
+                  <h2 className="text-lg font-bold text-[#1A1A1A] mb-4">
+                    {listings.length} stays {city && <span className="text-sm font-normal text-gray-500">in {city}</span>}
                   </h2>
                   <div className="grid grid-cols-1 gap-4">
                     {stayListings.map((stay) => (
@@ -1960,7 +1966,7 @@ function SearchPageContent() {
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
             <h3 className="text-lg font-semibold mb-4">Create new list</h3>
             <input
-              className="border border-gray-300 w-full p-3 rounded-lg mb-4 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
+              className="border border-gray-300 w-full p-3 rounded-lg mb-4 focus:ring-2 focus:ring-[#C45D3E]/30 focus:border-[#C45D3E] outline-none transition-all"
               placeholder="My dream stays"
               value={wishlistName}
               onChange={e => setWishlistName(e.target.value)}
@@ -1973,7 +1979,7 @@ function SearchPageContent() {
                 Cancel
               </button>
               <button
-                className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-medium transition-all active:scale-95 disabled:opacity-50"
+                className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-6 py-2 rounded-lg font-medium transition-all active:scale-95 disabled:opacity-50"
                 onClick={createWishlistAndSave}
                 disabled={!wishlistName.trim()}
               >
@@ -1992,7 +1998,7 @@ export default function SearchPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#C45D3E] mx-auto mb-4"></div>
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>

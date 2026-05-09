@@ -174,7 +174,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           className={`
             border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
             ${isDragActive 
-              ? 'border-purple-500 bg-purple-50' 
+              ? 'border-[#C45D3E] bg-[#FDF8F3]' 
               : 'border-gray-300 hover:border-purple-400 hover:bg-gray-50'
             }
             ${uploading ? 'opacity-50 cursor-not-allowed' : ''}
@@ -184,7 +184,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
           {uploading ? (
             <div className="space-y-2">
-              <Loader2 className="mx-auto h-6 w-6 animate-spin text-purple-500" />
+              <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#C45D3E]" />
               <p className="text-sm text-gray-600">Uploading images...</p>
             </div>
           ) : (
@@ -210,7 +210,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             <div key={fileName} className="flex items-center space-x-2">
               <div className="flex-1 bg-gray-200 rounded-full h-2">
                 <div 
-                  className="bg-purple-500 h-2 rounded-full transition-all duration-300"
+                  className="bg-[#C45D3E] h-2 rounded-full transition-all duration-300"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -245,7 +245,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                     </div>
                   )}
                   {image?.isPrimary && (
-                    <span className="absolute top-3 left-3 bg-gradient-to-r from-purple-600 to-indigo-500 text-white text-xs px-3 py-1 rounded-full shadow-lg font-semibold z-10">
+                    <span className="absolute top-3 left-3 bg-[#C45D3E] text-white text-xs px-3 py-1 rounded-full shadow-lg font-semibold z-10">
                       Primary
                     </span>
                   )}
@@ -271,7 +271,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                     />
                     <label
                       htmlFor={`caption-${index}`}
-                      className="absolute left-3 top-2 text-xs text-gray-500 pointer-events-none transition-all duration-200 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-purple-600 peer-placeholder-shown:top-5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400 bg-gray-50 px-1 rounded"
+                      className="absolute left-3 top-2 text-xs text-gray-500 pointer-events-none transition-all duration-200 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#C45D3E] peer-placeholder-shown:top-5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400 bg-gray-50 px-1 rounded"
                     >
                       Add caption...
                     </label>
@@ -279,7 +279,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                   {!image?.isPrimary && (
                     <button
                       onClick={() => setPrimaryImage(index)}
-                      className="mt-3 w-full text-xs bg-gradient-to-r from-gray-100 to-gray-200 hover:from-purple-100 hover:to-indigo-100 text-gray-700 py-1 px-2 rounded-lg font-medium transition-colors shadow-sm"
+                      className="mt-3 w-full text-xs bg-gradient-to-r from-gray-100 to-gray-200 hover:from-[#FDF8F3] hover:to-[#F5E6D3] text-gray-700 py-1 px-2 rounded-lg font-medium transition-colors shadow-sm"
                     >
                       Set as Primary
                     </button>

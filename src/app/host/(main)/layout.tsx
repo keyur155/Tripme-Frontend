@@ -7,9 +7,9 @@ export default function HostLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#f7f7f7]">
       <HostHeader />
-      <main className="pt-12 md:pt-28">
+      <main className="pt-16 md:pt-24">
         {children}
       </main>
       <Footer />

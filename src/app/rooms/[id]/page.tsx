@@ -30,7 +30,7 @@ const PropertyMap = dynamic(() => import("@/components/rooms/PropertyMap"), {
   loading: () => (
     <div className="h-96 bg-gray-100 rounded-xl flex items-center justify-center">
       <div className="text-center">
-        <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-3"></div>
+        <div className="w-8 h-8 border-4 border-[#F5E6D3] border-t-[#C45D3E] rounded-full animate-spin mx-auto mb-3"></div>
         <p className="text-gray-600">Loading map...</p>
       </div>
     </div>
@@ -1675,7 +1675,7 @@ const FloatingInsightBadge = ({ badge }) => {
   };
 
   const getAmenityIcon = (amenity: string) => {
-    const iconClass = "w-5 h-5 sm:w-6 sm:h-6 text-[#4285f4]";
+    const iconClass = "w-5 h-5 sm:w-6 sm:h-6 text-[#C45D3E]";
     const iconMap: Record<string, any> = {
       'wifi': <WifiIcon className={iconClass} />,
       'tv': <Tv className={iconClass} />,
@@ -1875,7 +1875,7 @@ const FloatingInsightBadge = ({ badge }) => {
         />
         <div className="pt-40 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-gray-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-6"></div>
+            <div className="w-16 h-16 border-4 border-gray-200 border-t-[#C45D3E] rounded-full animate-spin mx-auto mb-6"></div>
             <span className="text-xl text-gray-600">Loading property details...</span>
           </div>
         </div>
@@ -1894,7 +1894,7 @@ const FloatingInsightBadge = ({ badge }) => {
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Property Not Found</h2>
             <p className="text-gray-600 mb-6">{error || "This property doesn't exist or has been removed."}</p>
-            <Button onClick={() => router.back()} className="bg-indigo-600 hover:bg-indigo-700">
+            <Button onClick={() => router.back()} className="bg-[#C45D3E] hover:bg-[#A84B32]">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Go Back
             </Button>
@@ -1921,7 +1921,7 @@ const FloatingInsightBadge = ({ badge }) => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-white">
       <Header visibleShare={true}
         visibleWishlist={true}
         onShareClick={handleShare}
@@ -1973,8 +1973,8 @@ const FloatingInsightBadge = ({ badge }) => {
                     }}
                     className={`relative flex-shrink-0 px-2 md:px-4 py-4 md:py-6 text-xs md:text-sm font-medium transition-colors duration-200 whitespace-nowrap border-b-2 ${
                       activeTab === key
-                        ? 'border-gray-900 text-gray-900'
-                        : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300'
+                        ? 'border-[#C45D3E] text-[#C45D3E]'
+                        : 'border-transparent text-gray-500 hover:text-[#1A1A1A] hover:border-gray-300'
                     }`}
                   >
                     {label}
@@ -1998,170 +1998,125 @@ const FloatingInsightBadge = ({ badge }) => {
           <div ref={bookingSentinelRef} className="h-px w-full" aria-hidden="true" />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Left Column - Main Content */}
-            <div className="lg:col-span-2 space-y-8">
+            <div className="lg:col-span-2 space-y-6">
               {/* Header Section */}
-              <div className="mb-8">
-                <div className="mb-2">
-
-                  {/* TOP ROW — TITLE + ACTIONS */}
-
-                  <div className="flex items-start justify-between gap-3">
-
-                    {/* LEFT CONTENT */}
-                    <div className="flex-1">
-                      <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
-                        {property.title}
-                      </h1>
-
-                      {/* SUBTITLE (Airbnb mobile style) */}
-                      <p className="mt-2 text-gray-600 text-sm sm:text-base">
-                        {property.placeType === "entire"
-                          ? "Entire apartment"
-                          : property.placeType === "room"
-                            ? "A room"
-                            : "Shared room"}{" "}
-                        in {property.location?.city}, {property.location?.country || "India"}
-                      </p>
-
-
-                    </div>
-
-                    {/* RIGHT ACTIONS — MOBILE AIRBNB STYLE */}
-                    <div className="hidden md:flex items-center gap-1 sm:gap-2">
-                      <button
-                        onClick={handleShare}
-                        className="p-2 rounded-full hover:bg-gray-100 transition"
-                      >
-                        <Share2 className="w-5 h-5 text-gray-700" />
-                      </button>
-
-                      <button
-                        onClick={() => handleFavorite(property._id)}
-                        className="p-2 rounded-full hover:bg-gray-100 transition"
-                      >
-                        <Heart
-                          className={`w-5 h-5 ${isFavorite
-                            ? "fill-red-500 text-red-500"
-                            : "text-gray-700"
-                            }`}
-                        />
-                      </button>
-                    </div>
-                  </div>
-
-
-
-                  {/* AIRBNB RATING STRIP */}
-                  <div
-                    onClick={() => setIsOpen(true)}
-                    className="cursor-pointer bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-4 sm:p-6 mt-5 flex items-center justify-between gap-3 sm:gap-8"
-                  >
-                    {/* LEFT SECTION */}
-                    <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                      <span className="text-green-500 text-lg sm:text-2xl">
-                        {heroBadge.icon}
-                      </span>
-                      <div className="text-left">
-                        <p className="text-sm sm:text-2xl font-bold text-gray-900 leading-tight">
-                          {heroBadge.label}
-                        </p>
-                      </div>
-                      <span className="hidden sm:inline text-green-500 text-2xl">
-                        {heroBadge.icon}
-                      </span>
-                    </div>
-
-                    {/* DESCRIPTION */}
-                    <div className="hidden md:block flex-1 min-w-[180px]">
-                      <p className="text-sm text-gray-600 leading-snug">
-                        {heroBadge.description || "One of the most loved properties by guests"}
-                      </p>
-                    </div>
-
-                    {/* STATS */}
-                    <div className="flex items-center gap-5 sm:gap-8 flex-shrink-0">
-                      <div className="flex flex-col items-start text-xs sm:text-sm">
-                        <p className="text-xs sm:text-xl font-semibold text-gray-900">
-                          {property.rating ? Number(property.rating).toFixed(1) : "New"}
-                        </p>
-                        <div className="flex gap-[1px] mt-1">
-                          {[1, 2, 3, 4, 5].map((s) => (
-                            <Star
-                              key={s}
-                              className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${
-                                s <= Math.round(property.rating || 0)
-                                  ? "fill-black text-black"
-                                  : "text-gray-300"
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="hidden sm:block w-px h-10 bg-gray-200" />
-
-                      <div className="flex flex-col items-start text-xs sm:text-sm">
-                        <p className="text-base sm:text-xl font-semibold text-gray-900">
-                          {property.reviewCount || 0}
-                        </p>
-                        <p className="text-[10px] sm:text-xs text-gray-500">Reviews</p>
-                      </div>
-                    </div>
-                  </div>
-
+              <div>
+                {/* LOCATION BREADCRUMB */}
+                <div className="flex items-center gap-1.5 mb-3">
+                  <MapPin className="w-3.5 h-3.5 text-[#C45D3E]" />
+                  <span className="text-xs font-medium text-gray-500 tracking-wide uppercase">
+                    {property.location?.city}{property.location?.state ? `, ${property.location?.state}` : ''} · India
+                  </span>
                 </div>
 
+                {/* TOP ROW — TITLE + ACTIONS */}
+                <div className="flex items-start justify-between gap-3">
+                  {/* LEFT CONTENT */}
+                  <div className="flex-1">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1A1A1A] leading-tight tracking-tight">
+                      {property.title}
+                    </h1>
+                    {/* PROPERTY TYPE BADGE */}
+                    <div className="flex items-center flex-wrap gap-2 mt-2">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#F5E6D3] rounded-full text-xs font-semibold text-[#C45D3E]">
+                        <Home className="w-3 h-3" />
+                        {property.placeType === "entire"
+                          ? "Entire place"
+                          : property.placeType === "room"
+                          ? "Private room"
+                          : "Shared room"}
+                      </span>
+                      {property.cancellationPolicy === "flexible" && (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#F0F7F1] rounded-full text-xs font-semibold text-[#2D5F3A]">
+                          <CheckCircle className="w-3 h-3" />
+                          Free cancellation
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* RIGHT ACTIONS */}
+                  <div className="hidden md:flex items-center gap-1">
+                    <button
+                      onClick={handleShare}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-gray-100 transition text-sm font-medium text-gray-700"
+                    >
+                      <Share2 className="w-4 h-4" />
+                      <span className="hidden lg:inline">Share</span>
+                    </button>
+                    <button
+                      onClick={() => handleFavorite(property._id)}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-gray-100 transition text-sm font-medium text-gray-700"
+                    >
+                      <Heart className={`w-4 h-4 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
+                      <span className="hidden lg:inline">{isFavorite ? "Saved" : "Save"}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* RATING STRIP */}
+                <div
+                  onClick={() => setIsOpen(true)}
+                  className="cursor-pointer mt-5 rounded-2xl border border-gray-100 bg-[#FAFAF8] p-4 sm:p-5 flex items-center gap-4 sm:gap-6 hover:border-gray-200 transition-colors"
+                >
+                  {/* Rating score */}
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Star className="w-5 h-5 fill-[#B8860B] text-[#B8860B]" />
+                    <span className="text-lg font-bold text-[#1A1A1A]">
+                      {property.rating ? Number(property.rating).toFixed(1) : "New"}
+                    </span>
+                  </div>
+
+                  {property.reviewCount > 0 && (
+                    <>
+                      <div className="w-px h-8 bg-gray-200 flex-shrink-0" />
+                      <div className="flex-shrink-0">
+                        <p className="text-sm font-semibold text-[#1A1A1A]">{property.reviewCount} reviews</p>
+                      </div>
+                    </>
+                  )}
+
+                  {heroBadge && (
+                    <>
+                      <div className="hidden sm:block w-px h-8 bg-gray-200 flex-shrink-0" />
+                      <div className="hidden sm:flex items-center gap-2 flex-1 min-w-0">
+                        <span className="text-lg flex-shrink-0">{heroBadge.icon}</span>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-[#1A1A1A] truncate">{heroBadge.label}</p>
+                          <p className="text-xs text-gray-500 truncate">{heroBadge.description}</p>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {property.reviewCount === 0 && (
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-gray-500">Be the first to review this property</p>
+                    </div>
+                  )}
+
+                  <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0 ml-auto" />
+                </div>
               </div>
 
               {/* Property Highlights */}
-            <div className="mb-8 bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-2 sm:p-6 mt-5">
-  <div className="flex flex-row items-center justify-between w-full gap-1 sm:gap-4">
-    
-    {/* Guests */}
-    <div className="flex-1 text-center">
-      <div className="flex justify-center mb-1">
-        <Users className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
-      </div>
-      <div className="text-[10px] sm:text-sm font-medium text-gray-900 leading-tight">
-        {property.maxGuests} guests
-      </div>
-    </div>
-
-    {/* Bedrooms */}
-    <div className="flex-1 text-center">
-      <div className="flex justify-center mb-1">
-        <BedDouble className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
-      </div>
-      <div className="text-[10px] sm:text-sm font-medium text-gray-900 leading-tight">
-        {property.bedrooms} {property.bedrooms > 1 ? 'bedrooms' : 'bedroom' }
-      </div>
-    </div>
-
-    {/* Beds */}
-    <div className="flex-1 text-center">
-      <div className="flex justify-center mb-1">
-        <Bed className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
-      </div>
-      <div className="text-[10px] sm:text-sm font-medium text-gray-900 leading-tight">
-        {property.beds} {property.beds > 1 ? 'beds' : 'bed'}
-      </div>
-    </div>
-
-    {/* Bathrooms */}
-    <div className="flex-1 text-center">
-      <div className="flex justify-center mb-1">
-        <Bath className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
-      </div>
-      <div className="text-[10px] sm:text-sm font-medium text-gray-900 leading-tight">
-        {property.bathrooms} bath
-      </div>
-    </div>
-
-  </div>
-            </div>
+              <div className="grid grid-cols-4 gap-3">
+                {[
+                  { icon: Users, value: property.maxGuests, label: "guests" },
+                  { icon: BedDouble, value: property.bedrooms, label: property.bedrooms > 1 ? "bedrooms" : "bedroom" },
+                  { icon: Bed, value: property.beds, label: property.beds > 1 ? "beds" : "bed" },
+                  { icon: Bath, value: property.bathrooms, label: property.bathrooms > 1 ? "baths" : "bath" },
+                ].map(({ icon: Icon, value, label }) => (
+                  <div key={label} className="flex flex-col items-center gap-1.5 bg-[#FAFAF8] rounded-2xl p-3 sm:p-4 border border-gray-100">
+                    <Icon className="w-5 h-5 text-[#C45D3E]" />
+                    <span className="text-base sm:text-lg font-bold text-[#1A1A1A] leading-none">{value}</span>
+                    <span className="text-[10px] sm:text-xs text-gray-500">{label}</span>
+                  </div>
+                ))}
+              </div>
 
             
-               <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-5 sm:p-8">
+               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-8">
             <HostCard host={property.host} />
           </div>
 
@@ -2169,56 +2124,43 @@ const FloatingInsightBadge = ({ badge }) => {
               {/* Overview Section */}
 
 
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-5 sm:p-8">
-
-                {/* HEADER */}
-
-                <div className="flex items-center gap-3 sm:gap-3 mb-4 sm:mb-6">
-                  <div className="w-10 h-10 sm:w-10 sm:h-10  rounded-lg sm:rounded-xl flex items-center justify-center">
-                    <Home className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]"  />
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-[#F5E6D3] flex items-center justify-center flex-shrink-0">
+                    <Home className="w-5 h-5 text-[#C45D3E]" />
                   </div>
-
-                  <h2 className="text-xl sm:text-2xl md:text-2xl font-bold text-gray-900 tracking-tight">
-                    About this place
-                  </h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">About this place</h2>
                 </div>
 
-                {/* DESCRIPTION */}
-                <div className="text-gray-700 leading-relaxed text-sm sm:text-base break-words">
-
+                <div className="text-gray-600 leading-relaxed text-sm sm:text-[15px] break-words">
                   {showFullDescription ? (
-                    <div>
-                      <p className="whitespace-pre-line break-words">
-                        {property.description}
-                      </p>
-
+                    <>
+                      <p className="whitespace-pre-line break-words">{property.description}</p>
                       <button
                         onClick={() => setShowFullDescription(false)}
-                        className="text-indigo-600 font-medium mt-3 hover:underline"
+                        className="flex items-center gap-1 text-[#C45D3E] font-semibold mt-4 hover:text-[#A84B32] transition-colors text-sm"
                       >
-                        Show less
+                        <ChevronUp className="w-4 h-4" /> Show less
                       </button>
-                    </div>
+                    </>
                   ) : (
-                    <div>
+                    <>
                       <p className="whitespace-pre-line break-words">
                         {property.description?.length > 300
                           ? `${property.description.substring(0, 300)}...`
                           : property.description}
                       </p>
-
                       {property.description?.length > 300 && (
                         <button
                           onClick={() => setShowFullDescription(true)}
-                          className="text-indigo-600 font-medium mt-3 hover:underline"
+                          className="flex items-center gap-1 text-[#C45D3E] font-semibold mt-4 hover:text-[#A84B32] transition-colors text-sm"
                         >
-                          Show more
+                          <ChevronDown className="w-4 h-4" /> Show more
                         </button>
                       )}
-                    </div>
+                    </>
                   )}
                 </div>
-
               </div>
 
 
@@ -2226,40 +2168,31 @@ const FloatingInsightBadge = ({ badge }) => {
 
 
               {/* Amenities Section */}
-
-              <div ref={amenitiesRef} className="bg-white rounded-2xl shadow-md  p-5 md:p-8">
-                {/* HEADER */}
-                <div className="flex items-center gap-3 sm:gap-3 mb-4 sm:mb-6">
-                  <div className="w-10 h-10 sm:w-10 sm:h-10 flex items-center justify-center shrink-0">
-                    <CheckCircle className="w-5 h-5 sm:w-8 sm:h-8 text-[#4285f4]" />
+              <div ref={amenitiesRef} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 md:p-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-[#F5E6D3] flex items-center justify-center flex-shrink-0">
+                    <Sparkles className="w-5 h-5 text-[#C45D3E]" />
                   </div>
-                  <h2 className="text-xl md:text-2xl sm:text-2xl font-semibold text-gray-900">
-                    What this place offers
-                  </h2>
+                  <h2 className="text-xl md:text-2xl font-bold text-[#1A1A1A]">What this place offers</h2>
                 </div>
 
-                {/* AMENITIES GRID */}
-                <div className="grid grid-cols-2 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-y-4 gap-x-3">
                   {(property.amenities
-                    ?.slice(0, isMobile ? 4 : showAllAmenities ? property.amenities.length : 8)
+                    ?.slice(0, isMobile ? 6 : showAllAmenities ? property.amenities.length : 10)
                   )?.map((amenity: string) => (
-                    <div
-                      key={amenity}
-                      className="flex items-center gap-3"
-                    >
-                      {getAmenityIcon(amenity)}
-                      <span className="text-sm md:text-base text-gray-700 capitalize">
+                    <div key={amenity} className="flex items-center gap-3 py-1">
+                      <div className="flex-shrink-0">{getAmenityIcon(amenity)}</div>
+                      <span className="text-sm text-gray-700 capitalize leading-tight">
                         {amenity.replace(/-/g, " ")}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                {/* SHOW ALL BUTTON */}
-                {property.amenities?.length > 4 && (
+                {property.amenities?.length > (isMobile ? 6 : 10) && !showAllAmenities && (
                   <button
                     onClick={() => setShowAllAmenities(true)}
-                    className="mt-5 w-full md:w-auto text-center border border-gray-300 rounded-xl px-6 py-3 text-sm font-medium hover:bg-gray-100 transition"
+                    className="mt-5 flex items-center gap-2 border border-[#1A1A1A] text-[#1A1A1A] rounded-xl px-5 py-2.5 text-sm font-semibold hover:bg-[#1A1A1A] hover:text-white transition-colors"
                   >
                     Show all {property.amenities.length} amenities
                   </button>
@@ -2301,7 +2234,7 @@ const FloatingInsightBadge = ({ badge }) => {
 
 
               {/* Availability Calendar Section */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 ">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <PropertyAvailabilityCalendar
                   propertyId={id as string}
                   checkInDate={dateRange.startDate}
@@ -2444,20 +2377,34 @@ const FloatingInsightBadge = ({ badge }) => {
 
               <div className="sticky top-2">
                 
-                <div className="bg-white border border-gray-200 rounded-2xl shadow-xl p-6">
+                <div className="bg-white border border-gray-100 rounded-2xl shadow-xl p-6">
                   {/* Price */}
-                  <div className="mb-6">
-                    <div className="flex items-baseline gap-2 mb-2">
-                      <span className="text-2xl font-bold text-gray-900">
+                  <div className="mb-5 pb-5 border-b border-gray-100">
+                    <div className="flex items-baseline gap-2 mb-1.5">
+                      <span className="text-3xl font-bold text-[#1A1A1A]">
                         {formatPrice(effectiveBasePrice, property.pricing?.currency || 'INR')}
                       </span>
-                      <span className="text-gray-600">{property.minNights ? `${property.minNights} night` : 'No minimum stay'}</span>
+                      <span className="text-gray-500 text-sm">/ night</span>
                     </div>
-                    <div className="flex items-center gap-1 text-sm text-gray-600 mb-4">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span>{property.rating || 0}</span>
-                      <span>•</span>
-                      <span>{property.reviewCount || 0} reviews</span>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <Star className="w-3.5 h-3.5 fill-[#B8860B] text-[#B8860B]" />
+                        <span className="font-semibold text-[#1A1A1A]">{property.rating ? Number(property.rating).toFixed(1) : "New"}</span>
+                      </div>
+                      {property.reviewCount > 0 && (
+                        <>
+                          <span className="text-gray-300">·</span>
+                          <span className="underline cursor-pointer hover:text-[#1A1A1A]" onClick={() => setIsOpen(true)}>
+                            {property.reviewCount} reviews
+                          </span>
+                        </>
+                      )}
+                      {property.minNights && property.minNights > 1 && (
+                        <>
+                          <span className="text-gray-300">·</span>
+                          <span>{property.minNights} night min.</span>
+                        </>
+                      )}
                     </div>
                   </div>
 
@@ -2469,7 +2416,7 @@ const FloatingInsightBadge = ({ badge }) => {
                         <div
                           ref={checkInRef}
                           className={`border rounded-lg p-3 cursor-pointer transition-all duration-300 ${selectionStep === 'checkin'
-                            ? 'border-indigo-500 bg-indigo-50 shadow-md'
+                            ? 'border-[#C45D3E] bg-[#FDF8F3] shadow-md'
                             : availabilityError && availabilityError.includes('Check-in')
                               ? 'border-red-300 bg-red-50'
                               : 'border-gray-300 hover:border-gray-400'
@@ -2481,11 +2428,11 @@ const FloatingInsightBadge = ({ badge }) => {
                             setSelectionStep('checkin');
                           }}
                         >
-                          <div className={`text-xs font-medium mb-1 ${selectionStep === 'checkin' ? 'text-indigo-700' : 'text-gray-700'
+                          <div className={`text-xs font-medium mb-1 ${selectionStep === 'checkin' ? 'text-[#C45D3E]' : 'text-gray-700'
                             }`}>
                             {selectionStep === 'checkin' ? '🔄 Selecting Check-in' : 'Check-in'}
                           </div>
-                          <div className={`text-sm ${selectionStep === 'checkin' ? 'text-indigo-900' : 'text-gray-900'
+                          <div className={`text-sm ${selectionStep === 'checkin' ? 'text-[#1A1A1A]' : 'text-gray-900'
                             }`}>
                             {formatDate(dateRange.startDate)}
                           </div>
@@ -2493,7 +2440,7 @@ const FloatingInsightBadge = ({ badge }) => {
                         <div
                           ref={checkOutRef}
                           className={`border rounded-lg p-3 cursor-pointer transition-all duration-300 ${selectionStep === 'checkout'
-                            ? 'border-indigo-500 bg-indigo-50 shadow-md'
+                            ? 'border-[#C45D3E] bg-[#FDF8F3] shadow-md'
                             : availabilityError && availabilityError.includes('Check-out')
                               ? 'border-red-300 bg-red-50'
                               : 'border-gray-300 hover:border-gray-400'
@@ -2505,11 +2452,11 @@ const FloatingInsightBadge = ({ badge }) => {
                             setSelectionStep('checkout');
                           }}
                         >
-                          <div className={`text-xs font-medium mb-1 ${selectionStep === 'checkout' ? 'text-indigo-700' : 'text-gray-700'
+                          <div className={`text-xs font-medium mb-1 ${selectionStep === 'checkout' ? 'text-[#C45D3E]' : 'text-gray-700'
                             }`}>
                             {selectionStep === 'checkout' ? '🔄 Selecting Check-out' : 'Check-out'}
                           </div>
-                          <div className={`text-sm ${selectionStep === 'checkout' ? 'text-indigo-900' : 'text-gray-900'
+                          <div className={`text-sm ${selectionStep === 'checkout' ? 'text-[#1A1A1A]' : 'text-gray-900'
                             }`}>
                             {dateRange.endDate ? formatDate(dateRange.endDate) : 'Select date'}
                           </div>
@@ -2532,9 +2479,9 @@ const FloatingInsightBadge = ({ badge }) => {
 
                       {/* Custom Check-in Time Selector */}
                       {!isOwnProperty && (
-                        <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                        <div className="mt-4 p-4 bg-gradient-to-r from-[#FDF8F3] to-[#F5E6D3] rounded-xl border border-[#F5E6D3]">
                           <div className="flex items-center gap-2 mb-3">
-                            <Clock className="w-4 h-4 text-blue-600" />
+                            <Clock className="w-4 h-4 text-[#C45D3E]" />
                             <label className="text-sm font-semibold text-gray-800">Check-in Time</label>
                           </div>
                           <TimeSpinner
@@ -2573,10 +2520,10 @@ const FloatingInsightBadge = ({ badge }) => {
 
                           {/* Calculated checkout display */}
                           {dateRange.startDate && (
-                            <div className="mt-3 p-3 bg-white rounded-lg border border-blue-100">
+                            <div className="mt-3 p-3 bg-white rounded-lg border border-[#F5E6D3]">
                               <div className="flex items-center justify-between">
                                 <span className="text-xs text-gray-600">Calculated Check-out:</span>
-                                <span className="text-sm font-semibold text-blue-700">
+                                <span className="text-sm font-semibold text-[#C45D3E]">
                                   {(() => {
                                     const checkout = getCalculatedCheckout();
                                     if (!checkout) return 'Select dates';
@@ -2682,10 +2629,10 @@ const FloatingInsightBadge = ({ badge }) => {
                                         {/* Step Indicator */}
                                         <div className="text-center mb-4 text-sm">
                                           {selectionStep === 'checkin' && (
-                                            <span className="text-blue-600 font-medium">Select Check-in Date</span>
+                                            <span className="text-[#C45D3E] font-medium">Select Check-in Date</span>
                                           )}
                                           {selectionStep === 'checkout' && (
-                                            <span className="text-blue-600 font-medium">Select Check-out Date</span>
+                                            <span className="text-[#C45D3E] font-medium">Select Check-out Date</span>
                                           )}
                                           {selectionStep === 'complete' && (
                                             <span className="text-green-600 font-medium">Dates Selected!</span>
@@ -2750,13 +2697,13 @@ const FloatingInsightBadge = ({ badge }) => {
                                               } else if (isBooked) {
                                                 className += 'bg-red-50 text-red-600 cursor-not-allowed line-through';
                                               } else if (isStartDate || isEndDate) {
-                                                className += 'bg-blue-600 text-white font-semibold';
+                                                className += 'bg-[#C45D3E] text-white font-semibold';
                                               } else if (isInRange) {
-                                                className += 'bg-blue-100 text-blue-800';
+                                                className += 'bg-[#F5E6D3] text-[#1A1A1A]';
                                               } else if (!isSelectable) {
                                                 className += 'text-gray-400 cursor-default';
                                               } else if (isToday) {
-                                                className += 'bg-blue-50 text-blue-700 font-bold underline';
+                                                className += 'bg-[#FDF8F3] text-[#C45D3E] font-bold underline';
                                               } else {
                                                 className += 'text-black hover:bg-gray-100 cursor-pointer';
                                               }
@@ -2847,7 +2794,7 @@ const FloatingInsightBadge = ({ badge }) => {
                                             <span>Booked</span>
                                           </div>
                                           <div className="flex items-center gap-1">
-                                            <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                                            <span className="w-2 h-2 bg-[#C45D3E] rounded-full"></span>
                                             <span>Selected</span>
                                           </div>
                                         </div>
@@ -2893,7 +2840,7 @@ const FloatingInsightBadge = ({ badge }) => {
 
                                       <button
                                         onClick={() => setShowDatePicker(false)}
-                                        className="flex-1 py-2 text-sm rounded-lg bg-indigo-600 text-white"
+                                        className="flex-1 py-2 text-sm rounded-lg bg-[#C45D3E] text-white"
                                       >
                                         Done
                                       </button>
@@ -2949,10 +2896,10 @@ const FloatingInsightBadge = ({ badge }) => {
                                 {/* Step Indicator */}
                                 <div className="text-center mb-4 text-sm">
                                   {selectionStep === 'checkin' && (
-                                    <span className="text-blue-600 font-medium">Select Check-in Date</span>
+                                    <span className="text-[#C45D3E] font-medium">Select Check-in Date</span>
                                   )}
                                   {selectionStep === 'checkout' && (
-                                    <span className="text-blue-600 font-medium">Select Check-out Date</span>
+                                    <span className="text-[#C45D3E] font-medium">Select Check-out Date</span>
                                   )}
                                   {selectionStep === 'complete' && (
                                     <span className="text-green-600 font-medium">Dates Selected!</span>
@@ -3017,11 +2964,11 @@ const FloatingInsightBadge = ({ badge }) => {
                                       } else if (!isSelectable) {
                                         className += 'text-gray-400 bg-gray-100';
                                       } else if (isStartDate || isEndDate) {
-                                        className += 'bg-blue-600 text-white font-semibold';
+                                        className += 'bg-[#C45D3E] text-white font-semibold';
                                       } else if (isInRange) {
-                                        className += 'bg-blue-200 text-blue-800';
+                                        className += 'bg-[#F5E6D3] text-[#1A1A1A]';
                                       } else if (isToday) {
-                                        className += 'bg-blue-100 text-blue-800 font-medium';
+                                        className += 'bg-[#F5E6D3] text-[#1A1A1A] font-medium';
                                       } else {
                                         className += 'hover:bg-gray-100 cursor-pointer';
                                       }
@@ -3112,7 +3059,7 @@ const FloatingInsightBadge = ({ badge }) => {
                                     <span>Booked</span>
                                   </div>
                                   <div className="flex items-center gap-1">
-                                    <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                                    <span className="w-2 h-2 bg-[#C45D3E] rounded-full"></span>
                                     <span>Selected</span>
                                   </div>
                                 </div>
@@ -3204,7 +3151,7 @@ const FloatingInsightBadge = ({ badge }) => {
                               <div className="flex justify-end mt-4">
                                 <button
                                   onClick={() => setShowGuestPicker(false)}
-                                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                                  className="px-4 py-2 bg-[#C45D3E] text-white rounded-lg hover:bg-[#A84B32] transition-colors"
                                 >
                                   Done
                                 </button>
@@ -3224,7 +3171,7 @@ const FloatingInsightBadge = ({ badge }) => {
                       <button
                         onClick={() => setShowExtras((prev) => !prev)}
                         className="lg:hidden w-full flex items-center justify-between px-4 py-3 mb-3
-                                          bg-blue-50 border border-blue-200 rounded-xl font-semibold"
+                                          bg-[#FDF8F3] border border-[#F5E6D3] rounded-xl font-semibold"
                       >
                         <span>Add extra hours</span>
                         <ChevronDown
@@ -3235,7 +3182,7 @@ const FloatingInsightBadge = ({ badge }) => {
                       <div className="bg-white rounded-3xl p-6 border border-gray-100 mb-8">
                         <div className="flex items-center gap-4 mb-6">
                           <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
-                            <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-[#4285f4]" />
+                            <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-[#C45D3E]" />
                           </div>
                           <div>
                             <h3 className="text-lg font-bold text-gray-900">Extend Your Stay</h3>
@@ -3252,8 +3199,8 @@ const FloatingInsightBadge = ({ badge }) => {
                             <div
                               key={option.hours}
                               className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${hourlyExtension === option.hours
-                                ? 'border-[#4285F4] bg-blue-100 shadow-lg scale-105'
-                                : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
+                                ? 'border-[#C45D3E] bg-[#F5E6D3] shadow-lg scale-105'
+                                : 'border-gray-200 hover:border-[#C45D3E] hover:shadow-md'
                                 }`}
                               onClick={() => setHourlyExtension(hourlyExtension === option.hours ? null : option.hours)}
                             >
@@ -3269,7 +3216,7 @@ const FloatingInsightBadge = ({ badge }) => {
                         </div>
 
                         {hourlyExtension && (
-                          <div className="mt-4 p-4 bg-white rounded-xl border border-blue-200">
+                          <div className="mt-4 p-4 bg-white rounded-xl border border-[#F5E6D3]">
                             <div className="flex items-center justify-between">
                               <div>
                                 <div className="font-semibold text-gray-900">{hourlyExtension} hours selected</div>
@@ -3307,7 +3254,7 @@ const FloatingInsightBadge = ({ badge }) => {
                     <div className="bg-white rounded-3xl p-6 border border-gray-100 mb-8">
                         <div className="flex items-center gap-4 mb-6">
                           <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
-                            <Receipt className="w-6 h-6 sm:w-8 sm:h-8 text-[#4285f4]" />
+                            <Receipt className="w-6 h-6 sm:w-8 sm:h-8 text-[#C45D3E]" />
                           </div>
                           <div>
                             <h3 className="text-lg font-bold text-gray-900">Price Breakdown</h3>
@@ -3337,7 +3284,7 @@ const FloatingInsightBadge = ({ badge }) => {
                         You cannot book your own property. This is a preview of how guests see your listing.
                       </p>
                       <Button
-                        className="bg-[#4285f4] hover:bg-[#1A73E8] text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                        className="bg-[#C45D3E] hover:bg-[#A84B32] text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
                         onClick={() => router.push(`/host/property/${id}`)}
                       >
                         <Home className="w-4 h-4 mr-2" />
@@ -3348,8 +3295,8 @@ const FloatingInsightBadge = ({ badge }) => {
                     <div className="space-y-4">
                       <Button
                         className={`w-full py-4 rounded-2xl font-bold text-lg shadow-xl transition-all duration-300 transform ${selectionStep === 'complete' && nights > 0
-                          ? 'bg-gradient-to-r from-[#4285f4] to-[#4285f4] hover:from-emerald-600 hover:to-green-700 text-white hover:shadow-2xl hover:scale-105'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          ? 'bg-[#C45D3E] hover:bg-[#A84B32] text-white hover:shadow-2xl hover:scale-[1.02]'
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                           }`}
                         onClick={handleCompleteBooking}
                         disabled={bookingLoading || availabilityLoading || selectionStep !== 'complete' || nights === 0}
@@ -3454,26 +3401,29 @@ const FloatingInsightBadge = ({ badge }) => {
                     </div>
                   )}
 
-                  {/* Cancellation Policy */}
-                  <div className="mt-6 pt-6 border-t border-gray-200">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-900">
-                        {property.cancellationPolicy || 'Moderate'} cancellation policy
-                      </span>
-                      <span className="text-sm text-indigo-600 underline cursor-pointer">Learn more</span>
-                    </div>
-                  </div>
-
-                  {/* Check-in/Check-out Times */}
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <div className="font-medium text-gray-900 mb-1">Check-in</div>
-                        <div className="text-gray-600">{property.checkInTime }</div>
+                  {/* Cancellation + Times footer */}
+                  <div className="mt-5 pt-5 border-t border-gray-100 space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Calendar className="w-3.5 h-3.5 text-[#C45D3E]" />
+                        <span className="capitalize">{property.cancellationPolicy || 'Moderate'} cancellation</span>
                       </div>
-                      <div>
-                        <div className="font-medium text-gray-900 mb-1">Check-out</div>
-                        <div className="text-gray-600">{property.checkOutTime }</div>
+                      <span className="text-[#C45D3E] underline cursor-pointer text-xs font-medium">Learn more</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-[#FAFAF8] rounded-xl p-3 border border-gray-100">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <Clock className="w-3 h-3 text-[#C45D3E]" />
+                          <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Check-in</p>
+                        </div>
+                        <p className="text-sm font-bold text-[#1A1A1A]">{property.checkInTime || "15:00"}</p>
+                      </div>
+                      <div className="bg-[#FAFAF8] rounded-xl p-3 border border-gray-100">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <Clock className="w-3 h-3 text-[#2D5F3A]" />
+                          <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Check-out</p>
+                        </div>
+                        <p className="text-sm font-bold text-[#1A1A1A]">{property.checkOutTime || "11:00"}</p>
                       </div>
                     </div>
                   </div>
@@ -3536,7 +3486,7 @@ const FloatingInsightBadge = ({ badge }) => {
                     </Button>
 
                     <Button
-                      className="flex-1 bg-indigo-600 text-white"
+                      className="flex-1 bg-[#C45D3E] text-white"
                       onClick={() => {
                         setShowTimePrompt(false);
                         setShowTimeSelector(true);
@@ -3584,7 +3534,7 @@ const FloatingInsightBadge = ({ badge }) => {
 
 
                   <Button
-                    className="w-full mt-4 bg-indigo-600 text-white"
+                    className="w-full mt-4 bg-[#C45D3E] text-white"
                     onClick={() => {
                       setTimeConfirmed(true);
                       setShowTimeSelector(false);
@@ -3660,31 +3610,33 @@ const FloatingInsightBadge = ({ badge }) => {
           </div>
 
           {/* Host Section */}
-          <div className="mb-20  bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 p-5 sm:p-8">
+          <div className="mb-20 bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-8">
             <HostCard host={property.host} />
           </div>
         </div>
 
 
         {showWishlistModal && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl p-6 w-[400px]">
-              <h3 className="text-lg font-semibold mb-3">Create new list</h3>
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+              <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">Create new list</h3>
               <input
-                className="border w-full p-2 rounded mb-4"
+                className="border border-gray-200 w-full p-3 rounded-xl mb-4 focus:ring-2 focus:ring-[#C45D3E]/30 focus:border-[#C45D3E] outline-none transition-all text-sm"
                 placeholder="My dream stays"
                 value={wishlistName}
                 onChange={e => setWishlistName(e.target.value)}
               />
-              <div className="flex justify-end gap-2">
-                <button onClick={() => setShowWishlistModal(false)
-                  // setIsFavorite(false)
-                }>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowWishlistModal(false)}
+                  className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                >
                   Cancel
                 </button>
                 <button
-                  className="bg-red-500 text-white px-4 py-2 rounded"
+                  className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95 disabled:opacity-50"
                   onClick={createWishlistAndSave}
+                  disabled={!wishlistName.trim()}
                 >
                   Create & Save
                 </button>

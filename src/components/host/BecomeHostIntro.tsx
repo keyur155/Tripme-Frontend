@@ -148,7 +148,7 @@ const BecomeHostIntro: React.FC<BecomeHostIntroProps> = ({ onGetStarted, onExit,
             onClick={handleGetStartedClick}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="bg-[#FF385C] hover:bg-[#E61E4D] text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors"
+            className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors"
           >
             Get started
           </motion.button>

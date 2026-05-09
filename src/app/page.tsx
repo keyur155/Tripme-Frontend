@@ -127,7 +127,7 @@ export default function Home() {
   };
 
   const categoryGradientPalette = [
-    'from-blue-600/90 via-indigo-700/80 to-purple-800/80',
+    'from-[#C45D3E]/90 via-[#A84B32]/80 to-[#1A1A1A]/80',
     'from-emerald-500/90 via-emerald-600/80 to-teal-800/80',
     'from-orange-500/90 via-rose-500/80 to-pink-700/80',
     'from-slate-700/90 via-slate-800/80 to-black/70',
@@ -1071,7 +1071,7 @@ export default function Home() {
       <p className="text-xs text-gray-500 uppercase font-bold tracking-tighter">Continue Booking</p>
       <h4 className="font-semibold text-gray-900 line-clamp-1">{propertyName}</h4>
     </div>
-    <button className="bg-[#4285F4] text-white p-2 rounded-full">
+    <button className="bg-[#C45D3E] text-white p-2 rounded-full">
       <ChevronRight size={20} />
     </button>
   </div>
@@ -1121,7 +1121,7 @@ export default function Home() {
         tabIndex={0}
         onClick={handleNavigation}
         onKeyDown={handleKeyPress}
-        className={`group relative ${cardHeight} w-full overflow-hidden rounded-xl bg-gray-900 text-left shadow-lg transition-all duration-300 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-400/50 hover:-translate-y-2 hover:shadow-2xl font-[var(--font-jost)]`}
+        className={`group relative ${cardHeight} w-full overflow-hidden rounded-xl bg-gray-900 text-left shadow-lg transition-all duration-300 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#C45D3E]/30 hover:-translate-y-2 hover:shadow-2xl font-[var(--font-jost)]`}
       >
         <img
           src={dest.image || "/placeholder.jpg"}
@@ -1140,7 +1140,7 @@ export default function Home() {
           <h3 className={`${titleSize} font-semibold text-white drop-shadow-md font-[var(--font-jost)]`}>{dest.name}</h3>
           <p className={`${descriptionSize} text-white/85 leading-relaxed line-clamp-2 font-[var(--font-jost)]`}> {dest.description || `Discover unforgettable getaways in ${dest.name}.`} </p>
           <div className="flex items-center gap-3">
-            <span className={`inline-flex items-center justify-center rounded-full bg-white/90 text-gray-900 font-semibold shadow ${buttonSize} transition-colors group-hover:bg-blue-600 group-hover:text-white font-[var(--font-jost)]`}>
+            <span className={`inline-flex items-center justify-center rounded-full bg-white/90 text-gray-900 font-semibold shadow ${buttonSize} transition-colors group-hover:bg-[#C45D3E] group-hover:text-white font-[var(--font-jost)]`}>
               Discover
             </span>
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/25 text-white backdrop-blur transition-colors group-hover:bg-white/40">
@@ -1156,7 +1156,7 @@ export default function Home() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-6"></div>
+          <div className="w-16 h-16 border-4 border-[#F5E6D3] border-t-[#C45D3E] rounded-full animate-spin mx-auto mb-6"></div>
           <span className="text-xl text-gray-600">Loading amazing destinations...</span>
         </div>
       </div>
@@ -1195,14 +1195,13 @@ export default function Home() {
             <section className="px-4 pb-2">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h2 className="text-xl
-                   font-bold text-gray-900">Recently Viewed</h2>
+                  <h2 className="text-xl font-bold text-[#1A1A1A]">Recently Viewed</h2>
                   <p className="text-[11px] text-gray-500 mt-0.5">Pick up where you left off</p>
                 </div>
                 {recentSearches.length > 0 && (
                   <button
                     onClick={() => { clearRecentSearches(); setRecentSearches([]); }}
-                    className="text-xs font-semibold text-gray-400 underline"
+                    className="text-xs font-semibold text-[#C45D3E] underline"
                   >
                     Clear all
                   </button>
@@ -1285,7 +1284,7 @@ export default function Home() {
 
           <section className="md:hidden py-1 bg-white ">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-2 md:mb-8">Popular Destinations</h2>
+              <h2 className="text-xl font-bold text-[#1A1A1A] mb-2 md:mb-8">Stays by City</h2>
 
               {/* City-wise Horizontal Property Display */}
               <div className="space-y-4">
@@ -1294,21 +1293,18 @@ export default function Home() {
                     {/* City Header */}
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
-                    
+                        <div className="w-0.5 h-8 bg-[#C45D3E] rounded-full" />
                         <div>
-                          <h3 className="text-xs font-bold text-gray-900">{city.name}</h3>
+                          <h3 className="text-xs font-bold text-[#1A1A1A]">{city.name}</h3>
                           <p className="text-[10px] text-gray-600">{city.description}</p>
                           <p className="text-[8px] text-gray-500">{city.propertyCount} stays</p>
                         </div>
                       </div>
                       <button
                         onClick={() => router.push(`/search?city=${encodeURIComponent(city.name)}`)}
-                        className="flex items-center gap-2 text-gray-700 hover:text-black font-medium transition-colors"
+                        className="flex items-center gap-1 text-xs font-semibold text-[#C45D3E] hover:text-[#A84B32] transition-colors"
                       >
-                        {/* View all */}
-                        <div className="flex items-center gap-1 text-sm font-semibold text-[#174EA6] hover:text-[#6366f1] transition-colors">
-                   <ArrowRight className="w-4 h-4" />
-                </div>
+                        <ArrowRight className="w-3.5 h-3.5" />
                       </button>
                     </div>
 
@@ -1397,7 +1393,7 @@ export default function Home() {
             <section className="px-4 mt-10 md:hidden">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-sm font-medium text-blue-600">Explore India</p>
+                  <p className="text-sm font-medium text-[#C45D3E]">Explore India</p>
                   <h2 className="text-xl font-bold text-gray-900">Popular Destinations</h2>
                 </div>
               </div>
@@ -1424,12 +1420,12 @@ export default function Home() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Popular Destinations</h2>
+                  <h2 className="text-2xl font-bold text-[#1A1A1A]">Popular Destinations</h2>
                   <p className="text-xs text-gray-500 mt-1">These popular destinations have a lot to offer</p>
                 </div>
                 <button
                   onClick={() => router.push('/search')}
-                  className="hidden sm:inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-600 transition-colors hover:bg-blue-100"
+                  className="hidden sm:inline-flex items-center gap-2 rounded-full bg-[#F5E6D3] px-4 py-2 text-xs font-semibold text-[#C45D3E] transition-colors hover:bg-[#EFDCC8]"
                 >
                   View all destinations
                   <ArrowRight className="h-4 w-4" />
@@ -1462,7 +1458,7 @@ export default function Home() {
                   </div>
                   <button
                     onClick={() => router.push('/services')}
-                    className="hidden sm:inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-600 transition-colors hover:bg-blue-100"
+                    className="hidden sm:inline-flex items-center gap-2 rounded-full bg-[#FDF8F3] px-4 py-2 text-xs font-semibold text-[#C45D3E] transition-colors hover:bg-[#F5E6D3]"
                   >
                     View all
                     <ArrowRight className="h-4 w-4" />
@@ -1497,15 +1493,11 @@ export default function Home() {
           <section className="px-4 mt-10 md:hidden">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-sm font-medium" style={{ color: '#e85d75' }}>Weekend offers</p>
-                <h2 className="text-xl font-bold text-gray-900">Deals for the weekend</h2>
+                <p className="text-sm font-medium text-[#C45D3E]">Weekend offers</p>
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Deals for the weekend</h2>
               </div>
-              <button onClick={() => router.push('/search')} className="text-xs text-gray-400 font-semibold underline">
-                <div className="flex items-center gap-1 text-sm font-semibold text-[#174EA6] hover:text-[#6366f1] transition-colors">
-                   <div className="flex items-center gap-1 text-sm font-semibold text-[#174EA6] hover:text-[#6366f1] transition-colors">
-                   <ArrowRight className="w-4 h-4" />
-                </div>
-                </div>
+              <button onClick={() => router.push('/search')} className="flex items-center gap-1 text-xs font-semibold text-[#C45D3E] hover:text-[#A84B32] transition-colors">
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
             <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
@@ -1544,13 +1536,11 @@ export default function Home() {
           <section className="px-4 mt-10 mb-10 md:hidden">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-sm font-medium" style={{ color: '#7c3aed' }}>Handpicked for you</p>
-                <h2 className="text-xl font-bold text-gray-900">Featured stays</h2>
+                <p className="text-sm font-medium text-[#B8860B]">Handpicked for you</p>
+                <h2 className="text-xl font-bold text-[#1A1A1A]">Featured stays</h2>
               </div>
-              <button onClick={() => router.push('/search')} className="text-xs text-gray-400 font-semibold underline">
-                <div className="flex items-center gap-1 text-sm font-semibold text-[#174EA6] hover:text-[#6366f1] transition-colors">
-                   <ArrowRight className="w-4 h-4" />
-                </div>
+              <button onClick={() => router.push('/search')} className="flex items-center gap-1 text-xs font-semibold text-[#C45D3E] hover:text-[#A84B32] transition-colors">
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
             <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
@@ -1591,10 +1581,10 @@ export default function Home() {
           
 
            <section className="md:hidden px-4 py-12">
-          <div className="bg-[#f5f7ff] rounded-xl p-6 shadow-sm space-y-8">
+          <div className="bg-[#FDF8F3] rounded-xl p-6 shadow-sm space-y-8">
             <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-500">About TripMe</p>
-              <h2 className="text-xl font-bold text-gray-900">Why Choose TripMe</h2>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#C45D3E]">About TripMe</p>
+              <h2 className="text-xl font-bold text-[#1A1A1A]">Why Choose TripMe</h2>
               <p className="text-sm text-gray-600 leading-relaxed">
                 From serene mountain hideaways to lively coastal escapes, we curate experiences that feel as effortless as they are unforgettable.
               </p>
@@ -1604,7 +1594,7 @@ export default function Home() {
               {aboutHighlights.map(({ icon: Icon, title, description }) => (
                 <div key={title} className="flex items-start gap-4">
                   <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm">
-                    <Icon className="h-6 w-6 text-blue-600" />
+                    <Icon className="h-6 w-6 text-[#C45D3E]" />
                   </div>
                   <div className="space-y-1">
                     <h3 className="text-base font-semibold text-gray-900">{title}</h3>
@@ -1620,7 +1610,7 @@ export default function Home() {
                 alt="Travelers enjoying a campfire"
                 className="h-full w-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/10 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-[#1A1A1A]/10 via-transparent to-transparent" />
             </div>
           </div>
         </section>
@@ -1701,58 +1691,75 @@ export default function Home() {
   </div>
 )}
         <div className="hidden md:block">
-          {/* Hero Section - Two Column Layout Inspired by Image */}
-          <section className="relative min-h-screen flex items-center pt-24 pb-8">
+          {/* Hero Section */}
+          <section className="relative pt-28 pb-20 bg-gradient-to-b from-[#FDF8F3] to-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-start lg:items-center">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-20 items-center">
 
-                {/* Left Column - Main Content */}
-                <div className="space-y-6 lg:space-y-8">
-                  {/* Brand Tagline */}
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <Plane className="w-6 h-6 text-blue-600" />
-                      <span className="text-blue-600 font-semibold text-lg font-heading">TripMe Travel Gems —</span>
-                    </div>
+                {/* Left Column */}
+                <div className="space-y-8">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#F5E6D3] rounded-full">
+                    <Compass className="w-4 h-4 text-[#C45D3E]" />
+                    <span className="text-[#C45D3E] font-semibold text-sm tracking-wide">Explore India with TripMe</span>
                   </div>
 
-                  {/* Main Headline */}
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 leading-tight font-display">
-                    Discover the Best Destinations Across India
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-[4.5rem] font-bold text-[#1A1A1A] leading-[1.1] font-display">
+                    Your Next <span className="text-[#C45D3E]">Adventure</span> Awaits Across India
                   </h1>
 
-                  {/* Description */}
-                  <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 leading-relaxed max-w-xl font-body">
-                    Embark on the adventure of a lifetime, where every step you take unveils a new story, and every destination leaves a lasting impression.
+                  <p className="text-lg lg:text-xl text-gray-600 leading-relaxed max-w-lg font-body">
+                    From heritage havelis in Rajasthan to serene backwaters in Kerala — discover handpicked stays and experiences for the modern traveler.
                   </p>
 
-                  {/* Trust Indicators */}
-                  <div className="flex flex-wrap items-center gap-4 lg:gap-6 pt-2">
+                  <div className="flex flex-wrap items-center gap-5 pt-2">
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <span className="text-sm lg:text-base text-gray-600 font-medium">100% Verified</span>
+                      <CheckCircle className="w-5 h-5 text-[#2D5F3A]" />
+                      <span className="text-sm text-gray-700 font-medium">Verified Stays</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Shield className="w-5 h-5 text-blue-600" />
-                      <span className="text-sm lg:text-base text-gray-600 font-medium">Secure Booking</span>
+                      <Shield className="w-5 h-5 text-[#2D5F3A]" />
+                      <span className="text-sm text-gray-700 font-medium">Secure Booking</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Award className="w-5 h-5 text-yellow-600" />
-                      <span className="text-sm lg:text-base text-gray-600 font-medium">Best Prices</span>
+                      <Award className="w-5 h-5 text-[#B8860B]" />
+                      <span className="text-sm text-gray-700 font-medium">Best Prices</span>
                     </div>
                   </div>
 
-
+                  <div className="flex items-center gap-4 pt-4">
+                    <button
+                      onClick={() => router.push('/search')}
+                      className="px-8 py-4 bg-[#C45D3E] text-white font-semibold rounded-xl hover:bg-[#A84B32] transition-colors shadow-lg shadow-[#C45D3E]/20"
+                    >
+                      Start Exploring
+                    </button>
+                    <button
+                      onClick={() => router.push(user?.role === 'host' ? '/host/dashboard' : '/become-host')}
+                      className="px-8 py-4 border-2 border-[#1A1A1A] text-[#1A1A1A] font-semibold rounded-xl hover:bg-[#1A1A1A] hover:text-white transition-colors"
+                    >
+                      {user?.role === 'host' ? 'Host Dashboard' : 'Become a Host'}
+                    </button>
+                  </div>
                 </div>
 
-                {/* Right Column - Direct Image */}
-                <div className="relative flex items-center justify-center lg:justify-end h-[450px] sm:h-[550px] lg:h-[650px] xl:h-[750px] pt-8 lg:pt-12">
-                  <img
-                    src="/finalImage.png"
-                    alt="Indian Destinations"
-                    className="max-h-full w-auto max-w-full cursor-pointer hover:scale-105 transition-transform duration-500"
-                    onClick={() => router.push('/search')}
-                  />
+                {/* Right Column - Image Grid */}
+                <div className="relative grid grid-cols-2 gap-4 h-[550px] lg:h-[600px]">
+                  <div className="space-y-4">
+                    <div className="rounded-3xl overflow-hidden h-[55%] shadow-lg">
+                      <img src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=600&q=80" alt="Taj Mahal" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-pointer" onClick={() => router.push('/search?city=Agra')} />
+                    </div>
+                    <div className="rounded-3xl overflow-hidden h-[42%] shadow-lg">
+                      <img src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=600&q=80" alt="Kerala Backwaters" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-pointer" onClick={() => router.push('/search?city=Kerala')} />
+                    </div>
+                  </div>
+                  <div className="space-y-4 pt-8">
+                    <div className="rounded-3xl overflow-hidden h-[42%] shadow-lg">
+                      <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80" alt="Himalayan Mountains" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-pointer" onClick={() => router.push('/search?city=Manali')} />
+                    </div>
+                    <div className="rounded-3xl overflow-hidden h-[55%] shadow-lg">
+                      <img src="https://images.unsplash.com/photo-1477587458883-47145ed94245?w=600&q=80" alt="Rajasthan Desert" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-pointer" onClick={() => router.push('/search?city=Jaisalmer')} />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1766,12 +1773,12 @@ export default function Home() {
                 {/* Header */}
                 <div className="flex items-end justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Recently Viewed</h2>
+                    <h2 className="text-2xl font-bold text-[#1A1A1A]">Recently Viewed</h2>
                     <p className="text-sm text-gray-500 mt-1">Pick up where you left off</p>
                   </div>
                   <button
                     onClick={() => { clearRecentSearches(); setRecentSearches([]); }}
-                    className="text-sm text-gray-400 hover:text-gray-700 underline transition-colors"
+                    className="text-sm text-[#C45D3E] hover:text-[#A84B32] underline transition-colors"
                   >
                     Clear all
                   </button>
@@ -1840,9 +1847,9 @@ export default function Home() {
           )}
 
           {/* Dynamic Cities Section */}
-          <section className="py-5 bg-white">
+          <section className="hidden md:block py-5 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-4xl font-bold text-gray-900 mb-8">Popular Destinations</h2>
+              <h2 className="text-4xl font-bold text-[#1A1A1A] mb-8">Stays by City</h2>
 
               {/* City-wise Horizontal Property Display */}
               <div className="space-y-12">
@@ -1851,29 +1858,19 @@ export default function Home() {
                     {/* City Header */}
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        {/* <div className="w-16 h-16 rounded-lg overflow-hidden">
-                <img
-                  src={city.image}
-                  alt={city.name}
-                  className="w-full h-full object-cover"
-                />
-              </div> */}
+                        <div className="w-1 h-10 bg-[#C45D3E] rounded-full" />
                         <div>
-                          <h3 className="text-2xl font-bold text-gray-900">{city.name}</h3>
+                          <h3 className="text-2xl font-bold text-[#1A1A1A]">{city.name}</h3>
                           <p className="text-gray-600">{city.description}</p>
                           <p className="text-sm text-gray-500">{city.propertyCount} stays</p>
                         </div>
                       </div>
                       <button
                         onClick={() => router.push(`/search?city=${encodeURIComponent(city.name)}`)}
-                        className="flex items-center gap-2 text-gray-700 hover:text-black font-medium text-[#174EA6] hover:text-[#6366f1] transition-colors"
+                        className="flex items-center gap-1 text-sm font-semibold text-[#C45D3E] hover:text-[#A84B32] transition-colors"
                       >
-                        {/* View all */}
-                       <div className="flex items-center gap-1 text-sm font-semibold text-[#174EA6] hover:text-[#6366f1] transition-colors">
-                  <div className="flex items-center gap-1 text-sm font-semibold text-[#174EA6] hover:text-[#6366f1] transition-colors">
-                   <ArrowRight className="w-4 h-4" />
-                </div>
-                </div>
+                        View all
+                        <ArrowRight className="w-4 h-4" />
                       </button>
                     </div>
 
@@ -1913,7 +1910,7 @@ export default function Home() {
           <section className="py-5">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="mb-6">
-                <h2 className="text-4xl font-bold text-gray-900 mb-8">Active Coupons</h2>
+                <h2 className="text-4xl font-bold text-[#1A1A1A] mb-8">Active Coupons</h2>
                 <p className="text-start text-gray-600 font-body">
                   Check out our latest active coupons and discounts
                 </p>
@@ -1924,7 +1921,7 @@ export default function Home() {
                 {couponLoading ? (
                   <div className="h-80 bg-white rounded-2xl shadow-lg flex items-center justify-center">
                     <div className="text-center">
-                      <div className="w-10 h-10 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-3"></div>
+                      <div className="w-10 h-10 border-4 border-[#F5E6D3] border-t-[#C45D3E] rounded-full animate-spin mx-auto mb-3"></div>
                       <p className="text-gray-600">Loading coupons...</p>
                     </div>
                   </div>
@@ -1961,7 +1958,7 @@ export default function Home() {
 
   {/* Top Gradient Accent */}
   <div className="absolute top-0 left-0 w-full h-1.5 
-  bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+  bg-gradient-to-r from-[#C45D3E] via-[#B8860B] to-[#2D5F3A]" />
 
   {/* Ticket Cut Circles */}
   <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-gray-50 rounded-full" />
@@ -2016,7 +2013,7 @@ export default function Home() {
 
       <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
+          className="h-full bg-gradient-to-r from-[#C45D3E] to-[#B8860B] transition-all duration-500"
           style={{
             width: `${Math.min(
               ((coupon.usedCount || 0) / coupon.usageLimit) * 100,
@@ -2059,7 +2056,7 @@ export default function Home() {
                             key={index}
                             onClick={() => setCurrentCouponIndex(index * 3)}
                             className={`w-2 h-2 rounded-full transition-all duration-300 ${Math.floor(currentCouponIndex / 3) === index
-                              ? 'bg-purple-600 w-8'
+                              ? 'bg-[#C45D3E] w-8'
                               : 'bg-gray-300 hover:bg-gray-400'
                               }`}
                           />
@@ -2070,8 +2067,8 @@ export default function Home() {
                 ) : (
                   <div className="h-80 bg-white rounded-2xl shadow-lg flex items-center justify-center">
                     <div className="text-center">
-                      <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Tag className="w-8 h-8 text-purple-600" />
+                      <div className="w-16 h-16 bg-[#F5E6D3] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Tag className="w-8 h-8 text-[#C45D3E]" />
                       </div>
                       <h3 className="text-xl font-bold text-gray-900 mb-2">No Active Coupons</h3>
                       <p className="text-gray-600">Check back soon for exciting offers and discounts!</p>
@@ -2083,13 +2080,13 @@ export default function Home() {
           </section>
 
 
-           <section className="py-24 bg-[#f5f7ff]">
+           <section className="py-24 bg-[#FDF8F3]">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 xl:gap-20 items-center">
                 <div className="space-y-6">
                   <div className="space-y-3">
-                    <p className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-500">About TripMe</p>
-                    <h2 className="text-4xl font-bold text-gray-900">Why Travelers Trust Us</h2>
+                    <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[#C45D3E]">About TripMe</p>
+                    <h2 className="text-4xl font-bold text-[#1A1A1A]">Why Travelers Trust Us</h2>
                     <p className="text-lg text-gray-600 leading-relaxed max-w-xl">
                       We are travel enthusiasts committed to finding authentic stays, tailored experiences, and effortless journeys for every kind of explorer.
                     </p>
@@ -2097,9 +2094,9 @@ export default function Home() {
 
                   <div className="space-y-5">
                     {aboutHighlights.map(({ icon: Icon, title, description }) => (
-                      <div key={title} className="flex items-start gap-4 p-5 bg-white rounded-2xl shadow-sm">
-                        <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-blue-50">
-                          <Icon className="h-6 w-6 text-blue-600" />
+                      <div key={title} className="flex items-start gap-4 p-5 bg-white rounded-2xl shadow-sm border border-gray-100">
+                        <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-[#F5E6D3]">
+                          <Icon className="h-6 w-6 text-[#C45D3E]" />
                         </div>
                         <div className="space-y-1">
                           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
@@ -2117,7 +2114,7 @@ export default function Home() {
                       alt="Campfire experience under the night sky"
                       className="w-full h-full object-cover max-h-[540px]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/10 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[#1A1A1A]/10 via-transparent to-transparent" />
                   </div>
                 </div>
               </div>
@@ -2129,12 +2126,12 @@ export default function Home() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-4xl font-bold text-gray-900">Popular Destinations</h2>
+                  <h2 className="text-4xl font-bold text-[#1A1A1A]">Popular Destinations</h2>
                   <p className="text-base text-gray-500 mt-2">These sought-after cities combine unforgettable stays with local experiences.</p>
                 </div>
                 <button
                   onClick={() => router.push('/search')}
-                  className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-5 py-3 text-sm font-semibold text-blue-600 transition-colors hover:bg-blue-100"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#F5E6D3] px-5 py-3 text-sm font-semibold text-[#C45D3E] transition-colors hover:bg-[#EFDCC8]"
                 >
                   View all destinations
                   <ArrowRight className="h-5 w-5" />
@@ -2167,7 +2164,7 @@ export default function Home() {
                   </div>
                   <button
                     onClick={() => router.push('/services')}
-                    className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-5 py-3 text-sm font-semibold text-blue-600 transition-colors hover:bg-blue-100"
+                    className="inline-flex items-center gap-2 rounded-full bg-[#FDF8F3] px-5 py-3 text-sm font-semibold text-[#C45D3E] transition-colors hover:bg-[#F5E6D3]"
                   >
                     Explore all services
                     <ArrowRight className="h-5 w-5" />
@@ -2198,23 +2195,20 @@ export default function Home() {
           )} */}
 
           {/* Weekend Offers Section */}
-          <section className="py-5 bg-gray-50">
+          <section className="py-5 bg-[#FAFAF8]">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               {/* Header Section */}
               <div className="flex items-end justify-between mb-10">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full" style={{ background: 'linear-gradient(135deg, #e85d75 0%, #f5a623 100%)', color: '#fff' }}>🏖 Weekend Offers</span>
+                    <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-[#F5E6D3] text-[#C45D3E]">Weekend Offers</span>
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900">Deals For The Weekend</h2>
+                  <h2 className="text-3xl font-bold text-[#1A1A1A]">Deals For The Weekend</h2>
                   <p className="text-gray-500 mt-1 text-sm">Limited-time stays for your next spontaneous escape</p>
                 </div>
-                <button onClick={() => router.push('/search')} className="hidden sm:flex items-center gap-1 text-sm font-semibold text-[#174EA6] hover:text-[#6366f1] transition-colors">
-                  <div className="flex items-center gap-1 text-sm font-semibold text-[#174EA6] hover:text-[#6366f1] transition-colors">
-                   <div className="flex items-center gap-1 text-sm font-semibold text-[#174EA6] hover:text-[#6366f1] transition-colors">
-                   <ArrowRight className="w-4 h-4" />
-                </div>
-                </div>
+                <button onClick={() => router.push('/search')} className="hidden sm:flex items-center gap-1 text-sm font-semibold text-[#C45D3E] hover:text-[#A84B32] transition-colors">
+                  View all
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
 
@@ -2275,17 +2269,14 @@ export default function Home() {
               <div className="flex items-end justify-between mb-10">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 60%, #b45309 100%)', color: '#fff' }}>⭐ Featured</span>
+                    <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-[#F5E6D3] text-[#B8860B]">Featured</span>
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900">Featured Stays</h2>
+                  <h2 className="text-3xl font-bold text-[#1A1A1A]">Featured Stays</h2>
                   <p className="text-gray-500 mt-1 text-sm">Handpicked accommodations for an unforgettable experience</p>
                 </div>
-                <button onClick={() => router.push('/search')} className="hidden sm:flex items-center gap-1 text-sm font-semibold text-[#174EA6] hover:text-[#6366f1] transition-colors">
-                   <div className="flex items-center gap-1 text-sm font-semibold text-[#174EA6] hover:text-[#6366f1] transition-colors">
-                   <div className="flex items-center gap-1 text-sm font-semibold text-[#174EA6] hover:text-[#6366f1] transition-colors">
-                   <ArrowRight className="w-4 h-4" />
-                </div>
-                </div>
+                <button onClick={() => router.push('/search')} className="hidden sm:flex items-center gap-1 text-sm font-semibold text-[#C45D3E] hover:text-[#A84B32] transition-colors">
+                  View all
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
 
@@ -2321,8 +2312,8 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Building2 size={32} className="text-purple-600" />
+                  <div className="w-16 h-16 bg-[#F5E6D3] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Building2 size={32} className="text-[#C45D3E]" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">No featured stays available</h3>
                   <p className="text-gray-600">Check back soon for amazing accommodations!</p>
@@ -2332,7 +2323,7 @@ export default function Home() {
           </section>
 
           {/* CTA Section */}
-          <section className="py-5 bg-gradient-to-br from-gray-900 to-gray-800">
+          <section className="py-24 bg-gradient-to-br from-[#1A1A1A] to-[#2D5F3A]">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <h2 className="text-4xl font-bold text-white mb-6">
                 Ready to Start Your Journey?
@@ -2342,26 +2333,22 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
-                  className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-8 py-4 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-200"
                   onClick={() => router.push('/search')}
                 >
                   Start Exploring
-                  <div className="flex items-center gap-1 text-sm font-semibold text-[#174EA6] hover:text-[#6366f1] transition-colors">
-                  <div className="flex items-center gap-1 text-sm font-semibold text-[#174EA6] hover:text-[#6366f1] transition-colors">
-                   <ArrowRight className="w-4 h-4" />
-                </div>
-                </div>
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
                 {user?.role === 'host' ? (
                   <Button
-                    className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20 px-8 py-4 rounded-xl font-medium transition-all duration-200"
+                    className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-[#F5E6D3]/30 px-8 py-4 rounded-xl font-medium transition-all duration-200"
                     onClick={() => router.push('/host/dashboard')}
                   >
                     Host Dashboard
                   </Button>
                 ) : (
                   <Button
-                    className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20 px-8 py-4 rounded-xl font-medium transition-all duration-200"
+                    className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-[#F5E6D3]/30 px-8 py-4 rounded-xl font-medium transition-all duration-200"
                     onClick={() => router.push('/become-host')}
                   >
                     Become a Host
@@ -2389,7 +2376,7 @@ export default function Home() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                 <input
-                  className="border border-gray-300 w-full p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                  className="border border-gray-300 w-full p-3 rounded-xl focus:ring-2 focus:ring-[#C45D3E]/30 focus:border-[#C45D3E] outline-none transition-all"
                   placeholder="e.g. Summer Vacation, My Dream Stays"
                   value={wishlistName}
                   onChange={e => setWishlistName(e.target.value)}
@@ -2406,7 +2393,7 @@ export default function Home() {
                   Cancel
                 </button>
                 <button
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-7 py-2.5 rounded-xl font-semibold transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 shadow-lg shadow-indigo-200"
+                  className="bg-[#C45D3E] hover:bg-[#A84B32] text-white px-7 py-2.5 rounded-xl font-semibold transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 shadow-lg shadow-[#C45D3E]/20"
                   onClick={createWishlistAndSave}
                   disabled={!wishlistName.trim() || wishlistName.length > 50}
                 >

@@ -160,13 +160,23 @@ const HostServicesContent: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 pt-24">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-6"></div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Loading your services</h2>
-            <p className="text-gray-600">Gathering your service information...</p>
-          </div>
+      <div className="max-w-6xl mx-auto px-6 py-10">
+        <div className="mb-8">
+          <div className="h-8 w-44 bg-gray-200 rounded-lg animate-pulse mb-2" />
+          <div className="h-5 w-60 bg-gray-100 rounded-lg animate-pulse" />
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white border border-gray-200 rounded-2xl p-5">
+              <div className="h-4 w-16 bg-gray-100 rounded animate-pulse mb-3" />
+              <div className="h-7 w-10 bg-gray-200 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="bg-white border border-gray-200 rounded-2xl h-64 animate-pulse" />
+          ))}
         </div>
       </div>
     );
@@ -174,62 +184,44 @@ const HostServicesContent: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 pt-24">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="bg-white/80 backdrop-blur-sm border border-red-200 rounded-2xl p-8 max-w-md mx-auto shadow-xl">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <AlertCircle className="w-8 h-8 text-red-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">Something went wrong</h3>
-              <p className="text-gray-600 mb-6">{error}</p>
-              <Button onClick={fetchServices} className="w-full">
-                Try Again
-              </Button>
-            </div>
+      <div className="max-w-6xl mx-auto px-6 py-10">
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-5">
+            <AlertCircle className="w-8 h-8 text-red-500" />
           </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Something went wrong</h3>
+          <p className="text-gray-500 mb-6 text-center max-w-sm">{error}</p>
+          <button onClick={fetchServices} className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-colors">
+            Try Again
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 pt-6 md:pt-8 overflow-x-hidden">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-6 py-10 overflow-x-hidden">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <Briefcase className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent font-display">
-                    My Services
-                  </h1>
-                  <p className="text-gray-600 font-body text-sm md:text-base">Manage your services and experiences</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <Button 
-                onClick={() => router.push('/host/dashboard')}
-                variant="outline"
-                className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border-purple-200 hover:bg-white hover:shadow-lg transition-all duration-300 hover:scale-105 text-sm md:text-base"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Dashboard
-              </Button>
-              <Button 
-                onClick={() => router.push('/host/service/new')}
-                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105 border-0 shadow-lg text-sm md:text-base"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add New Service
-              </Button>
-            </div>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">My Services</h1>
+            <p className="text-gray-500 mt-1">Manage your services and experiences</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.push('/host/dashboard')}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Dashboard
+            </button>
+            <button
+              onClick={() => router.push('/host/service/new')}
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Add Service
+            </button>
           </div>
         </div>
 
@@ -242,7 +234,7 @@ const HostServicesContent: React.FC = () => {
           //         <p className="text-sm font-medium text-gray-600">Total Services</p>
           //         <p className="text-3xl font-bold text-gray-900">{services.length}</p>
           //       </div>
-          //       <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
+          //       <div className="w-16 h-16 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
           //         <Briefcase className="w-8 h-8 text-white" />
           //       </div>
           //     </div>
@@ -277,76 +269,64 @@ const HostServicesContent: React.FC = () => {
           //     <div className="flex items-center justify-between">
           //       <div className="space-y-2">
           //         <p className="text-sm font-medium text-gray-600">Active Services</p>
-          //         <p className="text-3xl font-bold text-indigo-600">
+          //         <p className="text-3xl font-bold text-[#C45D3E]">
           //           {services.filter(s => s.status === 'published').length}
           //         </p>
           //       </div>
-          //       <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
+          //       <div className="w-16 h-16 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
           //         <Users className="w-8 h-8 text-white" />
           //       </div>
           //     </div>
           //   </Card>
           // </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-8">
-  {/* Total Services */}
-  <Card className="p-4 md:p-6 bg-white/80 backdrop-blur-sm border-0 shadow-lg rounded-2xl hover:shadow-2xl transition-all duration-500 hover:scale-105 flex flex-col items-center text-center justify-center">
-    <div className="w-12 h-12 md:w-16 md:h-16 mb-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 shrink-0">
-      <Briefcase className="w-6 h-6 md:w-8 md:h-8 text-white" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+  <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-sm font-medium text-gray-500">Total</span>
+      <div className="w-9 h-9 bg-[#FDF8F3] rounded-xl flex items-center justify-center">
+        <Briefcase className="w-4 h-4 text-[#C45D3E]" />
+      </div>
     </div>
-    <div className="space-y-1">
-      <p className="text-[10px] md:text-sm font-semibold text-gray-500 uppercase tracking-wider">Total Services</p>
-      <p className="text-2xl md:text-3xl font-bold text-gray-900 leading-none">
-        {services.length}
-      </p>
-    </div>
-  </Card>
+    <div className="text-2xl font-bold text-gray-900">{services.length}</div>
+  </div>
 
-  {/* Published */}
-  <Card className="p-4 md:p-6 bg-white/80 backdrop-blur-sm border-0 shadow-lg rounded-2xl hover:shadow-2xl transition-all duration-500 hover:scale-105 flex flex-col items-center text-center justify-center">
-    <div className="w-12 h-12 md:w-16 md:h-16 mb-3 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 shrink-0">
-      <CheckCircle className="w-6 h-6 md:w-8 md:h-8 text-white" />
+  <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-sm font-medium text-gray-500">Published</span>
+      <div className="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center">
+        <CheckCircle className="w-4 h-4 text-green-600" />
+      </div>
     </div>
-    <div className="space-y-1">
-      <p className="text-[10px] md:text-sm font-semibold text-gray-500 uppercase tracking-wider">Published</p>
-      <p className="text-2xl md:text-3xl font-bold text-emerald-600 leading-none">
-        {services.filter(s => s.status === 'published').length}
-      </p>
-    </div>
-  </Card>
+    <div className="text-2xl font-bold text-green-600">{services.filter(s => s.status === 'published').length}</div>
+  </div>
 
-  {/* Drafts */}
-  <Card className="p-4 md:p-6 bg-white/80 backdrop-blur-sm border-0 shadow-lg rounded-2xl hover:shadow-2xl transition-all duration-500 hover:scale-105 flex flex-col items-center text-center justify-center">
-    <div className="w-12 h-12 md:w-16 md:h-16 mb-3 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 shrink-0">
-      <Clock className="w-6 h-6 md:w-8 md:h-8 text-white" />
+  <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-sm font-medium text-gray-500">Drafts</span>
+      <div className="w-9 h-9 bg-amber-50 rounded-xl flex items-center justify-center">
+        <Clock className="w-4 h-4 text-amber-600" />
+      </div>
     </div>
-    <div className="space-y-1">
-      <p className="text-[10px] md:text-sm font-semibold text-gray-500 uppercase tracking-wider">Drafts</p>
-      <p className="text-2xl md:text-3xl font-bold text-amber-600 leading-none">
-        {services.filter(s => s.status === 'draft').length}
-      </p>
-    </div>
-  </Card>
+    <div className="text-2xl font-bold text-amber-600">{services.filter(s => s.status === 'draft').length}</div>
+  </div>
 
-  {/* Active Services */}
-  <Card className="p-4 md:p-6 bg-white/80 backdrop-blur-sm border-0 shadow-lg rounded-2xl hover:shadow-2xl transition-all duration-500 hover:scale-105 flex flex-col items-center text-center justify-center">
-    <div className="w-12 h-12 md:w-16 md:h-16 mb-3 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 shrink-0">
-      <Users className="w-6 h-6 md:w-8 md:h-8 text-white" />
+  <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-sm font-medium text-gray-500">Active</span>
+      <div className="w-9 h-9 bg-[#FDF8F3] rounded-xl flex items-center justify-center">
+        <Users className="w-4 h-4 text-[#C45D3E]" />
+      </div>
     </div>
-    <div className="space-y-1">
-      <p className="text-[10px] md:text-sm font-semibold text-gray-500 uppercase tracking-wider">Active</p>
-      <p className="text-2xl md:text-3xl font-bold text-indigo-600 leading-none">
-        {services.filter(s => s.status === 'published').length}
-      </p>
-    </div>
-  </Card>
+    <div className="text-2xl font-bold text-gray-900">{services.filter(s => s.status === 'published').length}</div>
+  </div>
 </div>
         )}
 
         {/* Filters and Search */}
         {/* <div className="mb-8">
-          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-purple-200/50 shadow-xl">
+          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-[#F5E6D3]/50 shadow-xl">
             <h6 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <div className="w-5 h-5 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
+              <div className="w-5 h-5 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] rounded-lg flex items-center justify-center">
                 <Search className="w-3 h-3 text-white" />
               </div>
               Search & Filter
@@ -358,14 +338,14 @@ const HostServicesContent: React.FC = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   leftIcon={<Search className="w-4 h-4 text-gray-400" />}
-                  className="bg-white/80 backdrop-blur-sm border-purple-200 focus:border-purple-400 focus:ring-purple-200"
+                  className="bg-white/80 backdrop-blur-sm border-[#F5E6D3] focus:border-[#C45D3E] focus:ring-[#C45D3E]/30"
                 />
               </div>
               <div className="flex gap-3">
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-4 py-2 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200 hover:shadow-md"
+                  className="px-4 py-2 border border-[#F5E6D3] rounded-xl focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200 hover:shadow-md"
                 >
                   <option value="all">All Status</option>
                   <option value="published">Published</option>
@@ -375,7 +355,7 @@ const HostServicesContent: React.FC = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="px-4 py-2 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200 hover:shadow-md"
+                  className="px-4 py-2 border border-[#F5E6D3] rounded-xl focus:ring-2 focus:ring-[#C45D3E] focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-700 font-medium transition-all duration-200 hover:shadow-md"
                 >
                   <option value="createdAt">Newest First</option>
                   <option value="updatedAt">Recently Updated</option>
@@ -387,80 +367,61 @@ const HostServicesContent: React.FC = () => {
           </div>
         </div> */}
         <div className="mb-8">
-  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 md:p-6 border border-purple-200/50 shadow-xl">
-    {/* Header - Made more compact on mobile */}
-    <h6 className="text-base md:text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-      <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center shadow-sm">
-        <Search className="w-3.5 h-3.5 text-white" />
+    <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex-1 relative">
+        <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+        <input
+          type="text"
+          placeholder="Search services..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-300 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-colors"
+        />
       </div>
-      Search & Filter
-    </h6>
-
-    <div className="flex flex-col gap-3 md:flex-row md:gap-4">
-      {/* Search Input - Full width on mobile */}
-      <div className="w-full md:flex-1">
-        <div className="relative group">
-          <Input
-            placeholder="Search services..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 h-12 bg-white/80 backdrop-blur-sm border-purple-100 rounded-xl focus:border-purple-400 focus:ring-purple-200 transition-all"
-          />
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-purple-500 transition-colors" />
-        </div>
-      </div>
-
-      {/* Filter Row - 2 Columns on mobile, Auto-width on desktop */}
-      <div className="grid grid-cols-2 md:flex gap-3">
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="w-full md:w-40 h-12 px-3 border border-purple-100 rounded-xl bg-white/80 backdrop-blur-sm text-sm font-semibold text-gray-700 focus:ring-2 focus:ring-purple-400 outline-none appearance-none hover:border-purple-300 transition-all cursor-pointer"
-          style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%236b7280\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1rem' }}
-        >
-          <option value="all">All Status</option>
-          <option value="published">Published</option>
-          <option value="draft">Draft</option>
-          <option value="suspended">Suspended</option>
-        </select>
-
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="w-full md:w-44 h-12 px-3 border border-purple-100 rounded-xl bg-white/80 backdrop-blur-sm text-sm font-semibold text-gray-700 focus:ring-2 focus:ring-purple-400 outline-none appearance-none hover:border-purple-300 transition-all cursor-pointer"
-          style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%236b7280\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1rem' }}
-        >
-          <option value="createdAt">Newest First</option>
-          <option value="updatedAt">Recently Updated</option>
-          <option value="title">Title A-Z</option>
-          <option value="price">Price High-Low</option>
-        </select>
-      </div>
+      <select
+        value={statusFilter}
+        onChange={(e) => setStatusFilter(e.target.value)}
+        className="px-4 py-2.5 bg-white border border-gray-300 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-colors"
+      >
+        <option value="all">All Status</option>
+        <option value="published">Published</option>
+        <option value="draft">Draft</option>
+        <option value="suspended">Suspended</option>
+      </select>
+      <select
+        value={sortBy}
+        onChange={(e) => setSortBy(e.target.value)}
+        className="px-4 py-2.5 bg-white border border-gray-300 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-colors"
+      >
+        <option value="createdAt">Newest First</option>
+        <option value="updatedAt">Recently Updated</option>
+        <option value="title">Title A-Z</option>
+        <option value="price">Price High-Low</option>
+      </select>
     </div>
-  </div>
 </div>
 
         {/* Services Grid */}
         {filteredServices.length === 0 ? (
-          <Card className="p-12 text-center bg-white/80 backdrop-blur-sm border-0 shadow-xl rounded-2xl hover:shadow-2xl transition-all duration-500">
-            <div className="w-20 h-20 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Briefcase className="w-10 h-10 text-purple-600" />
+          <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
+              <Briefcase className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">No services found</h3>
-            <p className="text-gray-600 mb-8 max-w-md mx-auto">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">No services found</h3>
+            <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">
               {services.length === 0 
                 ? "You haven't created any services yet. Start by adding your first service to begin earning."
                 : "No services match your current filters. Try adjusting your search criteria."
               }
             </p>
-            <Button 
+            <button
               onClick={() => router.push('/host/service/new')}
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105 border-0 shadow-lg"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
             >
-              <Plus className="w-5 h-5 mr-2" />
+              <Plus className="w-4 h-4" />
               Create Your First Service
-            </Button>
-          </Card>
+            </button>
+          </div>
         ) : (
           // <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           //   {filteredServices.map((service, index) => (
@@ -495,18 +456,18 @@ const HostServicesContent: React.FC = () => {
           //         </div>
 
           //         <div className="flex items-center text-sm text-gray-600 mb-3">
-          //           <MapPin className="w-4 h-4 mr-2 text-purple-600" />
+          //           <MapPin className="w-4 h-4 mr-2 text-[#C45D3E]" />
           //           <span>{service.location.city}, {service.location.state}</span>
           //         </div>
 
           //         <div className="flex items-center justify-between mb-4">
           //           <div className="flex items-center space-x-4 text-sm text-gray-600">
           //             <div className="flex items-center">
-          //               <Users className="w-4 h-4 mr-1 text-purple-600" />
+          //               <Users className="w-4 h-4 mr-1 text-[#C45D3E]" />
           //               <span>Max {service.groupSize?.max || 1}</span>
           //             </div>
           //             <div className="flex items-center">
-          //               <Clock className="w-4 h-4 mr-1 text-purple-600" />
+          //               <Clock className="w-4 h-4 mr-1 text-[#C45D3E]" />
           //               <span>{service.duration ? `${service.duration.value} ${service.duration.unit}` : 'Flexible'}</span>
           //             </div>
           //           </div>
@@ -528,11 +489,11 @@ const HostServicesContent: React.FC = () => {
           //         {/* Stats */}
           //         <div className="flex items-center justify-between text-sm text-gray-600 mb-6 p-3 bg-gray-50/50 rounded-xl">
           //           <span className="flex items-center">
-          //             <Calendar className="w-4 h-4 mr-1 text-purple-600" />
+          //             <Calendar className="w-4 h-4 mr-1 text-[#C45D3E]" />
           //             Created {formatDate(service.createdAt)}
           //           </span>
           //           <span className="flex items-center">
-          //             <Clock className="w-4 h-4 mr-1 text-purple-600" />
+          //             <Clock className="w-4 h-4 mr-1 text-[#C45D3E]" />
           //             {formatDate(service.updatedAt)}
           //           </span>
           //         </div>
@@ -542,7 +503,7 @@ const HostServicesContent: React.FC = () => {
           //           <Button
           //             variant="outline"
           //             size="sm"
-          //             className="w-full bg-white/80 backdrop-blur-sm border-purple-200 hover:bg-white hover:shadow-md text-gray-700 font-medium rounded-lg transition-all duration-200"
+          //             className="w-full bg-white/80 backdrop-blur-sm border-[#F5E6D3] hover:bg-white hover:shadow-md text-gray-700 font-medium rounded-lg transition-all duration-200"
           //             onClick={() => router.push(`/host/service/${service._id}/edit`)}
           //           >
           //             <Edit className="w-4 h-4 mr-2" />
@@ -551,7 +512,7 @@ const HostServicesContent: React.FC = () => {
           //           <Button
           //             variant="outline"
           //             size="sm"
-          //             className="w-full bg-white/80 backdrop-blur-sm border-purple-200 hover:bg-white hover:shadow-md text-gray-700 font-medium rounded-lg transition-all duration-200"
+          //             className="w-full bg-white/80 backdrop-blur-sm border-[#F5E6D3] hover:bg-white hover:shadow-md text-gray-700 font-medium rounded-lg transition-all duration-200"
           //             onClick={() => router.push(`/host/service/${service._id}/availability`)}
           //           >
           //             <Calendar className="w-4 h-4 mr-2" />
@@ -560,7 +521,7 @@ const HostServicesContent: React.FC = () => {
           //           <Button
           //             variant="outline"
           //             size="sm"
-          //             className="w-full bg-white/80 backdrop-blur-sm border-purple-200 hover:bg-white hover:shadow-md text-gray-700 font-medium rounded-lg transition-all duration-200"
+          //             className="w-full bg-white/80 backdrop-blur-sm border-[#F5E6D3] hover:bg-white hover:shadow-md text-gray-700 font-medium rounded-lg transition-all duration-200"
           //             onClick={() => router.push(`/services/${service._id}`)}
           //           >
           //             <Eye className="w-4 h-4 mr-2" />
@@ -595,11 +556,11 @@ const HostServicesContent: React.FC = () => {
           //     </Card>
           //   ))}
           // </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
   {filteredServices.map((service) => (
     <Card 
       key={service._id} 
-      className="overflow-hidden bg-white/90 backdrop-blur-sm border-0 shadow-lg rounded-3xl hover:shadow-2xl transition-all duration-300 group"
+      className="overflow-hidden bg-white border border-gray-200 rounded-2xl hover:shadow-md transition-shadow group"
     >
       {/* 1. Image Section - Responsive Aspect Ratio */}
       <div className="relative aspect-[16/10] sm:aspect-[4/3] overflow-hidden">
@@ -627,22 +588,22 @@ const HostServicesContent: React.FC = () => {
       {/* 2. Content Section */}
       <div className="p-4 md:p-6">
         <div className="mb-3">
-          <h3 className="font-bold text-gray-900 line-clamp-1 text-lg group-hover:text-purple-600 transition-colors">
+          <h3 className="font-bold text-gray-900 line-clamp-1 text-lg">
             {service.title}
           </h3>
           <div className="flex items-center text-xs text-gray-500 mt-1">
-            <MapPin className="w-3 h-3 mr-1 text-purple-500" />
+            <MapPin className="w-3 h-3 mr-1 text-gray-400" />
             <span className="truncate">{service.location.city}, {service.location.state}</span>
           </div>
         </div>
 
         {/* Compact Info Pills */}
         <div className="flex flex-wrap gap-2 mb-4">
-          <div className="flex items-center bg-purple-50 text-purple-700 px-2 py-1 rounded-lg text-[11px] font-semibold">
+          <div className="flex items-center bg-gray-100 text-gray-700 px-2.5 py-1 rounded-lg text-[11px] font-medium">
             <Users className="w-3 h-3 mr-1" />
             Max {service.groupSize?.max || 1}
           </div>
-          <div className="flex items-center bg-blue-50 text-blue-700 px-2 py-1 rounded-lg text-[11px] font-semibold">
+          <div className="flex items-center bg-gray-100 text-gray-700 px-2.5 py-1 rounded-lg text-[11px] font-medium">
             <Clock className="w-3 h-3 mr-1" />
             {service.duration ? `${service.duration.value} ${service.duration.unit}` : 'Flex'}
           </div>
@@ -654,7 +615,7 @@ const HostServicesContent: React.FC = () => {
           
           <Button
             onClick={() => router.push(`/host/service/${service._id}/availability`)}
-            className="w-full bg-green-700 hover:bg-slate-800 text-black font-bold rounded-xl h-11 shadow-md active:scale-95 transition-all"
+            className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-xl h-11 transition-colors"
           >
             <Calendar className="w-4 h-4 mr-2" />
             Manage Calendar
@@ -697,7 +658,6 @@ const HostServicesContent: React.FC = () => {
   ))}
 </div>
         )}
-      </div>
     </div>
   );
 };
