@@ -93,10 +93,9 @@ export default function AdminLoginPage() {
           text: 'Login successful! Redirecting to dashboard...'
         });
         
-        // Add a small delay to ensure state is properly set
+        // Use hard redirect to ensure middleware reads the fresh cookie
         setTimeout(() => {
-          console.log('🔄 Redirecting to admin dashboard...');
-          router.push('/admin/dashboard');
+          window.location.href = '/admin/dashboard';
         }, 1000);
       } else {
         setMessage({

@@ -112,6 +112,9 @@ export class AuthService {
         // Also store in regular user storage for API client compatibility
         localStorage.setItem('tripme_token', data.data.token);
         localStorage.setItem('tripme_user', JSON.stringify(data.data.admin));
+
+        // Set cookie for Next.js middleware (server-side route protection)
+        document.cookie = `adminToken=${data.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
         
         // Set current auth state
         this.token = data.data.token;
@@ -180,6 +183,8 @@ export class AuthService {
       // Always clear local storage regardless of API call result
       localStorage.removeItem('adminToken');
       localStorage.removeItem('adminData');
+      // Clear the admin cookie used by Next.js middleware
+      document.cookie = 'adminToken=; path=/; max-age=0; SameSite=Lax';
       this.clearAuth();
     }
   }
