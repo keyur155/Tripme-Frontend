@@ -494,28 +494,63 @@ export default function PhotosPage() {
     }
   };
 
-   useEffect(() => {
-  if (!data.photos?.length) return;
+//    useEffect(() => {
+//   if (!data.photos?.length) return;
 
-  // avoid overwriting existing state
-  if (photos.length > 0) return;
+//   // avoid overwriting existing state
+//   if (photos.length > 0) return;
 
-  const restoredPhotos: PhotoItem[] = data.photos.map(
-    (photo: any, index: number) => ({
-      id: `existing-${index}`,
-      preview: photo.url,
-      url: photo.url,
-      uploaded: true,
-      uploading: false,
-      category: photo.category || "Other",
-    })
-  );
+//   const restoredPhotos: PhotoItem[] = data.photos.map(
+//     (photo: any, index: number) => ({
+//       id: `existing-${index}`,
+//       preview: photo.url,
+//       url: photo.url,
+//       uploaded: true,
+//       uploading: false,
+//       category: photo.category || "Other",
+//     })
+//   );
 
-  setPhotos(restoredPhotos);
-}, [data.photos]); 
+//   setPhotos(restoredPhotos);
+// }, [data.photos]); 
 
 
   // ================= AUTO COVER =================
+
+
+ useEffect(() => {
+  if (!data.photos?.length) return;
+
+  if (photos.length > 0) return;
+
+  const restoredPhotos: PhotoItem[] = data.photos.map(
+    (photo: any, index: number) => {
+      // OLD FORMAT (string)
+      if (typeof photo === "string") {
+        return {
+          id: `existing-${index}`,
+          preview: photo,
+          url: photo,
+          uploaded: true,
+          uploading: false,
+          category: "Other",
+        };
+      }
+
+      // NEW FORMAT (object)
+      return {
+        id: `existing-${index}`,
+        preview: photo.url,
+        url: photo.url,
+        uploaded: true,
+        uploading: false,
+        category: photo.category || "Other",
+      };
+    }
+  );
+
+  setPhotos(restoredPhotos);
+}, [data.photos]);
 
   useEffect(() => {
     setPhotos((prev) => {

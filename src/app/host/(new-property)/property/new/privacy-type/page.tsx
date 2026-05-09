@@ -32,6 +32,13 @@ export default function PrivacyTypePage() {
   const { data, updateData } = useOnboarding();
   const [selected, setSelected] = useState<PropertyType | undefined>(data.propertyType);
 
+  // Sync with context when data loads in edit mode
+  React.useEffect(() => {
+    if (data.propertyType) {
+      setSelected(data.propertyType);
+    }
+  }, [data.propertyType]);
+
    const params = useParams();
     const searchParams = useSearchParams();
     const id = params.id;

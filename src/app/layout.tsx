@@ -21,11 +21,6 @@ const jost = Jost({
   variable: '--font-jost',
 });
 
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-montserrat',
-});
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -97,7 +92,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${jost.className} ${jost.variable} ${inter.variable} ${playfair.variable} ${poppins.variable}  antialiased font-sans`}
+        className={`${jost.className} ${jost.variable} ${inter.variable} ${poppins.variable}  antialiased font-sans`}
       >
         <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
           <ErrorBoundary>

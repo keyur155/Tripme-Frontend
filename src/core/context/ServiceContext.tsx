@@ -25,7 +25,7 @@ export const TOTAL_MAIN_STEPS = 3;
 export interface ServiceOnboardingData {
  serviceId?: string;
   // Step 1: Service category
-  serviceCategory?: string;
+  serviceType?: string;
   // Step 2: Service details
   title?: string;
   description?: string;

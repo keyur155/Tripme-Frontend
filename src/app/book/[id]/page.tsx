@@ -557,7 +557,7 @@ export default function BookingPage() {
 
   useEffect(() => {
     if (!showDatePicker) return;
-
+     refreshAvailabilityData();
     setPendingRange({
       checkIn: committedCheckIn,
       checkOut: committedCheckOut
@@ -601,6 +601,7 @@ export default function BookingPage() {
     return map;
   }, [availability]);
 
+  // const blockedDateSet = useMemo(() => new Set(blockedDates), [blockedDates]);
   const blockedDateSet = useMemo(() => new Set(blockedDates), [blockedDates]);
 
   const getStatusForDate = (date: Date) => {
@@ -676,6 +677,8 @@ export default function BookingPage() {
     cleaningFee: number;
     securityDeposit: number;
     extraGuestCost: number;
+    extraGuestPrice: number;
+    extraGuests: number;
     hourlyExtension: number;
     platformFee: number;
     gst: number;
@@ -693,6 +696,8 @@ export default function BookingPage() {
     cleaningFee: 0,
     securityDeposit: 0,
     extraGuestCost: 0,
+    extraGuestPrice: 0,
+    extraGuests: 0,
     hourlyExtension: 0,
     platformFee: 0,
     gst: 0,
@@ -1601,6 +1606,8 @@ export default function BookingPage() {
         cleaningFee: pricing.cleaningFee,
         securityDeposit: pricing.securityDeposit,
         extraGuestCost: pricing.extraGuestCost,
+        extraGuestPrice: pricing.extraGuestPrice || property.pricing?.extraGuestPrice || (pricing.extraGuestCost && pricing.extraGuests && pricing.nights ? pricing.extraGuestCost / (pricing.extraGuests * pricing.nights) : 0),
+        extraGuests: pricing.extraGuests || (property.pricing?.guestsIncluded && bookingData.guests > property.pricing.guestsIncluded ? bookingData.guests - property.pricing.guestsIncluded : 0),
         baseAmount: pricing.baseAmount || 0,
         hourlyExtension: pricing.hourlyExtension || 0,
         platformFee: pricing.platformFee,
@@ -1673,7 +1680,12 @@ export default function BookingPage() {
             const selectionState = getSelectionState(normalized);
             const isBetween = selectionState === 'between';
             const status = getStatusForDate(normalized);
-            const isHardBlocked = status ? ['booked', 'maintenance', 'unavailable', 'blocked', 'partially-available'].includes(status) && status !== 'blocked-self' : false;
+            // const isHardBlocked = status ? ['booked', 'maintenance', 'unavailable', 'blocked', 'partially-available'].includes(status) && status !== 'blocked-self' : false;
+            const isHardBlocked =
+  status === 'booked' ||
+  status === 'maintenance' ||
+  status === 'unavailable' ||
+  status === 'blocked';
             const isBlockedSelf = status === 'blocked-self';
             const isSelectedBoundary = selectionState === 'start' || selectionState === 'end';
 
@@ -1728,25 +1740,73 @@ export default function BookingPage() {
     );
   };
 
+//   const isDateSelectable = (date: Date) => {
+//     const normalized = startOfDay(date);
+//     const today = startOfDay(new Date());
+//     if (isBefore(normalized, today)) return false;
+
+//     if (pendingRange.checkIn && isSameDay(normalized, pendingRange.checkIn)) return true;
+//     if (pendingRange.checkOut && isSameDay(normalized, pendingRange.checkOut)) return true;
+//     if (committedCheckIn && isSameDay(normalized, committedCheckIn)) return true;
+//     if (committedCheckOut && committedCheckOut && isSameDay(normalized, committedCheckOut)) return true;
+
+//     // if (!availability || availability.length === 0) return true;
+//     if (!availability || availability.length === 0) return false;
+//     const status = getStatusForDate(normalized);
+//     // if (!status) return true;
+
+//     if (!status) return false;
+
+//     if (
+//         status === 'booked' ||
+//         status === 'maintenance' ||
+//         status === 'unavailable' ||
+//         status === 'blocked'
+//       ) {
+//             return false;
+//           }
+
+
+//     // if (status === 'available') return true;
+//     // if (status === 'blocked-self') return true;
+
+
+// if (
+//   status === 'available' ||
+//   status === 'partially-available' ||
+//   status === 'blocked-self'
+// ) {
+//   return true;
+// }
+//     return false;
+//   };
+
+
   const isDateSelectable = (date: Date) => {
-    const normalized = startOfDay(date);
-    const today = startOfDay(new Date());
-    if (isBefore(normalized, today)) return false;
+  const normalized = startOfDay(date);
+  const today = startOfDay(new Date());
 
-    if (pendingRange.checkIn && isSameDay(normalized, pendingRange.checkIn)) return true;
-    if (pendingRange.checkOut && isSameDay(normalized, pendingRange.checkOut)) return true;
-    if (committedCheckIn && isSameDay(normalized, committedCheckIn)) return true;
-    if (committedCheckOut && committedCheckOut && isSameDay(normalized, committedCheckOut)) return true;
+  if (isBefore(normalized, today)) return false;
 
-    if (!availability || availability.length === 0) return true;
+  const status = getStatusForDate(normalized);
 
-    const status = getStatusForDate(normalized);
-    if (!status) return true;
+  // Allow selection while availability loading
+  if (availabilityLoading) return true;
 
-    if (status === 'available') return true;
-    if (status === 'blocked-self') return true;
+  // If backend has no status for date, assume available
+  if (!status) return true;
+
+  if (
+    status === 'booked' ||
+    status === 'maintenance' ||
+    status === 'unavailable' ||
+    status === 'blocked'
+  ) {
     return false;
-  };
+  }
+
+  return true;
+};
 
   const isRangeSelectable = (start: Date, end: Date) => {
     if (!isAfter(end, start)) return false;
@@ -1780,8 +1840,18 @@ export default function BookingPage() {
   };
 
   const handleDateSelection = (date: Date) => {
+    
     const normalized = startOfDay(date);
     const status = getStatusForDate(normalized);
+
+    if (
+  status === 'booked' ||
+  status === 'maintenance' ||
+  status === 'unavailable' ||
+  status === 'blocked'
+) {
+  return;
+}
 
     const isBaseSelectable = isDateSelectable(normalized) || status === 'available' || status === 'blocked-self';
     const isCheckoutCandidate = pendingRange.checkIn && !pendingRange.checkOut && isAfter(normalized, pendingRange.checkIn) && (status === 'available' || status === 'blocked-self');
@@ -2410,6 +2480,8 @@ export default function BookingPage() {
           cleaningFee: pricing.cleaningFee,
           securityDeposit: pricing.securityDeposit,
           extraGuestCost: pricing.extraGuestCost,
+          extraGuestPrice: pricing.extraGuestPrice || property.pricing?.extraGuestPrice || (pricing.extraGuestCost && pricing.extraGuests && pricing.nights ? pricing.extraGuestCost / (pricing.extraGuests * pricing.nights) : 0),
+          extraGuests: pricing.extraGuests || (property.pricing?.guestsIncluded && bookingData.guests > property.pricing.guestsIncluded ? bookingData.guests - property.pricing.guestsIncluded : 0),
           baseAmount: pricing.baseAmount || 0,
           hourlyExtension: pricing.hourlyExtension || 0,
           platformFee: pricing.platformFee,

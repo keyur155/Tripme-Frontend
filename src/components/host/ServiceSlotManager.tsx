@@ -139,7 +139,13 @@ export default function ServiceSlotManager({ serviceId }: Props) {
       .then(([svcRes, availRes]: [any, any]) => {
         // Service duration & title
         const svc = svcRes?.data?.service;
-        if (svc?.duration) setServiceDuration(svc.duration);
+        if (svc?.duration) {
+          // Handle both old structure { value, unit } and new structure { minDuration, maxDuration, unit }
+          const duration = svc.duration;
+          const value = duration.value || duration.maxDuration || duration.minDuration || 60;
+          const unit = duration.unit || "minutes";
+          setServiceDuration({ value, unit });
+        }
         if (svc?.title) setServiceTitle(svc.title);
 
         // Existing slots
@@ -387,7 +393,7 @@ export default function ServiceSlotManager({ serviceId }: Props) {
                     <p className="text-xs font-semibold text-purple-700 mb-3 flex items-center gap-1.5">
                       <RefreshCw size={12} /> Auto-Generate Slots
                     </p>
-                    <div className="flex items-end gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-end gap-3">
                       <div className="flex-1">
                         <label className="block text-[10px] font-semibold text-slate-500 mb-1 uppercase">From</label>
                         <input
@@ -408,7 +414,7 @@ export default function ServiceSlotManager({ serviceId }: Props) {
                       </div>
                       <button
                         onClick={handleGenerate}
-                        className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition"
+                        className="shrink-0 flex items-center justify-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition"
                       >
                         <RefreshCw size={13} /> Generate
                       </button>

@@ -29,7 +29,7 @@ export default function ReviewPage() {
       const initializeKYC = async () => {
         await refreshUser(true);
       };
-      
+
       initializeKYC();
     }, []);
 
@@ -82,8 +82,11 @@ export default function ReviewPage() {
         'hostel': 'hostel',
         'guesthouse': 'house',
         'hotel': 'apartment',
-        'bnb': 'house',
-        'farm': 'cottage',
+        // 'bnb': 'house',
+        'farm': 'farm',
+        'camper': 'camper',
+        'tent': 'tent',
+        'castle': 'castle',
       };
 
       const listingType = typeMapping[data.structureType || 'house'] || 'house';
@@ -97,7 +100,13 @@ export default function ReviewPage() {
         data.location?.pincode
       ].filter(Boolean).join(', ');
 
-      const listingData = {
+      const imagesPayload = (data.photos || []).map((p: any, index: number) => ({
+        url: typeof p === "string" ? p : p.url,
+        ...(p.category ? { category: p.category } : {}),
+        isPrimary: index === 0,
+      }));
+
+      const listingData: any = {
         title: data.title || 'My Listing',
         description: data.description || 'A beautiful place to stay with all modern amenities and comfortable living spaces.',
         type: listingType,
@@ -121,11 +130,7 @@ export default function ReviewPage() {
         beds: data.floorPlan?.beds || 1,
         bathrooms: data.floorPlan?.bathrooms || 1,
         amenities: data.amenities || [],
-        images: (data.photos || []).map((p: any, index: number) => ({
-          url: p.url,
-          category: p.category,
-          isPrimary: index === 0, // cover photo
-        })),
+        images: imagesPayload,
         // images: (data.photos || []).map((url: string, index: number) => ({
         //   url,
         //   isPrimary: index === 0,
@@ -172,7 +177,8 @@ export default function ReviewPage() {
           },
         }),
       }; 
-       let response ;
+
+      let response ;
       if(isEditMode && id) {
          response = await apiClient.updateListing(id as string, listingData);
       }

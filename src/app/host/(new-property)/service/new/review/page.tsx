@@ -1,122 +1,4 @@
-// "use client";
 
-// import { useRouter } from "next/navigation";
-// import OnboardingLayout from "@/components/host/OnboardingLayout";
-// serviceOnboarding
-// import Button from "@/components/ui/Button";
-// import { serviceOnboarding } from "@/core/context/ServiceContext";
-
-// export default function ServiceReviewPage() {
-//   const router = useRouter();
-//   const { data } = serviceOnboarding();
-
-//   const isReady =
-//     data.title &&
-//     data.description &&
-//     data.pricing?.basePrice &&
-//     data.duration?.minDuration &&
-//     data.location;
-
-//   const handlePublish = async () => {
-//     if (!isReady) return;
-
-//     // TODO: replace with real API call
-//     console.log("Publishing service:", data);
-
-//     router.push("/host/dashboard");
-//   };
-
-//   return (
-//     <OnboardingLayout
-//       flow="service"
-//       currentMainStep={3}
-//       currentSubStep="review"
-//       showNextButton={false}
-//     >
-//       <h1 className="text-3xl font-semibold mb-3">
-//         Review your service
-//       </h1>
-
-//       <p className="text-gray-500 mb-8">
-//         Make sure everything looks right before publishing.
-//       </p>
-
-//       <div className="space-y-6">
-//         {/* Title */}
-//         <ReviewSection label="Title">
-//           {data.title}
-//         </ReviewSection>
-
-//         {/* Description */}
-//         <ReviewSection label="Description">
-//           {data.description}
-//         </ReviewSection>
-
-//         {/* Location */}
-//         <ReviewSection label="Location">
-//           {data.location?.address}, {data.location?.city},{" "}
-//           {data.location?.state}
-//         </ReviewSection>
-
-//         {/* Duration */}
-//         <ReviewSection label="Duration">
-//           {data.duration?.minDuration}–{data.duration?.maxDuration}{" "}
-//           {data.duration?.unit}
-//         </ReviewSection>
-
-//         {/* Pricing */}
-//         <ReviewSection label="Price">
-//           {data.pricing?.currency === "INR" ? "₹" : "$"}
-//           {data.pricing?.basePrice}
-//           {data.pricing?.perPersonPrice
-//             ? ` + ${data.pricing.currency === "INR" ? "₹" : "$"}${data.pricing.perPersonPrice} / person`
-//             : ""}
-//         </ReviewSection>
-
-//         {/* Media */}
-//         <ReviewSection label="Photos">
-//           {data.photos?.images.length
-//             ? `${data.photos.images.length} photos uploaded`
-//             : "No photos added"}
-//         </ReviewSection>
-//       </div>
-
-//       {/* Publish button */}
-//       <div className="mt-10">
-//         <Button
-//           disabled={!isReady}
-//           onClick={handlePublish}
-//           className="w-full bg-rose-600 hover:bg-rose-700 text-white py-4 rounded-xl text-lg font-medium disabled:opacity-50"
-//         >
-//           Publish service
-//         </Button>
-
-//         {!isReady && (
-//           <p className="text-sm text-red-500 mt-3">
-//             Please complete all required steps before publishing.
-//           </p>
-//         )}
-//       </div>
-//     </OnboardingLayout>
-//   );
-// }
-
-// function ReviewSection({
-//   label,
-//   children,
-// }: {
-//   label: string;
-//   children: React.ReactNode;
-// }) {
-//   return (
-//     <div className="border border-gray-200 rounded-xl p-5">
-//       <p className="text-sm text-gray-500 mb-1">{label}</p>
-//       <p className="text-lg font-medium text-gray-900">
-//         {children || "—"}
-//       </p>
-//     </div>
-//   );
-// }
 
 "use client";
 
@@ -164,14 +46,16 @@ const handlePublish = async () => {
     const serviceData = {
       title: data.title,
       description: data.description,
-      serviceType: data.serviceCategory, // ✅ Use serviceCategory as serviceType
+      serviceType: data.serviceType,
       location: {
         address: data.location?.address,
         city: data.location?.city,
         state: data.location?.state,
         country: data.location?.country,
-        pincode: data.location?.pincode,
-        coordinates: data.location?.coordinates,
+        pincode: data.location?.zipCode,
+        coordinates: data.location?.coordinates?.lng && data.location?.coordinates?.lat
+          ? [Number(data.location.coordinates.lng), Number(data.location.coordinates.lat)]
+          : [0, 0],
 
         type: "Point" // ✅ Add required type
       },
@@ -189,8 +73,7 @@ const handlePublish = async () => {
       duration: {
         minDuration: data.duration?.minDuration,
         maxDuration: data.duration?.maxDuration,
-        unit: data.duration?.unit || "hours", // ✅ Ensure valid enum value
-        value: 60 // ✅ Add required value field
+        unit: data.duration?.unit || "hours"
       },
     media: [
     ...(data.photos?.images?.map(url => ({

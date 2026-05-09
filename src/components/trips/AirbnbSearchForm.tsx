@@ -97,7 +97,7 @@ const customSelectStyles = {
   indicatorSeparator: () => ({ display: 'none' }),
   menu: (provided: any) => ({
     ...provided,
-    zIndex: 50,
+    zIndex: 9999,
     borderRadius: '16px',
     boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
     background: '#fff',
@@ -1263,7 +1263,7 @@ const isStartOrEnd = (day, monthDate) => {
                   placeholder="Search destinations"
                   styles={{
                     ...customSelectStyles,
-                    menuPortal: (base: any) => ({ ...base, zIndex: 60 })
+                    menuPortal: (base: any) => ({ ...base, zIndex: 9999 })
                   }}
                   menuPortalTarget={typeof window !== 'undefined' ? document.body : undefined}
                   isSearchable

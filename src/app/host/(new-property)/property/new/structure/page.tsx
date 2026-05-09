@@ -38,6 +38,13 @@ export default function StructurePage() {
   const { data, updateData } = useOnboarding();
   const [selected, setSelected] = useState<StructureType | undefined>(data.structureType);
 
+  // Sync with context when data loads in edit mode
+  React.useEffect(() => {
+    if (data.structureType) {
+      setSelected(data.structureType);
+    }
+  }, [data.structureType]);
+
    const params = useParams();
     const searchParams = useSearchParams();
     const id = params.id;

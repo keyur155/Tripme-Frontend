@@ -174,7 +174,7 @@ function EditLoader({ children }: { children: React.ReactNode }) {
  const mappedData = {
     ...response.data.service,
    
-    serviceCategory: response.data.service.serviceType || response.data.service.category || response.data.service.serviceCategory,
+    serviceType: response.data.service.serviceType || response.data.service.category || response.data.service.serviceCategory,
     title: response.data.service.title,
     description: response.data.service.description,
     location: response.data.service.location,

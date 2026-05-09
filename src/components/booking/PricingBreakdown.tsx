@@ -14,6 +14,7 @@ interface PricingBreakdownProps {
     couponMaxDiscount?: number;
     extraGuestPrice?: number;
     extraGuests?: number;
+    extraGuestCost?: number; // Total extra guest cost from backend
     cleaningFee?: number;
     serviceFee?: number;
     securityDeposit?: number;
@@ -48,6 +49,7 @@ export default function PricingBreakdown({
     nights = 1,
     extraGuestPrice = 0,
     extraGuests = 0,
+    extraGuestCost: passedExtraGuestCost,
     cleaningFee = 0,
     serviceFee = 0,
     securityDeposit = 0,
@@ -68,9 +70,10 @@ export default function PricingBreakdown({
     hostEarning: passedHostEarning
   } = pricing;
 
-  // Use backend-calculated baseAmount if available, otherwise calculate from basePrice * nights
-  const baseAmount = passedBaseAmount ?? (basePrice * nights);
-  const extraGuestCost = extraGuestPrice * extraGuests * nights; // Simple display calculation only
+  // Calculate baseAmount from basePrice * nights to exclude extra guest charges
+  const baseAmount = basePrice * nights;
+  // Use backend-calculated extraGuestCost if available, otherwise calculate from extraGuestPrice * extraGuests * nights
+  const extraGuestCost = passedExtraGuestCost ?? (extraGuestPrice * extraGuests * nights);
   const hostFees = cleaningFee + serviceFee; // Simple display calculation only
   
   // Use ONLY passed values from backend - these are already calculated correctly
@@ -95,10 +98,12 @@ export default function PricingBreakdown({
       </div>
 
       {/* Extra Guest Charges */}
-      {extraGuests > 0 && extraGuestCost  > 0 && (
+      {extraGuestCost > 0 && (
         <div className="flex justify-between items-center py-2">
           <span className="text-gray-600">
-            Extra guest{extraGuests > 1 ? 's' : ''} ({extraGuests} × {formatPrice(extraGuestPrice)})
+            {extraGuests > 0
+              ? `Extra guest${extraGuests > 1 ? 's' : ''} (${extraGuests} × ${formatPrice(extraGuestPrice)})`
+              : 'Extra guest charges'}
           </span>
           <span className="text-gray-900">{formatPrice(extraGuestCost)}</span>
         </div>

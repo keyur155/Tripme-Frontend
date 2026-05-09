@@ -34,6 +34,9 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ['mongoose'],
   // Turbopack configuration for Next.js 16 (empty config to silence webpack warning)
   turbopack: {},
+  experimental: {
+    turbopackUseSystemTlsCerts: true,
+  },
   // Keep webpack config for backward compatibility when explicitly using webpack
   webpack: (config) => {
     config.externals = [...(config.externals || []), 'canvas', 'jsdom'];

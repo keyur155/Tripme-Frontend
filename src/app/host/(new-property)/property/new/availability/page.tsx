@@ -65,6 +65,29 @@ export default function PricingPage() {
     eighteenHours: (data.hourlyBooking?.hourlyRates?.eighteenHours || 0.90) * 100,
   });
 
+  // Sync with context when data loads in edit mode
+  React.useEffect(() => {
+    if (data.pricing) {
+      setBasePrice(data.pricing.basePrice || 2500);
+      setExtraGuestPrice(data.pricing.extraGuestPrice || 500);
+      setCleaningFee(data.pricing.cleaningFee || 0);
+      setSecurityDeposit(data.pricing.securityDeposit || 0);
+      setWeeklyDiscount(data.pricing.weeklyDiscount || 0);
+      setMonthlyDiscount(data.pricing.monthlyDiscount || 0);
+      setWeekendPremium(data.pricing.weekendPremium || 0);
+      setAnytimeCheckInEnabled(data.pricing.anytimeCheckInEnabled || false);
+      setAnytimeCheckInPrice(data.pricing.anytimeCheckInPrice || Math.round((data.pricing.basePrice || 2500) * 1.2));
+    }
+    if (data.hourlyBooking) {
+      setHourlyExtensionEnabled(data.hourlyBooking.enabled || false);
+      setHourlyRates({
+        sixHours: (data.hourlyBooking.hourlyRates?.sixHours || 0.30) * 100,
+        twelveHours: (data.hourlyBooking.hourlyRates?.twelveHours || 0.60) * 100,
+        eighteenHours: (data.hourlyBooking.hourlyRates?.eighteenHours || 0.90) * 100,
+      });
+    }
+  }, [data.pricing, data.hourlyBooking]);
+
   // Guest safety items
   const [safetyItems, setSafetyItems] = useState<string[]>(
     data.amenities?.filter((a: string) => ['smoke-alarm', 'carbon-monoxide-alarm', 'first-aid-kit', 'fire-extinguisher'].includes(a)) || []

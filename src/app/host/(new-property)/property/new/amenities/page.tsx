@@ -41,6 +41,11 @@ export default function AmenitiesPage() {
   const { data, updateData } = useOnboarding();
   const [selected, setSelected] = useState<string[]>(data.amenities || []);
 
+  // Sync with context when data loads in edit mode
+  React.useEffect(() => {
+    setSelected(data.amenities || []);
+  }, [data.amenities]);
+
    const params = useParams();
     const searchParams = useSearchParams();
     const id = params.id;

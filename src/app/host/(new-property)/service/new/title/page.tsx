@@ -18,7 +18,7 @@ export default function TitlePage() {
   const [title, setTitle] = useState(data.title || '');
   const MIN_TITLE_LENGTH = 15;
   const MAX_TITLE_LENGTH = 25;
-    const selected = data.serviceCategory;
+    const selected = data.serviceType;
     const params = useParams();
   const searchParams = useSearchParams();
   

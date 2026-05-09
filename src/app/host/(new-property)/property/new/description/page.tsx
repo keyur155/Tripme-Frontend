@@ -9,6 +9,11 @@ export default function DescriptionPage() {
   const router = useRouter();
   const { data, updateData } = useOnboarding();
   const [description, setDescription] = useState(data.description || '');
+
+  // Sync with context when data loads in edit mode
+  React.useEffect(() => {
+    setDescription(data.description || '');
+  }, [data.description]);
   const maxLength = 500;
 const minLength = 50;
    const params = useParams();

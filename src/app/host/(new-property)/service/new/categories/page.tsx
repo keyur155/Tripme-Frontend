@@ -144,7 +144,7 @@ export default function ServiceCategoryPage() {
   const router = useRouter();
   const { data, updateData, goToNextSubStep } = serviceOnboarding();
 
-  const selected = data.serviceCategory;
+  const selected = data.serviceType;
   const params = useParams();
 const searchParams = useSearchParams();
 
@@ -160,7 +160,7 @@ const isEditMode = searchParams.get("mode") === "edit";
   // };
 
   const handleNext = () => {
-  updateData({ serviceCategory: selected });
+  updateData({ serviceType: selected });
 
   if (isEditMode && id) {
     router.push(`/host/service/${id}/title?mode=edit`);
@@ -192,7 +192,7 @@ const isEditMode = searchParams.get("mode") === "edit";
           return (
             <button
               key={id}
-              onClick={() => updateData({ serviceCategory: id })}
+              onClick={() => updateData({ serviceType: id })}
               className={`
                 border rounded-xl p-6 text-left transition
                 hover:border-black

@@ -50,6 +50,16 @@ export default function FloorPlanPage() {
   const [beds, setBeds] = useState(data.floorPlan?.beds || 1);
   const [bathrooms, setBathrooms] = useState(data.floorPlan?.bathrooms || 1);
 
+  // Sync with context when data loads in edit mode
+  React.useEffect(() => {
+    if (data.floorPlan) {
+      setGuests(data.floorPlan.guests || 4);
+      setBedrooms(data.floorPlan.bedrooms || 1);
+      setBeds(data.floorPlan.beds || 1);
+      setBathrooms(data.floorPlan.bathrooms || 1);
+    }
+  }, [data.floorPlan]);
+
    const params = useParams();
     const searchParams = useSearchParams();
     const id = params.id;

@@ -9,6 +9,11 @@ export default function TitlePage() {
   const router = useRouter();
   const { data, updateData } = useOnboarding();
   const [title, setTitle] = useState(data.title || '');
+
+  // Sync with context when data loads in edit mode
+  React.useEffect(() => {
+    setTitle(data.title || '');
+  }, [data.title]);
   const maxLength = 50;
   const minLength =10;
   const isTooShort = title.trim().length > 0 && title.trim().length < minLength;

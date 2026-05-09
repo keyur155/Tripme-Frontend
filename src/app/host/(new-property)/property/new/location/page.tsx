@@ -48,6 +48,14 @@ export default function LocationPage() {
     const isEditMode = searchParams.get("mode") === "edit";
     const returnToReview = searchParams.get("return") === "review";
 
+  // Check if location exists
+  const hasLocation = Boolean(
+    data.location?.address &&
+    data.location?.coordinates?.lat &&
+    data.location?.coordinates?.lng
+  );
+  
+  const [editingLocation, setEditingLocation] = useState(!hasLocation);
   
   // Current step in the location flow
   const [step, setStep] = useState<Step>('search');
@@ -67,6 +75,20 @@ export default function LocationPage() {
     pincode: data.location?.pincode || '',
     coordinates: data.location?.coordinates || { lat: 20.5937, lng: 78.9629 }, // Default to India center
   });
+
+  // Sync with context when data loads in edit mode
+  React.useEffect(() => {
+    if (data.location) {
+      setLocation({
+        address: data.location.address || '',
+        city: data.location.city || '',
+        state: data.location.state || '',
+        country: data.location.country || 'India',
+        pincode: data.location.pincode || '',
+        coordinates: data.location.coordinates || { lat: 20.5937, lng: 78.9629 },
+      });
+    }
+  }, [data.location]);
   
   // UI state
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
@@ -353,10 +375,21 @@ export default function LocationPage() {
   };
 
   // Validation
-  const isValid = location.address.length >= 5 && location.city && location.state && location.country;
+  const isValid = hasLocation && !editingLocation ? true : 
+                 (location.address.length >= 5 && location.city && location.state && location.country);
 
   // Handle next
   const handleNext = () => {
+    // If in edit mode with existing location and not editing, just proceed
+    if (isEditMode && hasLocation && !editingLocation) {
+      if (returnToReview) {
+        router.push(`/host/property/${id}/review?mode=edit`);
+      } else {
+        router.push(`/host/property/${id}/photos?mode=edit`);
+      }
+      return;
+    }
+    
     if (step === 'confirm') {
       setStep('pin');
       return;
@@ -417,9 +450,47 @@ export default function LocationPage() {
       currentSubStep="location"
       onNext={handleNext}
       onBack={handleBack}
-      nextDisabled={step === 'search' || (step === 'pin' && !isValid)}
+      nextDisabled={
+        isEditMode && hasLocation && !editingLocation
+          ? false
+          : (step === 'search' || (step === 'pin' && !isValid))
+      }
       nextLabel={getNextLabel()}
     >
+      {isEditMode && hasLocation && !editingLocation ? (
+        <div className="max-w-2xl">
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">
+            Location
+          </h1>
+          <p className="text-gray-500 mb-6">
+            Your current property location
+          </p>
+          <div className="border rounded-xl p-6 bg-gray-50">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center flex-shrink-0">
+                <MapPin className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-gray-900 text-lg">{data.location?.address}</p>
+                <p className="text-gray-600 mt-1">
+                  {[data.location?.city, data.location?.state, data.location?.pincode, data.location?.country]
+                    .filter(Boolean)
+                    .join(', ')}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setEditingLocation(true);
+                setStep('search');
+              }}
+              className="mt-4 text-sm underline font-medium hover:text-gray-700"
+            >
+              Edit location
+            </button>
+          </div>
+        </div>
+      ) : (
       <div className="flex flex-col lg:flex-row gap-8 h-full">
         {/* Left side - Form */}
         <div className="flex-1 max-w-lg">
@@ -646,6 +717,7 @@ export default function LocationPage() {
           </div>
         </div>
       </div>
+      )}
     </OnboardingLayout>
   );
 }

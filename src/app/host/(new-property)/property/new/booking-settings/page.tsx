@@ -36,6 +36,15 @@ export default function BookingSettingsPage() {
 const [checkOutTime, setCheckOutTime] = useState(data.checkOutTime || '11:00');
 const [cancellationPolicy, setCancellationPolicy] = useState(data.cancellationPolicy || 'moderate');
 
+  // Sync with context when data loads in edit mode
+  React.useEffect(() => {
+    setMinNights(data.availability?.minNights || 1);
+    setMaxNights(data.availability?.maxNights || 365);
+    setCheckInTime(data.checkInTime || '15:00');
+    setCheckOutTime(data.checkOutTime || '11:00');
+    setCancellationPolicy(data.cancellationPolicy || 'moderate');
+  }, [data.availability, data.checkInTime, data.checkOutTime, data.cancellationPolicy]);
+
   const handleNext = () => {
     updateData({
       availability: {

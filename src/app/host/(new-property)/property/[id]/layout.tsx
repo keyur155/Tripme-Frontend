@@ -34,12 +34,49 @@ function EditLoader({ children }: { children: React.ReactNode }) {
     }
 
     async function loadListing() {
-      const response = await apiClient.getListing(id as string);
+      try {
+        setLoading(true);
 
-      if (response.success && response.data) {
-        const l = response.data.listing;
+        const listing = await apiClient.getListing(id as string);
 
-        // Map backend Property → OnboardingContext shape (complete mapping)
+        if (!listing?.data?.listing) {
+          console.warn('⚠️ EditLoader: listing not found for id', id);
+          setLoading(false);
+          return;
+        }
+
+        const l = listing.data.listing;
+
+        const normalizeCategory = (value?: string) => {
+          const categories = [
+            'Living room',
+            'Bedroom',
+            'Kitchen',
+            'Bathroom',
+            'Exterior',
+            'Amenities',
+            'Other',
+          ];
+
+          const raw = (value || '').trim().toLowerCase();
+          if (!raw) return 'Other';
+
+          const matched = categories.find(
+            (category) => category.toLowerCase() === raw
+          );
+
+          if (matched) {
+            return matched;
+          }
+
+          // handle plural/singular variations like "amenity"
+          if (raw === 'amenity' || raw === 'amenities') {
+            return 'Amenities';
+          }
+
+          return 'Other';
+        };
+
         const mappedData = {
           listingId: l._id,
 
@@ -73,9 +110,9 @@ function EditLoader({ children }: { children: React.ReactNode }) {
           } : undefined,
 
           // ── Step 2: photos / title / description ───────────────────────────
-          photos: (l.images || []).map((img: any) => ({
+          photos: (l.propertyImages || l.images || []).map((img: any) => ({
             url:       img.url,
-            category:  img.category  || 'other',
+            category:  normalizeCategory(img.category),
             isPrimary: img.isPrimary || false,
           })),
           title:       l.title       || '',
@@ -128,9 +165,11 @@ function EditLoader({ children }: { children: React.ReactNode }) {
 
         console.log('✅ EditLoader: mapped property data into OnboardingContext →', mappedData);
         updateData(mappedData);
+      } catch (error) {
+        console.error('❌ EditLoader: failed to load listing', error);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     }
 
     loadListing();
