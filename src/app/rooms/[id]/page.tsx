@@ -3457,6 +3457,12 @@ const FloatingInsightBadge = ({ badge }) => {
                 timeOptions={generateTimeOptions()}
                 formatTimeHour={formatTimeHour}
                 isHourlyProperty={!!(property?.hourlyBooking?.enabled)}
+                hourlyExtension={hourlyExtension}
+                setHourlyExtension={setHourlyExtension}
+                hourlySettings={property?.hourlyBooking}
+                guests={guests}
+                setGuests={setGuests}
+                maxGuests={property?.maxGuests}
               />
             )}
 
@@ -3613,6 +3619,11 @@ const FloatingInsightBadge = ({ badge }) => {
           <div className="mb-20 bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-8">
             <HostCard host={property.host} />
           </div>
+
+          <div className="md:hidden mb-70">
+
+          </div>
+         
         </div>
 
 
