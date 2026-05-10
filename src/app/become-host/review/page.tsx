@@ -107,16 +107,20 @@ export default function ReviewPage() {
           weeklyDiscount: data.pricing?.weeklyDiscount || 0,
           monthlyDiscount: data.pricing?.monthlyDiscount || 0,
           weekendPremium: data.pricing?.weekendPremium || 0,
-          ...(data.pricing?.anytimeCheckInEnabled && {
+          // For shared: include custom anytime price if enabled
+          // For non-shared: backend will enforce basePrice24Hour = basePrice
+          ...((data.propertyType === 'shared' && data.pricing?.anytimeCheckInEnabled) ? {
             basePrice24Hour: data.pricing.anytimeCheckInPrice,
-          }),
+          } : {}),
         },
         minNights: data.availability?.minNights || 1,
         maxNights: data.availability?.maxNights || 365,
         instantBook: data.availability?.instantBook ?? true,
-        ...(data.pricing?.anytimeCheckInEnabled && {
+        // For shared: host controls anytime toggle
+        // For non-shared: backend forces enable24HourBooking = true
+        ...((data.propertyType === 'shared' && data.pricing?.anytimeCheckInEnabled) ? {
           enable24HourBooking: true,
-        }),
+        } : {}),
         ...(data.hourlyBooking?.enabled && {
           hourlyBooking: {
             enabled: true,

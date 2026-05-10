@@ -398,6 +398,7 @@ interface PhotoItem {
   file?: File;
   preview: string;
   url?: string;
+  publicId?: string;
   uploading?: boolean;
   uploaded?: boolean;
   category: string;
@@ -454,7 +455,7 @@ export default function PhotosPage() {
     );
 
     const result = await res.json();
-    return result?.success ? result.data.url : null;
+    return result?.success ? result.data : null;
   };
 
   const handleCategoryUpload = async (
@@ -477,20 +478,34 @@ export default function PhotosPage() {
     setPhotos((prev) => [...prev, ...newPhotos]);
 
     for (const photo of newPhotos) {
-      const url = await uploadToCloudinary(photo.file!);
+      const uploadData = await uploadToCloudinary(photo.file!);
 
-      setPhotos((prev) =>
-        prev.map((p) =>
+      setPhotos((prev) => {
+        const updated = prev.map((p) =>
           p.id === photo.id
             ? {
                 ...p,
-                url: url || undefined,
-                uploaded: !!url,
+                url: uploadData?.url || undefined,
+                publicId: uploadData?.publicId || undefined,
+                uploaded: !!uploadData,
                 uploading: false,
               }
             : p
-        )
-      );
+        );
+
+        // Sync with OnboardingContext
+        updateData({
+          photos: updated
+            .filter((p) => p.uploaded && p.url)
+            .map((p) => ({
+              url: p.url!,
+              category: p.category,
+              publicId: p.publicId,
+            })),
+        });
+
+        return updated;
+      });
     }
   };
 
@@ -542,6 +557,7 @@ export default function PhotosPage() {
         id: `existing-${index}`,
         preview: photo.url,
         url: photo.url,
+        publicId: photo.publicId,
         uploaded: true,
         uploading: false,
         category: photo.category || "Other",
@@ -569,10 +585,75 @@ export default function PhotosPage() {
     });
   }, [photos.length]);
 
-  // ================= REMOVE =================
+  // Helper to extract publicId from Cloudinary URL
+  const extractPublicId = (url: string) => {
+    if (!url || !url.includes('cloudinary.com')) return null;
+    const parts = url.split('/');
+    const uploadIndex = parts.indexOf('upload');
+    if (uploadIndex === -1) return null;
+    
+    let startIndex = uploadIndex + 1;
+    // Skip version number (v1234567) if present
+    if (parts[startIndex]?.startsWith('v') && !isNaN(Number(parts[startIndex].substring(1)))) {
+      startIndex++;
+    }
+    
+    const pathParts = parts.slice(startIndex);
+    const fullPath = pathParts.join('/');
+    const lastDotIndex = fullPath.lastIndexOf('.');
+    return lastDotIndex === -1 ? fullPath : fullPath.substring(0, lastDotIndex);
+  };
 
-  const removePhoto = (id: string) => {
-    setPhotos((prev) => prev.filter((p) => p.id !== id));
+  const removePhoto = async (id: string) => {
+    console.log("removePhoto called with id:", id);
+    const photoToRemove = photos.find((p) => p.id === id);
+    if (!photoToRemove) return;
+    
+    console.log("Photo to remove:", photoToRemove);
+
+    // Update local state and global context IMMEDIATELY to prevent race conditions
+    const newPhotos = photos.filter((p) => p.id !== id);
+    setPhotos(newPhotos);
+
+    updateData({
+      photos: newPhotos
+        .filter((p) => p.uploaded && p.url)
+        .map((p) => ({
+          url: p.url!,
+          category: p.category,
+          publicId: p.publicId,
+        })),
+    });
+    
+    // Use stored publicId or try to extract it from URL
+    const publicId = photoToRemove.publicId || (photoToRemove.url ? extractPublicId(photoToRemove.url) : null);
+
+    // If the photo was already uploaded, delete from Cloudinary/DB in the background
+    if (photoToRemove.uploaded && publicId) {
+      console.log("Deleting from backend. publicId:", publicId);
+      try {
+        const encodedPublicId = encodeURIComponent(publicId);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/upload/image/${encodedPublicId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("tripme_token")}`,
+            },
+          }
+        );
+        const result = await res.json();
+        if (result.success) {
+          console.log("Photo removed from backend successfully");
+        } else {
+          console.error("Failed to remove photo from backend:", result.message);
+        }
+      } catch (error) {
+        console.error("Error removing photo from backend:", error);
+      }
+    } else {
+      console.log("Photo not uploaded or missing publicId. Skipping backend deletion.");
+    }
   };
 
   // ================= GROUP =================
@@ -632,6 +713,7 @@ export default function PhotosPage() {
       .map((p) => ({
         url: p.url,
         category: p.category,
+        publicId: p.publicId,
       })),
   });
 
@@ -731,18 +813,22 @@ export default function PhotosPage() {
 
                     {/* COVER BADGE */}
                     {photo.isCover && (
-                      <div className="absolute top-3 left-3 bg-white px-3 py-1 rounded-full text-xs shadow flex items-center gap-1">
-                        <Star size={12} />
-                        Cover
+                      <div className="absolute top-3 left-3 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full text-[11px] font-bold uppercase tracking-wider text-gray-900 shadow-sm flex items-center gap-1.5 border border-white/20">
+                        <Star className="w-3 h-3 fill-[#FFB800] text-[#FFB800]" />
+                        Cover photo
                       </div>
                     )}
 
                     {/* REMOVE */}
                     <button
-                      onClick={() => removePhoto(photo.id)}
-                      className="absolute top-2 right-2 bg-white rounded-full p-1 shadow"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removePhoto(photo.id);
+                      }}
+                      className="absolute top-2 right-2 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-rose-50 hover:text-rose-600 transition-all transform hover:scale-110 active:scale-95 z-10"
+                      title="Remove photo"
                     >
-                      <X size={14} />
+                      <X className="w-3.5 h-3.5" />
                     </button>
 
                     {/* UPLOADING */}

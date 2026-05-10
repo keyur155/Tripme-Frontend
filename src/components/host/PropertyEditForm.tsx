@@ -1377,7 +1377,8 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                           </div>
                         </div>
 
-                        {/* Anytime Check-in (24-hour window) Settings */}
+                        {/* Anytime Check-in (24-hour window) Settings - Only shown for shared placeType */}
+                        {formData.placeType === 'shared' && (
                         <div className="mt-8 pt-6 border-t border-slate-300">
                           <div className="flex items-center justify-between mb-4">
                             <div>
@@ -1416,6 +1417,7 @@ const PropertyEditForm: React.FC<PropertyEditFormProps> = ({ listingId }) => {
                             </div>
                           )}
                         </div>
+                        )}
 
                         {/* Hourly Booking Settings */}
                         <div className="mt-8 pt-6 border-t border-slate-300">

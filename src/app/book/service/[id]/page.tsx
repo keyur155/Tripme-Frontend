@@ -859,11 +859,34 @@ export default function ServiceBookingPage() {
                     )}
 
                     <button
-                      onClick={() => setShowPayment(true)}
-                      disabled={!canBook}
+                      onClick={async () => {
+                        setBookingError("");
+                        setLoading(true);
+                        try {
+                          const preValidatePayload = {
+                            serviceId: id as string,
+                            checkIn,
+                            checkOut,
+                            guests: { adults: guests, children: 0, infants: 0 },
+                            bookingDuration: "daily",
+                          };
+                          console.log('🔍 Running service pre-validation...', preValidatePayload);
+                          const preRes = await apiClient.preValidateBooking(preValidatePayload);
+                          if (!preRes.success) {
+                            setBookingError(preRes.message || "Pre-validation failed");
+                            return;
+                          }
+                          setShowPayment(true);
+                        } catch (err: any) {
+                          setBookingError(err.message || "Validation failed");
+                        } finally {
+                          setLoading(false);
+                        }
+                      }}
+                      disabled={!canBook || loading}
                       className="w-full py-4 bg-gradient-to-r from-[#C45D3E] to-[#A84B32] hover:from-[#A84B32] hover:to-[#8B3D28] text-white font-bold text-lg rounded-2xl transition disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
                     >
-                      Confirm and Pay · {fmt(total)}
+                      {loading ? <Loader2 className="animate-spin mx-auto" /> : `Confirm and Pay · ${fmt(total)}`}
                     </button>
                   </div>
                 </div>

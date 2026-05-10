@@ -58,7 +58,10 @@ export interface ServiceOnboardingData {
     unit: "minutes" | "hours" | "days";
   };
   photos?: {
-    images: string[];
+    images: {
+      url: string;
+      publicId?: string;
+    }[];
     videos: string[];
   };
   review?: {

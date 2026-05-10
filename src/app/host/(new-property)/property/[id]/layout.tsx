@@ -131,9 +131,12 @@ function EditLoader({ children }: { children: React.ReactNode }) {
             serviceFee:          l.pricing?.serviceFee       || 0,
             weeklyDiscount:      l.pricing?.weeklyDiscount   || 0,
             monthlyDiscount:     l.pricing?.monthlyDiscount  || 0,
-            // Anytime check-in: enabled if enable24HourBooking=true OR basePrice24Hour > 0
-            anytimeCheckInEnabled: !!(l.enable24HourBooking || (l.pricing?.basePrice24Hour > 0)),
-            anytimeCheckInPrice:   l.pricing?.basePrice24Hour || 0,
+            // Anytime check-in: Only relevant for shared placeType
+            // For non-shared, backend auto-manages it (basePrice24Hour = basePrice)
+            anytimeCheckInEnabled: l.placeType === 'shared' 
+              ? !!(l.enable24HourBooking || (l.pricing?.basePrice24Hour > 0 && l.pricing.basePrice24Hour !== l.pricing.basePrice))
+              : false,
+            anytimeCheckInPrice: l.placeType === 'shared' ? (l.pricing?.basePrice24Hour || 0) : 0,
           },
 
           // ── Step 3: booking settings ───────────────────────────────────────

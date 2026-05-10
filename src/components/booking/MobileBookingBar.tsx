@@ -92,8 +92,10 @@ export default function MobileBookingBar({
   /* 💰 Price logic */
   const pricingBaseAmount = pricing?.baseAmount;
   const hasBaseAmount = typeof pricingBaseAmount === "number" && pricingBaseAmount > 0;
+  
+  // Use subtotal (price for entire stay) instead of base nightly amount if available
   const displayPrice = hasBaseAmount
-    ? formatPrice(pricingBaseAmount)
+    ? formatPrice(pricing?.subtotal || pricing?.hostSubtotal || pricingBaseAmount)
     : formatPrice(property?.pricing?.basePrice || 0);
 
   const priceLabel = hasBaseAmount ? " total" : " / night";
@@ -151,7 +153,7 @@ export default function MobileBookingBar({
 
               {/* Action Buttons */}
               <div className="flex gap-2">
-                {hasBaseAmount && (
+                {/* {hasBaseAmount && (
                   <button
                     onClick={() => {
                       haptic();
@@ -162,7 +164,7 @@ export default function MobileBookingBar({
                     {showBreakdown ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                     Breakdown
                   </button>
-                )}
+                )} */}
                 <button
                   onClick={() => {
                     haptic();

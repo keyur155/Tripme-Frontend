@@ -53,6 +53,7 @@ export interface OnboardingData {
   photos: {
      url: string;
      category: string;
+     publicId?: string;
      }[];
   title?: string;
   description?: string;

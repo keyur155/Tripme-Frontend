@@ -144,10 +144,11 @@ export default function ReviewPage() {
           securityDeposit: data.pricing?.securityDeposit || 0,
           weeklyDiscount: data.pricing?.weeklyDiscount || 0,
           monthlyDiscount: data.pricing?.monthlyDiscount || 0,
-          // weekendPremium: data.pricing?.weekendPremium || 0,
-          ...(data.pricing?.anytimeCheckInEnabled && {
+          // For shared: include custom anytime price if enabled
+          // For non-shared: backend will enforce basePrice24Hour = basePrice
+          ...((data.propertyType === 'shared' && data.pricing?.anytimeCheckInEnabled) ? {
             basePrice24Hour: data.pricing.anytimeCheckInPrice,
-          }),
+          } : {}),
         },
          bookingSettings: {
     instantBookable: data.availability?.instantBook ?? true,
@@ -162,9 +163,11 @@ export default function ReviewPage() {
         cancellationPolicy: data.cancellationPolicy || 'moderate',
         // instantBook: data.availability?.instantBook ?? true,
         houseRules: data.houseRules,
-        ...(data.pricing?.anytimeCheckInEnabled && {
+        // For shared: host controls anytime toggle
+        // For non-shared: backend forces enable24HourBooking = true
+        ...((data.propertyType === 'shared' && data.pricing?.anytimeCheckInEnabled) ? {
           enable24HourBooking: true,
-        }),
+        } : {}),
         ...(data.hourlyBooking?.enabled && {
           hourlyBooking: {
             enabled: true,

@@ -342,7 +342,12 @@ const HostDashboardContent: React.FC = () => {
         <h2 className="text-lg font-bold text-gray-900 mb-4">Quick actions</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <button
-            onClick={() => router.push('/host/property/new/onboarding/step-1')}
+            onClick={() => {
+              localStorage.removeItem('propertyOnboardingData');
+              localStorage.removeItem('propertyMainStep');
+              localStorage.removeItem('propertySubStep');
+              router.push('/host/property/new/onboarding/step-1');
+            }}
             className="flex items-center gap-3 p-4 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition-colors group"
           >
             <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-colors">
@@ -355,7 +360,11 @@ const HostDashboardContent: React.FC = () => {
           </button>
 
           <button
-            onClick={() => router.push('/host/service/new')}
+            onClick={() => {
+              localStorage.removeItem('serviceDraft');
+              localStorage.removeItem('serviceStep');
+              router.push('/host/service/new');
+            }}
             className="flex items-center gap-3 p-4 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition-colors group"
           >
             <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-colors">

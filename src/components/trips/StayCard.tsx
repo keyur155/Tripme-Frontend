@@ -112,6 +112,26 @@ const priceAmount =
 const currency =
   stay.price?.currency || "INR";
 
+  const nightsCount = useMemo(() => {
+    if (!checkIn || !checkOut) return 0;
+    try {
+      const start = new Date(checkIn);
+      const end = new Date(checkOut);
+      const diffTime = end.getTime() - start.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return Math.max(1, diffDays);
+    } catch (e) {
+      return 0;
+    }
+  }, [checkIn, checkOut]);
+
+  const displayPrice = useMemo(() => {
+    if (nightsCount > 0 && priceAmount) {
+      return priceAmount * nightsCount;
+    }
+    return priceAmount;
+  }, [nightsCount, priceAmount]);
+
   const imageSrc =
   typeof stay.images?.[currentImage] === "string"
     ? stay.images[currentImage]
@@ -238,9 +258,11 @@ const currency =
 
          {priceAmount &&( <div className="flex items-baseline gap-1">
             <span className="text-xs md:text-lg font-bold text-[#C45D3E]">
-              {formatCurrency(stay.price.amount, stay.price.currency)}
+              {formatCurrency(displayPrice || 0, currency)}
             </span>
-            <span className="text-xs md:text-sm text-gray-600 font-medium">night</span>
+            <span className="text-xs md:text-sm text-gray-600 font-medium">
+              {nightsCount > 0 ? 'total' : 'night'}
+            </span>
           </div> )}
         </div>
       </div>

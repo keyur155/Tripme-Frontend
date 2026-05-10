@@ -11,7 +11,8 @@ interface PhotoItem {
   id: string;
   file?: File;
   preview: string;
-  url?: string; // Cloudinary URL after upload
+  url?: string;
+  publicId?: string;
   uploading?: boolean;
   uploaded?: boolean;
 }
@@ -28,12 +29,17 @@ export default function PhotosPage() {
   // Initialize photos from context data on mount
   useEffect(() => {
     if (data.photos?.images && data.photos.images.length > 0 && photos.length === 0) {
-      const existingPhotos: PhotoItem[] = data.photos.images.map((url, index) => ({
-        id: `existing-${index}`,
-        preview: url,
-        url: url,
-        uploaded: true,
-      }));
+      const existingPhotos: PhotoItem[] = data.photos.images.map((img, index) => {
+        const url = typeof img === 'string' ? img : img.url;
+        const publicId = typeof img === 'string' ? undefined : img.publicId;
+        return {
+          id: `existing-${index}`,
+          preview: url,
+          url: url,
+          publicId: publicId,
+          uploaded: true,
+        };
+      });
       setPhotos(existingPhotos);
     }
   }, [data.photos]);
@@ -53,7 +59,7 @@ export default function PhotosPage() {
       
       const result = await response.json();
       if (result.success) {
-        return result.data.url;
+        return result.data;
       }
       console.error('Upload failed:', result.message);
       return null;
@@ -81,14 +87,32 @@ export default function PhotosPage() {
     // Upload each photo to Cloudinary
     for (const photo of newPhotos) {
       if (photo.file) {
-        const cloudinaryUrl = await uploadToCloudinary(photo.file);
-        setPhotos((prev) => 
-          prev.map((p) => 
+        const uploadData = await uploadToCloudinary(photo.file);
+        setPhotos((prev) => {
+          const updated = prev.map((p) => 
             p.id === photo.id 
-              ? { ...p, url: cloudinaryUrl || undefined, uploading: false, uploaded: !!cloudinaryUrl }
+              ? { 
+                  ...p, 
+                  url: uploadData?.url || undefined, 
+                  publicId: uploadData?.publicId || undefined,
+                  uploading: false, 
+                  uploaded: !!uploadData 
+                }
               : p
-          )
-        );
+          );
+
+          // Sync with context
+          updateData({
+            photos: {
+              images: updated
+                .filter(p => p.uploaded && p.url)
+                .map(p => ({ url: p.url!, publicId: p.publicId, type: 'image' as const })),
+              videos: data.photos?.videos || []
+            }
+          });
+
+          return updated;
+        });
       }
     }
     
@@ -111,14 +135,61 @@ export default function PhotosPage() {
     setDragOver(false);
   };
 
-  const removePhoto = (id: string) => {
-    setPhotos((prev) => {
-      const photo = prev.find((p) => p.id === id);
-      if (photo?.preview && photo.preview.startsWith('blob:')) {
-        URL.revokeObjectURL(photo.preview);
+  // Helper to extract publicId from Cloudinary URL
+  const extractPublicId = (url: string) => {
+    if (!url || !url.includes('cloudinary.com')) return null;
+    const parts = url.split('/');
+    const uploadIndex = parts.indexOf('upload');
+    if (uploadIndex === -1) return null;
+    
+    let startIndex = uploadIndex + 1;
+    if (parts[startIndex]?.startsWith('v') && !isNaN(Number(parts[startIndex].substring(1)))) {
+      startIndex++;
+    }
+    
+    const pathParts = parts.slice(startIndex);
+    const fullPath = pathParts.join('/');
+    const lastDotIndex = fullPath.lastIndexOf('.');
+    return lastDotIndex === -1 ? fullPath : fullPath.substring(0, lastDotIndex);
+  };
+
+  const removePhoto = async (id: string) => {
+    const photoToRemove = photos.find((p) => p.id === id);
+    if (!photoToRemove) return;
+
+    // Optimistic update
+    const newPhotos = photos.filter((p) => p.id !== id);
+    setPhotos(newPhotos);
+
+    // Sync with context immediately
+    updateData({
+      photos: {
+        images: newPhotos
+          .filter(p => p.uploaded && p.url)
+          .map(p => ({ url: p.url!, publicId: p.publicId, type: 'image' as const })),
+        videos: data.photos?.videos || []
       }
-      return prev.filter((p) => p.id !== id);
     });
+
+    if (photoToRemove.preview && photoToRemove.preview.startsWith('blob:')) {
+      URL.revokeObjectURL(photoToRemove.preview);
+    }
+
+    const publicId = photoToRemove.publicId || (photoToRemove.url ? extractPublicId(photoToRemove.url) : null);
+
+    if (photoToRemove.uploaded && publicId) {
+      try {
+        const encodedPublicId = encodeURIComponent(publicId);
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload/image/${encodedPublicId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('tripme_token')}`,
+          },
+        });
+      } catch (error) {
+        console.error('Error removing photo from backend:', error);
+      }
+    }
   };
 
   // Set a photo as cover (move to first position)
@@ -140,10 +211,10 @@ export default function PhotosPage() {
 
   const handleNext = () => {
     // Store Cloudinary URLs in context (only uploaded photos)
-    const uploadedUrls = photos
+    const uploadedImages = photos
       .filter((p) => p.uploaded && p.url)
-      .map((p) => p.url as string);
-    updateData({ photos: { images: uploadedUrls, videos: [] } });
+      .map((p) => ({ url: p.url!, publicId: p.publicId, type: 'image' as const }));
+    updateData({ photos: { images: uploadedImages, videos: [] } });
     const next = goToNextSubStep();
     if (next) router.push(next);
   };
@@ -296,24 +367,24 @@ export default function PhotosPage() {
                   
                   {/* Cover photo badge */}
                   {index === 0 && photo.uploaded && (
-                    <div className="absolute top-3 left-3 px-3 py-1 bg-white rounded-full text-sm font-medium shadow flex items-center gap-1">
-                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                    <div className="absolute top-3 left-3 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full text-[11px] font-bold uppercase tracking-wider text-gray-900 shadow-sm flex items-center gap-1.5 border border-white/20">
+                      <Star className="w-3 h-3 fill-[#FFB800] text-[#FFB800]" />
                       Cover photo
                     </div>
                   )}
                   
                   {/* Reorder handle */}
                   {reorderMode && (
-                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                      <div className="bg-white rounded-full p-3 shadow-lg">
-                        <GripVertical className="w-6 h-6 text-gray-600" />
+                    <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px] flex items-center justify-center">
+                      <div className="bg-white rounded-full p-4 shadow-xl transform scale-110">
+                        <GripVertical className="w-6 h-6 text-gray-700" />
                       </div>
                     </div>
                   )}
                   
                   {/* Action buttons */}
                   {!reorderMode && (
-                    <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute top-2 right-2 flex gap-1.5">
                       {/* Set as cover button (only for non-first photos) */}
                       {index !== 0 && photo.uploaded && (
                         <button
@@ -321,10 +392,10 @@ export default function PhotosPage() {
                             e.stopPropagation();
                             setCoverPhoto(photo.id);
                           }}
-                          className="p-2 bg-white rounded-full shadow hover:bg-gray-100"
+                          className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-all transform hover:scale-110 active:scale-95"
                           title="Set as cover photo"
                         >
-                          <Star className="w-4 h-4" />
+                          <Star className="w-3.5 h-3.5 text-gray-700" />
                         </button>
                       )}
                       {/* Remove button */}
@@ -333,10 +404,10 @@ export default function PhotosPage() {
                           e.stopPropagation();
                           removePhoto(photo.id);
                         }}
-                        className="p-2 bg-white rounded-full shadow hover:bg-gray-100"
+                        className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-rose-50 hover:text-rose-600 transition-all transform hover:scale-110 active:scale-95"
                         title="Remove photo"
                       >
-                        <X className="w-4 h-4" />
+                        <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   )}

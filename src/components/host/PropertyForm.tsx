@@ -999,7 +999,8 @@ const PropertyForm: React.FC = () => {
           </select>
         </div>
 
-        {/* Anytime Check-in (24-hour window) Settings - separate toggle */}
+        {/* Anytime Check-in (24-hour window) Settings - Only shown for shared placeType */}
+        {formData.placeType === 'shared' && (
         <div className="mt-8 pt-6 border-t border-gray-200">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -1057,6 +1058,7 @@ const PropertyForm: React.FC = () => {
             </div>
           )}
         </div>
+        )}
 
         {/* Hourly Booking (Extensions) - separate section */}
         <div className="mt-8 pt-6 border-t border-gray-200">

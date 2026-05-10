@@ -55,11 +55,15 @@ export default function HostingPage() {
 
   const handleGetStarted = () => {
     if (isServiceIntent) {
-      // Service flow: call becomeHost() API directly via lightweight page.
-      // No property listing onboarding needed. sessionStorage already has the redirect.
+      // Service flow
+      localStorage.removeItem('serviceDraft');
+      localStorage.removeItem('serviceStep');
       router.push('/become-host/host-register');
     } else {
-      // Property listing flow: unchanged — full property onboarding.
+      // Property listing flow
+      localStorage.removeItem('propertyOnboardingData');
+      localStorage.removeItem('propertyMainStep');
+      localStorage.removeItem('propertySubStep');
       const dest = redirectAfter
         ? `/become-host/onboarding/step-1?redirect=${encodeURIComponent(redirectAfter)}`
         : '/become-host/onboarding/step-1';
@@ -68,6 +72,9 @@ export default function HostingPage() {
   };
 
   const handleCreateNewListing = () => {
+    localStorage.removeItem('propertyOnboardingData');
+    localStorage.removeItem('propertyMainStep');
+    localStorage.removeItem('propertySubStep');
     router.push('/become-host/onboarding/step-1');
   };
 

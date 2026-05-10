@@ -1122,6 +1122,20 @@ function SearchPageContent() {
   const [wishlistName, setWishlistName] = useState('');
   const [wishlists, setWishlists] = useState<any[]>([]);
   
+  // Calculate nights for total price display
+  const nightsCount = useMemo(() => {
+    if (!checkIn || !checkOut) return 0;
+    try {
+      const start = new Date(checkIn);
+      const end = new Date(checkOut);
+      const diffTime = end.getTime() - start.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return Math.max(1, diffDays);
+    } catch (e) {
+      return 0;
+    }
+  }, [checkIn, checkOut]);
+  
   // Bottom sheet states
   const [sheetState, setSheetState] = useState<'peek' | 'half' | 'full'>('half');
   const sheetRef = useRef<HTMLDivElement>(null);
@@ -1188,77 +1202,243 @@ function SearchPageContent() {
     isDraggingRef.current = false;
     isPotentialDrag.current = true;
     dragDirectionLocked.current = 'none';
+    
     // Disable transition during drag for instant feedback
     if (sheetRef.current) sheetRef.current.style.transition = 'none';
   };
 
+  // const handleDragMove = (e: React.TouchEvent | React.MouseEvent) => {
+  //   if (!isPotentialDrag.current) return;
+
+  //   const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+  //   const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+  //   const deltaY = clientY - dragStartY.current;
+  //   const deltaX = clientX - dragStartX.current;
+
+  //   // Lock gesture direction earlier
+  //   if (dragDirectionLocked.current === 'none') {
+  //     const absX = Math.abs(deltaX);
+  //     const absY = Math.abs(deltaY);
+  //     if (absX < 3 && absY < 3) return; // small threshold for jitter
+  //     dragDirectionLocked.current = absY >= absX ? 'vertical' : 'horizontal';
+  //   }
+
+  //   if (dragDirectionLocked.current === 'horizontal') {
+  //     // Let the browser handle horizontal scroll natively
+  //     isPotentialDrag.current = false;
+  //     return;
+  //   }
+
+  //   // Vertical gesture — decide if we should actually drag the sheet
+  //   if (!isDraggingRef.current) {
+  //     const isHandle = !!(e.target as HTMLElement).closest('.drag-handle');
+  //     // Use a small buffer for isAtTop to handle sub-pixel differences or momentum
+  //     const isAtTop = !listScrollRef.current || listScrollRef.current.scrollTop <= 5;
+      
+  //     const pullingDownAtTop = deltaY > 0 && isAtTop;
+  //     const pullingUpInHalf = deltaY < 0 && sheetState === 'half';
+  //     const pullingUpInPeek = deltaY < 0 && sheetState === 'peek';
+
+  //     if (isHandle || pullingDownAtTop || pullingUpInHalf || pullingUpInPeek) {
+  //       isDraggingRef.current = true;
+  //     } else {
+  //       // Not a sheet drag condition — let it scroll natively
+  //       isPotentialDrag.current = false;
+  //       return;
+  //     }
+  //   }
+
+  //   // Confirmed drag — move the sheet and prevent native scroll
+  //   if (e.cancelable) e.preventDefault();
+  //   dragCurrentY.current = clientY;
+  //   applyDragOffset(deltaY);
+  // };
+
+
   const handleDragMove = (e: React.TouchEvent | React.MouseEvent) => {
-    if (!isPotentialDrag.current) return;
+  if (!isPotentialDrag.current) return;
 
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const deltaY = clientY - dragStartY.current;
-    const deltaX = clientX - dragStartX.current;
+  const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+  const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
 
-    // Lock gesture direction once we've moved enough
-    if (dragDirectionLocked.current === 'none') {
-      if (Math.abs(deltaY) < 5 && Math.abs(deltaX) < 5) return; // not enough movement yet
-      dragDirectionLocked.current = Math.abs(deltaY) >= Math.abs(deltaX) ? 'vertical' : 'horizontal';
-    }
+  const deltaY = clientY - dragStartY.current;
+  const deltaX = clientX - dragStartX.current;
 
-    if (dragDirectionLocked.current === 'horizontal') {
-      // Let the browser handle horizontal scroll natively
+  // Lock gesture direction
+  if (dragDirectionLocked.current === 'none') {
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+
+    if (absX < 3 && absY < 3) return;
+
+    dragDirectionLocked.current =
+      absY >= absX ? 'vertical' : 'horizontal';
+  }
+
+  // Allow horizontal gestures normally
+  if (dragDirectionLocked.current === 'horizontal') {
+    isPotentialDrag.current = false;
+    return;
+  }
+
+  // Decide if sheet should drag
+  if (!isDraggingRef.current) {
+    const isHandle = !!(e.target as HTMLElement).closest('.drag-handle');
+
+    // scrollTop check
+    const scrollTop = listScrollRef.current?.scrollTop || 0;
+    const isAtTop = scrollTop <= 5;
+
+    const pullingDown = deltaY > 0;
+    const pullingUp = deltaY < 0;
+
+    // DOWN drag
+    const shouldDragDown =
+      pullingDown &&
+      (
+        sheetState === 'full'
+          ? isAtTop
+          : true
+      );
+
+    // UP drag
+    const shouldDragUp =
+      pullingUp &&
+      (
+        sheetState === 'half' ||
+        sheetState === 'peek'
+      );
+
+    if (isHandle || shouldDragDown || shouldDragUp) {
+      isDraggingRef.current = true;
+
+      // disable inner scrolling while dragging sheet
+      if (listScrollRef.current) {
+        listScrollRef.current.style.overflowY = 'hidden';
+      }
+    } else {
+      // allow normal scroll
       isPotentialDrag.current = false;
       return;
     }
+  }
 
-    // Vertical gesture — decide if we should actually drag the sheet
-    if (!isDraggingRef.current) {
-      const isHandle = !!(e.target as HTMLElement).closest('.drag-handle');
-      const isAtTop = !listScrollRef.current || listScrollRef.current.scrollTop <= 0;
+  // prevent native scrolling
+  if (e.cancelable) {
+    e.preventDefault();
+  }
 
-      const shouldDrag =
-        isHandle ||
-        (sheetState === 'full' && deltaY > 0 && isAtTop) ||
-        (sheetState === 'peek' && deltaY < 0) ||
-        sheetState === 'half';
+  dragCurrentY.current = clientY;
 
-      if (!shouldDrag) {
-        isPotentialDrag.current = false;
-        return;
-      }
-      isDraggingRef.current = true;
-    }
+  applyDragOffset(deltaY);
+};
 
-    // Confirmed drag — move the sheet
-    if ('touches' in e && e.cancelable) e.preventDefault();
-    dragCurrentY.current = clientY;
-    applyDragOffset(deltaY);
-  };
+//   const handleDragEnd = () => {
 
-  const handleDragEnd = () => {
-    isPotentialDrag.current = false;
-    // Re-enable CSS transition for the snap animation
-    if (sheetRef.current) sheetRef.current.style.transition = '';
 
-    if (!isDraggingRef.current) return;
-    isDraggingRef.current = false;
-    resetDragOffset();
 
-    const deltaY = dragCurrentY.current - dragStartY.current;
-    const threshold = 60;
+const handleDragEnd = () => {
+  isPotentialDrag.current = false;
 
-    if (deltaY < -threshold) {
-      // Swiped UP
-      if (sheetState === 'peek')       setSheetState('half');
-      else if (sheetState === 'half')  setSheetState('full');
-    } else if (deltaY > threshold) {
-      // Swiped DOWN
-      if (sheetState === 'full')       setSheetState('half');
-      else if (sheetState === 'half')  setSheetState('peek');
-    }
+  // Re-enable transition
+  if (sheetRef.current) {
+    sheetRef.current.style.transition = '';
+  }
+
+  // If no actual sheet drag happened
+  if (!isDraggingRef.current) {
     dragDirectionLocked.current = 'none';
-  };
+    return;
+  }
+
+  isDraggingRef.current = false;
+
+  // Restore scrolling
+  if (listScrollRef.current) {
+    listScrollRef.current.style.overflowY = 'auto';
+  }
+
+  resetDragOffset();
+
+  const deltaY = dragCurrentY.current - dragStartY.current;
+  const threshold = 60;
+
+  if (deltaY < -threshold) {
+    // Swipe UP
+    if (sheetState === 'peek') {
+      setSheetState('half');
+    } else if (sheetState === 'half') {
+      setSheetState('full');
+    }
+  } else if (deltaY > threshold) {
+    // Swipe DOWN
+    if (sheetState === 'full') {
+      setSheetState('half');
+    } else if (sheetState === 'half') {
+      setSheetState('peek');
+    }
+  }
+
+  dragDirectionLocked.current = 'none';
+};
+//     if (listScrollRef.current) {
+//   listScrollRef.current.style.overflowY = 'auto';
+// }
+
+//     isPotentialDrag.current = false;
+//     // Re-enable CSS transition for the snap animation
+//     if (sheetRef.current) sheetRef.current.style.transition = '';
+
+//     if (!isDraggingRef.current) return;
+//     isDraggingRef.current = false;
+//     resetDragOffset();
+
+//     const deltaY = dragCurrentY.current - dragStartY.current;
+//     const threshold = 60;
+
+//     if (deltaY < -threshold) {
+//       // Swiped UP
+//       if (sheetState === 'peek')       setSheetState('half');
+//       else if (sheetState === 'half')  setSheetState('full');
+//     } else if (deltaY > threshold) {
+//       // Swiped DOWN
+//       if (sheetState === 'full')       setSheetState('half');
+//       else if (sheetState === 'half')  setSheetState('peek');
+//     }
+//     dragDirectionLocked.current = 'none';
+//   };
+
+  // Attach manual non-passive listeners to allow e.preventDefault()
+  useEffect(() => {
+    const sheet = sheetRef.current;
+    if (!sheet) return;
+
+    const onTouchStart = (e: TouchEvent) => handleDragStart(e as any);
+    const onTouchMove = (e: TouchEvent) => handleDragMove(e as any);
+    const onTouchEnd = () => handleDragEnd();
+
+    const onMouseDown = (e: MouseEvent) => handleDragStart(e as any);
+    const onMouseMove = (e: MouseEvent) => handleDragMove(e as any);
+    const onMouseUp = () => handleDragEnd();
+
+    sheet.addEventListener('touchstart', onTouchStart, { passive: false });
+    sheet.addEventListener('touchmove', onTouchMove, { passive: false });
+    sheet.addEventListener('touchend', onTouchEnd);
+
+    sheet.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+
+    return () => {
+      sheet.removeEventListener('touchstart', onTouchStart);
+      sheet.removeEventListener('touchmove', onTouchMove);
+      sheet.removeEventListener('touchend', onTouchEnd);
+
+      sheet.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+  }, [sheetState]); // Re-attach when state changes to ensure fresh closures if needed
 
   useEffect(() => {
     setHideBottomNav(sheetState === 'full');
@@ -1831,8 +2011,13 @@ function SearchPageContent() {
                     </p>
                     
                     <div className="flex items-center gap-1 mt-1">
-                      <span className="text-xs font-bold text-gray-900">₹{selectedProperty.pricing?.basePrice || selectedProperty.price?.amount}</span>
-                      <span className="text-[10px] text-gray-600">/ night</span>
+                      <span className="text-xs font-bold text-gray-900">
+                        ₹{(() => {
+                          const base = selectedProperty.pricing?.basePrice || selectedProperty.price?.amount || 0;
+                          return nightsCount > 0 ? (base * nightsCount).toLocaleString() : base.toLocaleString();
+                        })()}
+                      </span>
+                      <span className="text-[10px] text-gray-600">{nightsCount > 0 ? 'total' : '/ night'}</span>
                     </div>
                   </div>
 
@@ -1884,13 +2069,8 @@ function SearchPageContent() {
             bottom: 0,
             height: SHEET_HEIGHTS[sheetState],
             transition: 'height 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
+            touchAction: 'none',
           }}
-          onTouchStart={handleDragStart}
-          onTouchMove={handleDragMove}
-          onTouchEnd={handleDragEnd}
-          onMouseDown={handleDragStart}
-          onMouseMove={handleDragMove}
-          onMouseUp={handleDragEnd}
         >
           {/* Drag Handle */}
           <div className="drag-handle flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing select-none">
@@ -1908,7 +2088,7 @@ function SearchPageContent() {
               <div 
                 ref={listScrollRef}
                 onScroll={handleListScroll}
-                className="flex-1 overflow-y-auto pb-20 touch-pan-y"
+                className="flex-1 overflow-y-auto pb-20 "
               >
                 <div className="px-4 pt-2 pb-4">
                   <h2 className="text-lg font-bold text-[#1A1A1A] mb-4">

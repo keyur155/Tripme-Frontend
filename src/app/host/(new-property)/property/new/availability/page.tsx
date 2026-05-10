@@ -9,6 +9,9 @@ import { useParams,useSearchParams } from 'next/navigation';
 export default function PricingPage() {
   const router = useRouter();
   const { data, updateData } = useOnboarding();
+  
+  // Determine if property is shared type — controls anytime check-in visibility
+  const isSharedType = data.propertyType === 'shared';
    const params = useParams();
       const searchParams = useSearchParams();
       const id = params.id;
@@ -49,7 +52,7 @@ export default function PricingPage() {
   
   // Anytime check-in
   const [anytimeCheckInEnabled, setAnytimeCheckInEnabled] = useState(
-    data.pricing?.anytimeCheckInEnabled || false
+    data.pricing?.anytimeCheckInEnabled ?? (isSharedType ? true : false)
   );
   const [anytimeCheckInPrice, setAnytimeCheckInPrice] = useState(
     data.pricing?.anytimeCheckInPrice || Math.round((data.pricing?.basePrice || 2500) * 1.2)
@@ -124,8 +127,14 @@ export default function PricingPage() {
         monthlyDiscount,
         weekendPremium,
         currency: 'INR',
-        anytimeCheckInEnabled,
-        anytimeCheckInPrice: anytimeCheckInEnabled ? anytimeCheckInPrice : undefined,
+        // Only include anytime check-in data for shared privacy type
+        ...(isSharedType ? {
+          anytimeCheckInEnabled,
+          anytimeCheckInPrice: anytimeCheckInEnabled ? anytimeCheckInPrice : undefined,
+        } : {
+          anytimeCheckInEnabled: false,
+          anytimeCheckInPrice: undefined,
+        }),
       },
       hourlyBooking: {
         enabled: hourlyExtensionEnabled,
@@ -335,7 +344,8 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* Anytime Check-in */}
+        {/* Anytime Check-in — Only shown for shared privacy type */}
+        {isSharedType && (
         <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl p-6 border border-orange-200 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -406,6 +416,7 @@ export default function PricingPage() {
             </motion.div>
           )}
         </div>
+        )}
 
         {/* Discounts */}
         <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200 mb-6">

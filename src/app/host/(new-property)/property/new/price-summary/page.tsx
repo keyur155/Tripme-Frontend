@@ -23,6 +23,9 @@ export default function PriceSummaryPage() {
   const router = useRouter();
   const { data } = useOnboarding();
   
+  // Only show anytime check-in section for shared privacy type
+  const isSharedType = data.propertyType === 'shared';
+  
   const basePrice = data.pricing?.basePrice || 2500;
   const extraGuestPrice = data.pricing?.extraGuestPrice || 0;
   const cleaningFee = data.pricing?.cleaningFee || 0;
@@ -180,8 +183,8 @@ export default function PriceSummaryPage() {
           </div>
         )}
 
-        {/* Anytime Check-in Summary */}
-        {anytimeCheckInEnabled && (
+        {/* Anytime Check-in Summary — only for shared privacy type */}
+        {isSharedType && anytimeCheckInEnabled && (
           <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl p-6 border border-orange-200 mb-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl flex items-center justify-center">

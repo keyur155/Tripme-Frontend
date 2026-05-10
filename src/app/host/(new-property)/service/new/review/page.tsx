@@ -76,8 +76,9 @@ const handlePublish = async () => {
         unit: data.duration?.unit || "hours"
       },
     media: [
-    ...(data.photos?.images?.map(url => ({
-      url,
+    ...(data.photos?.images?.map(img => ({
+      url: typeof img === 'string' ? img : img.url,
+      publicId: typeof img === 'string' ? undefined : img.publicId,
       type: 'image',
       caption: ''
     })) || []),
@@ -212,18 +213,21 @@ const handlePublish = async () => {
         >
           {data.photos?.images && data.photos.images.length > 0 ? (
             <div className="grid grid-cols-3 md:grid-cols-4 gap-2 mt-3">
-              {data.photos.images.slice(0, 8).map((url, index) => (
-                <div 
-                  key={index}
-                  className="aspect-square rounded-lg overflow-hidden bg-gray-100"
-                >
-                  <img
-                    src={url}
-                    alt={`Service photo ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
+              {data.photos.images.slice(0, 8).map((img, index) => {
+                const url = typeof img === 'string' ? img : img.url;
+                return (
+                  <div 
+                    key={index}
+                    className="aspect-square rounded-lg overflow-hidden bg-gray-100"
+                  >
+                    <img
+                      src={url}
+                      alt={`Service photo ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                );
+              })}
               {data.photos.images.length > 8 && (
                 <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
                   <span className="text-sm text-gray-600">

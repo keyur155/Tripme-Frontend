@@ -216,7 +216,11 @@ const HostServicesContent: React.FC = () => {
               Dashboard
             </button>
             <button
-              onClick={() => router.push('/host/service/new')}
+              onClick={() => {
+                localStorage.removeItem('serviceDraft');
+                localStorage.removeItem('serviceStep');
+                router.push('/host/service/new');
+              }}
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors"
             >
               <Plus className="w-4 h-4" />
