@@ -556,6 +556,13 @@ class ApiClient {
     });
   }
 
+  async updateServiceStatus(id: string, status: string): Promise<ApiResponse<any>> {
+    return this.request(`/services/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
   async getService(id: string): Promise<ApiResponse<any>> {
     return this.request(`/services/${id}`);
   }
@@ -568,6 +575,25 @@ class ApiClient {
   // Alias for getHostServices - used by host components
   async getMyServices(params?: PaginationParams): Promise<ApiResponse<PaginatedResponse<any>>> {
     return this.getHostServices(params);
+  }
+
+  async getAdminServices(params?: any): Promise<ApiResponse<PaginatedResponse<any>>> {
+    const queryParams = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return this.request(`/services/admin/all${queryParams}`);
+  }
+
+  async approveService(serviceId: string, reason?: string): Promise<ApiResponse<any>> {
+    return this.request(`/services/admin/${serviceId}/approve`, {
+      method: 'PATCH',
+      body: JSON.stringify({ approvalReason: reason }),
+    });
+  }
+
+  async rejectService(serviceId: string, reason: string): Promise<ApiResponse<any>> {
+    return this.request(`/services/admin/${serviceId}/reject`, {
+      method: 'PATCH',
+      body: JSON.stringify({ rejectionReason: reason }),
+    });
   }
 
   async deleteService(id: string): Promise<ApiResponse<void>> {

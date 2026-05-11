@@ -27,6 +27,7 @@ import {
   MapPinHouse,
   BookmarkCheckIcon,
   Award,
+  Briefcase,
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -89,6 +90,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     { name: 'Users', href: '/admin/users', icon: Users, badge: null },
     { name: 'Hosts', href: '/admin/hosts', icon: UserCheck, badge: null },
     { name: 'Listings', href: '/admin/listings', icon: Home, badge: null },
+    { name: 'Services', href: '/admin/services', icon: Briefcase, badge: null },
     { name: 'Badges', href: '/admin/badges', icon: Award, badge: null },
     { name: 'Featured', href: '/admin/featured', icon: BookmarkCheckIcon, badge: null },
     { name: 'Popular Destination', href: '/admin/populardestination', icon: MapPinHouse, badge: null },

@@ -12,6 +12,7 @@ import { apiClient } from '@/infrastructure/api/clients/api-client';
 interface HostService extends Omit<Service, 'createdAt' | 'updatedAt' | 'media'> {
   _id: string;
   status: 'draft' | 'published' | 'suspended' | 'deleted';
+  approvalStatus: 'pending' | 'approved' | 'rejected' | null;
   createdAt: string;
   updatedAt: string;
   media: { url: string; type: 'image' | 'video'; caption?: string }[];
@@ -74,13 +75,13 @@ const HostServicesContent: React.FC = () => {
 
   const handleStatusChange = async (serviceId: string, newStatus: string) => {
     try {
-      const response = await apiClient.updateService(serviceId, { status: newStatus });
+      const response = await apiClient.updateServiceStatus(serviceId, newStatus);
       if (response.success) {
-        setServices(prev => prev.map(service => 
-          service._id === serviceId 
-            ? { ...service, status: newStatus as any }
-            : service
-        ));
+        // Refresh the list to get updated approvalStatus from backend
+        fetchServices();
+        if (response.message && response.message.includes('approval')) {
+          alert(response.message);
+        }
       } else {
         alert('Failed to update service status');
       }
@@ -91,6 +92,10 @@ const HostServicesContent: React.FC = () => {
   };
 
   const getStatusIcon = (status: string) => {
+    if (status === 'draft') return <Clock className="w-4 h-4 text-yellow-500" />;
+    
+    // For other statuses, check if pending approval
+    // (We'll handle this in the color function for simplicity or here)
     switch (status) {
       case 'published':
         return <CheckCircle className="w-4 h-4 text-green-500" />;
@@ -105,7 +110,10 @@ const HostServicesContent: React.FC = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string, approvalStatus?: string | null) => {
+    if (approvalStatus === 'pending') return 'bg-blue-100 text-blue-800';
+    if (approvalStatus === 'rejected') return 'bg-red-100 text-red-800';
+
     switch (status) {
       case 'published':
         return 'bg-green-100 text-green-800';
@@ -316,12 +324,22 @@ const HostServicesContent: React.FC = () => {
 
   <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
     <div className="flex items-center justify-between mb-3">
+      <span className="text-sm font-medium text-gray-500">Pending</span>
+      <div className="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center">
+        <Clock className="w-4 h-4 text-blue-600" />
+      </div>
+    </div>
+    <div className="text-2xl font-bold text-blue-600">{services.filter(s => s.approvalStatus === 'pending').length}</div>
+  </div>
+
+  <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
+    <div className="flex items-center justify-between mb-3">
       <span className="text-sm font-medium text-gray-500">Active</span>
       <div className="w-9 h-9 bg-[#FDF8F3] rounded-xl flex items-center justify-center">
         <Users className="w-4 h-4 text-[#C45D3E]" />
       </div>
     </div>
-    <div className="text-2xl font-bold text-gray-900">{services.filter(s => s.status === 'published').length}</div>
+    <div className="text-2xl font-bold text-gray-900">{services.filter(s => s.status === 'published' && s.approvalStatus === 'approved').length}</div>
   </div>
 </div>
         )}
@@ -583,8 +601,8 @@ const HostServicesContent: React.FC = () => {
             </span>
           </div>
           
-          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm border backdrop-blur-md ${getStatusColor(service.status)}`}>
-            {service.status}
+          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm border backdrop-blur-md ${getStatusColor(service.status, service.approvalStatus)}`}>
+            {service.approvalStatus === 'pending' ? 'Pending Approval' : service.status}
           </span>
         </div>
       </div>
@@ -653,7 +671,9 @@ const HostServicesContent: React.FC = () => {
               }`}
               onClick={() => handleStatusChange(service._id, service.status === 'published' ? 'draft' : 'published')}
             >
-              {service.status === 'published' ? 'Pause' : 'Live'}
+              {service.status === 'published' 
+                ? 'Pause' 
+                : (service.approvalStatus === 'approved' ? 'Live' : 'Submit for Approval')}
             </Button>
           </div>
         </div>
