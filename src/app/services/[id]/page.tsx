@@ -47,6 +47,7 @@ interface ServiceDetails {
     state?: string;
     country: string;
     address?: string;
+    coordinates?: [number, number];
   };
   groupSize: {
     min: number;
@@ -529,6 +530,7 @@ export default function ServiceDetailsPage() {
       state={service.location?.state || 'State not specified'}
       country={service.location?.country || 'India'}
       coordinates={service.location?.coordinates}
+      price={service.pricing.basePrice}
     />
   </div>
 </div>

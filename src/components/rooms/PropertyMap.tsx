@@ -106,14 +106,22 @@ export default function PropertyMap({
     if (Array.isArray(coordinates) && coordinates.length === 2) {
       const [lng, lat] = coordinates;
       if (typeof lng === 'number' && typeof lat === 'number' && !isNaN(lng) && !isNaN(lat)) {
+        // If it's [0, 0], treat as not provided and fallback to city
+        if (lng === 0 && lat === 0) {
+          return getDefaultCoordinates(city);
+        }
         return { lat, lng };
       }
     }
     
     // If coordinates is an object {lat, lng}
-    if (typeof coordinates === 'object' && 'lat' in coordinates && 'lng' in coordinates) {
-      const { lat, lng } = coordinates;
+    if (typeof coordinates === 'object' && coordinates !== null && 'lat' in coordinates && 'lng' in coordinates) {
+      const { lat, lng } = coordinates as { lat: number; lng: number };
       if (typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng)) {
+        // If it's {0, 0}, treat as not provided and fallback to city
+        if (lat === 0 && lng === 0) {
+          return getDefaultCoordinates(city);
+        }
         return { lat, lng };
       }
     }
@@ -299,6 +307,7 @@ class PriceMarker extends window.google.maps.OverlayView {
   }
 
   draw() {
+    if (!this.div || !this.getProjection()) return;
     const point = this.getProjection().fromLatLngToDivPixel(
       new window.google.maps.LatLng(this.position)
     );
@@ -306,12 +315,16 @@ class PriceMarker extends window.google.maps.OverlayView {
     this.div.style.left = point.x + "px";
     this.div.style.top = point.y + "px";
   }
+
+  setPosition(position) {
+    this.position = position;
+    this.draw();
+  }
 }
 
-new PriceMarker({ lat: currentCoords.lat, lng: currentCoords.lng }).setMap(map);
-
-
-      markerRef.current = markerDiv;
+const marker = new PriceMarker({ lat: currentCoords.lat, lng: currentCoords.lng });
+marker.setMap(map);
+markerRef.current = marker;
 
       // Create info window
      <div className="absolute bottom-4 left-4 right-4 bg-white rounded-2xl shadow-xl p-4">
@@ -442,7 +455,7 @@ new PriceMarker({ lat: currentCoords.lat, lng: currentCoords.lng }).setMap(map);
         </div>
 
         <div className="relative">
-          {mapError || !coords.lat || !coords.lng || isNaN(coords.lat) || isNaN(coords.lng) ? (
+          {mapError || coords.lat === undefined || coords.lng === undefined || isNaN(coords.lat) || isNaN(coords.lng) ? (
             <div className="h-100 bg-gray-100 rounded-xl flex items-center justify-center">
               <div className="text-center">
                 <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-3" />
@@ -450,7 +463,7 @@ new PriceMarker({ lat: currentCoords.lat, lng: currentCoords.lng }).setMap(map);
                 <p className="text-sm text-gray-500 mb-3">
                   {!GOOGLE_MAPS_API_KEY 
                     ? 'Google Maps API key not configured' 
-                    : !coords.lat || !coords.lng || isNaN(coords.lat) || isNaN(coords.lng) 
+                  : (coords.lat === undefined || coords.lng === undefined || isNaN(coords.lat) || isNaN(coords.lng)) 
                     ? 'Invalid coordinates' 
                     : mapError || 'Unable to load map'
                   }
