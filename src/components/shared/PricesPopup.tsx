@@ -142,30 +142,41 @@ export default function TripMePopup() {
                   <span className="text-[10px] font-semibold text-gray-500">Trusted by 10k+ travelers</span>
                 </div>
 
-                <h2 className="text-lg sm:text-2xl font-black text-gray-900 leading-tight mb-1.5 tracking-tight">
+                <h2 className="text-lg sm:text-2xl font-black text-gray-900 leading-tight mb-1 tracking-tight">
                   Travel without <br />
                   <span className="text-[#FF385C]">hidden surprises.</span>
                 </h2>
 
-                <p className="text-[12px] text-gray-500 leading-relaxed mb-4">
-                  The price you see is the <span className="font-bold text-gray-900">final price</span>. All fees are included.
+                <p className="text-[11px] text-gray-500 leading-relaxed mb-3">
+                  The price you see is final. Plus, enjoy the <span className="text-gray-900 font-bold">exclusive flexibility</span> of your trip, your way.
                 </p>
 
+                {/* New USP Highlight: Flexibility */}
+                <div className="mb-4 p-2.5 rounded-xl bg-gradient-to-r from-rose-50/80 to-orange-50/80 border border-rose-100/50 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-white shadow-sm flex items-center justify-center text-[#FF385C] shrink-0">
+                    <Zap size={18} fill="currentColor" />
+                  </div>
+                  <div>
+                    <div className="text-[9px] font-black text-[#FF385C] uppercase tracking-[0.05em]">TripMe Exclusive</div>
+                    <div className="text-[11px] font-bold text-gray-800 leading-tight">Anytime Check-in & Hourly Extensions</div>
+                  </div>
+                </div>
+
                 {/* Side-by-Side Compact Features */}
-                <div className="grid grid-cols-2 gap-2 mb-5">
+                <div className="grid grid-cols-2 gap-2 mb-4">
                   {[
                     {
                       icon: <CheckCircle2 className="text-green-500" size={14} />,
                       title: "No Extra Fees",
                     },
                     {
-                      icon: <Info className="text-blue-500" size={14} />,
-                      title: "Full Breakdown",
+                      icon: <ShieldCheck className="text-blue-500" size={14} />,
+                      title: "Secure Pricing",
                     }
                   ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-2 p-2.5 rounded-xl bg-gray-50 border border-gray-100 transition-all">
+                    <div key={i} className="flex items-center gap-2 p-2 rounded-lg bg-gray-50/50 border border-gray-100 transition-all">
                       <div className="shrink-0">{item.icon}</div>
-                      <h4 className="text-[11px] font-bold text-gray-700">{item.title}</h4>
+                      <h4 className="text-[10px] font-bold text-gray-700">{item.title}</h4>
                     </div>
                   ))}
                 </div>
@@ -182,12 +193,7 @@ export default function TripMePopup() {
                     <ArrowRight size={16} />
                   </motion.button>
                   
-                  <button 
-                    onClick={dismiss}
-                    className="w-full py-1 text-[10px] font-bold text-gray-400 hover:text-gray-600 transition-colors uppercase tracking-widest"
-                  >
-                    Not now
-                  </button>
+                 
                 </div>
               </div>
             </motion.div>

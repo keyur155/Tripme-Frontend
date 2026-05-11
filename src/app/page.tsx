@@ -1433,15 +1433,17 @@ export default function Home() {
               </div>
 
               {destLoading ? (
-                <div className="grid grid-cols-2 gap-4 sm:gap-6">
+                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
                   {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="h-[220px] rounded-3xl bg-gray-200 animate-pulse" />
+                    <div key={i} className="min-w-[200px] h-[220px] rounded-3xl bg-gray-200 animate-pulse flex-shrink-0" />
                   ))}
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-4 sm:gap-6">
-                  {popularDestinations.slice(0, 6).map((dest) => (
-                    <DestinationCard key={dest._id} dest={dest} variant="mobile" />
+                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 snap-x snap-mandatory">
+                  {popularDestinations.map((dest) => (
+                    <div key={dest._id} className="min-w-[200px] flex-shrink-0 snap-center">
+                      <DestinationCard dest={dest} variant="mobile" />
+                    </div>
                   ))}
                 </div>
               )}
