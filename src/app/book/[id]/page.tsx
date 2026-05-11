@@ -66,6 +66,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useUI } from "@/core/store/uiContext";
 import UserHeader from "@/components/shared/UserHeader";
 import { TimeSpinner } from "@/components/rooms/timeSelection/TimeSpinner";
+import CouponPicker from "@/components/booking/CouponPicker";
+import { Coupon } from "@/types";
 
 // Payment Modal Component with Razorpay Integration
 const PaymentModal: React.FC<{
@@ -436,6 +438,49 @@ export default function BookingPage() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { bookingData: contextBookingData, updateBookingData: updateContextBookingData, clearBookingData } = useBooking();
   const [property, setProperty] = useState<any>(null);
+  const [priceBreakdown, setPriceBreakdown] = useState<{
+    basePrice: number;
+    baseAmount: number;
+    discountAmount: number;
+    discountType?: 'percentage' | 'fixed';
+    couponCode?: string;
+    couponValue?: number;
+    couponMaxDiscount?: number;
+    serviceFee: number;
+    cleaningFee: number;
+    securityDeposit: number;
+    extraGuestCost: number;
+    extraGuestPrice: number;
+    extraGuests: number;
+    hourlyExtension: number;
+    platformFee: number;
+    gst: number;
+    processingFee: number;
+    taxes: number;
+    total: number;
+    nights: number;
+    subtotal: number;
+    pricingToken?: string;
+  }>({
+    basePrice: 0,
+    baseAmount: 0,
+    discountAmount: 0,
+    serviceFee: 0,
+    cleaningFee: 0,
+    securityDeposit: 0,
+    extraGuestCost: 0,
+    extraGuestPrice: 0,
+    extraGuests: 0,
+    hourlyExtension: 0,
+    platformFee: 0,
+    gst: 0,
+    processingFee: 0,
+    taxes: 0,
+    total: 0,
+    nights: 0,
+    subtotal: 0
+  });
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [availability, setAvailability] = useState<any[]>([]);
@@ -479,6 +524,7 @@ export default function BookingPage() {
       setHideHeader(false);
     };
   }, []);
+
 
   // Booking state - initialize from context or defaults
   const [bookingData, setBookingData] = useState(() => {
@@ -538,6 +584,76 @@ export default function BookingPage() {
   const [couponData, setCouponData] = useState<any>(null);
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState('');
+  const [showCouponPicker, setShowCouponPicker] = useState(false);
+  const [availableCoupons, setAvailableCoupons] = useState<Coupon[]>([]);
+  const [isCouponsLoading, setIsCouponsLoading] = useState(false);
+  const calendarTriggerRef = useRef<HTMLDivElement | null>(null);
+  const datePickerRef = useRef<HTMLDivElement | null>(null);
+  const hasAutoApplied = useRef(false);
+
+  const fetchAvailableCoupons = async () => {
+    try {
+      setIsCouponsLoading(true);
+      const response = await apiClient.get('/coupons/public?isActive=true');
+      if (response.success && response.data?.coupons) {
+        setAvailableCoupons(response.data.coupons);
+      }
+    } catch (error) {
+      console.error('Error fetching available coupons:', error);
+    } finally {
+      setIsCouponsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAvailableCoupons();
+  }, []);
+
+  // Auto-apply logic: finds and applies the best eligible coupon automatically
+  useEffect(() => {
+    // Only attempt if we have coupons, a calculated subtotal, and no coupon is currently active
+    // And we haven't already auto-applied in this session/condition
+    if (!availableCoupons.length || !priceBreakdown?.subtotal || couponData || couponCode || hasAutoApplied.current) return;
+
+    const subtotal = priceBreakdown.subtotal;
+    const propertyId = property?._id;
+
+    const eligible = availableCoupons.filter(coupon => {
+      // 1. Min Booking Amount
+      if (coupon.minBookingAmount && subtotal < coupon.minBookingAmount) return false;
+      
+      // 2. Listing Specific
+      if (coupon.applicableToListings?.length && propertyId && !coupon.applicableToListings.includes(propertyId)) return false;
+      
+      // 3. Dates
+      const now = new Date();
+      if (new Date(coupon.validFrom) > now || new Date(coupon.validTo) < now) return false;
+      
+      // 4. Usage
+      if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) return false;
+
+      return true;
+    });
+
+    if (eligible.length > 0) {
+      // Find the one that gives the most discount
+      const best = eligible.reduce((prev, curr) => {
+        const getDiscountValue = (c: Coupon) => {
+          if (c.discountType === 'fixed') return c.amount;
+          const pct = (c.amount / 100) * subtotal;
+          return c.maxDiscount ? Math.min(pct, c.maxDiscount) : pct;
+        };
+        return getDiscountValue(curr) > getDiscountValue(prev) ? curr : prev;
+      });
+
+      if (best) {
+        console.log(`✨ Auto-applying best coupon: ${best.code}`);
+        hasAutoApplied.current = true;
+        setCouponCode(best.code);
+        validateCoupon(best.code);
+      }
+    }
+  }, [availableCoupons, priceBreakdown?.subtotal, property?._id, couponData, couponCode]);
 
   const calendarDayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   const [hasMounted, setHasMounted] = useState(false);
@@ -548,8 +664,6 @@ export default function BookingPage() {
     return startOfMonth(startOfDay(base));
   });
   const [pendingRange, setPendingRange] = useState<{ checkIn: Date | null; checkOut: Date | null }>({ checkIn: null, checkOut: null });
-  const calendarTriggerRef = useRef<HTMLDivElement | null>(null);
-  const datePickerRef = useRef<HTMLDivElement | null>(null);
 
   const committedCheckIn = useMemo(() => {
     const value = bookingData.checkIn instanceof Date ? bookingData.checkIn : new Date(bookingData.checkIn);
@@ -702,48 +816,6 @@ export default function BookingPage() {
     }
   }, [contextBookingData, id, router, isRedirecting]);
 
-  const [priceBreakdown, setPriceBreakdown] = useState<{
-    basePrice: number;
-    baseAmount: number;
-    discountAmount: number;
-    discountType?: 'percentage' | 'fixed';
-    couponCode?: string;
-    couponValue?: number;
-    couponMaxDiscount?: number;
-    serviceFee: number;
-    cleaningFee: number;
-    securityDeposit: number;
-    extraGuestCost: number;
-    extraGuestPrice: number;
-    extraGuests: number;
-    hourlyExtension: number;
-    platformFee: number;
-    gst: number;
-    processingFee: number;
-    taxes: number;
-    total: number;
-    nights: number;
-    subtotal: number;
-    pricingToken?: string;
-  }>({
-    basePrice: 0,
-    baseAmount: 0,
-    discountAmount: 0,
-    serviceFee: 0,
-    cleaningFee: 0,
-    securityDeposit: 0,
-    extraGuestCost: 0,
-    extraGuestPrice: 0,
-    extraGuests: 0,
-    hourlyExtension: 0,
-    platformFee: 0,
-    gst: 0,
-    processingFee: 0,
-    taxes: 0,
-    total: 0,
-    nights: 0,
-    subtotal: 0
-  });
 
 
   // Clear auth error when user becomes authenticated
@@ -3554,9 +3626,17 @@ export default function BookingPage() {
                         <Gift className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-base sm:text-lg font-bold text-gray-900">
-                          Coupon Code
-                        </h3>
+                        <div className="flex items-center justify-between w-full">
+                          <h3 className="text-base sm:text-lg font-bold text-gray-900">
+                            Coupon Code
+                          </h3>
+                          <button 
+                            onClick={() => setShowCouponPicker(true)}
+                            className="text-xs sm:text-sm font-bold text-[#C45D3E] hover:underline transition-all"
+                          >
+                            View All
+                          </button>
+                        </div>
                         <p className="text-xs sm:text-sm text-gray-600">
                           Enter a valid coupon code to get discounts
                         </p>
@@ -3875,6 +3955,21 @@ export default function BookingPage() {
           currency: 'INR'
         }}
       />
+
+      {/* Coupon Picker Modal */}
+      <CouponPicker
+        isOpen={showCouponPicker}
+        onClose={() => setShowCouponPicker(false)}
+        onSelect={(code) => {
+          setCouponCode(code);
+          validateCoupon(code);
+          setShowCouponPicker(false);
+        }}
+        availableCoupons={availableCoupons}
+        isLoading={isCouponsLoading}
+        currentBookingAmount={priceBreakdown?.subtotal || 0}
+        currentPropertyId={property?._id}
+      />
     </div>
   );
-} 
+}

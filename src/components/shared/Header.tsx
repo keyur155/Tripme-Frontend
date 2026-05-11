@@ -242,6 +242,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                   width={120}
                   height={120}
                   className="h-30 w-30 object-contain transition-transform duration-300 group-hover:scale-110"
+                  
                   priority
                 />
               </div>
