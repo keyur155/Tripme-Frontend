@@ -74,6 +74,7 @@ interface Booking {
     name: string;
   };
   checkInNotes?: string;
+  hostEarnings?:number
 }
 
 const HostBookingsPage: React.FC = () => {
@@ -85,6 +86,7 @@ const HostBookingsPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [updatingBooking, setUpdatingBooking] = useState<string | null>(null);
+  const [hostEarning ,setHostEarning] = useState<number>(0)
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -104,6 +106,7 @@ const HostBookingsPage: React.FC = () => {
       if (response.success && response.data) {
         const data = response.data as any;
         setBookings(data.bookings || []);
+        setHostEarning(data.totalEarnings?.[0]?.total || 0);
       } else {
         setError('Failed to load bookings');
       }
@@ -370,7 +373,7 @@ const HostBookingsPage: React.FC = () => {
         <span className="text-green-600 font-bold text-sm">₹</span>
       </div>
     </div>
-    <div className="text-xl font-bold text-gray-900">{formatPrice(bookings.filter(b => b.status === 'confirmed').reduce((sum, b) => sum + b.totalAmount, 0))}</div>
+    <div className="text-xl font-bold text-gray-900">{formatPrice(hostEarning || 0)}</div>
   </div>
 </div>
 
