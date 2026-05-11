@@ -22,8 +22,8 @@ export default function HostRegisterPage() {
     useEffect(() => {
         if (!user) return; // wait for auth context to load
 
-        // If already a host, skip straight to destination
-        if (user?.role === "host") {
+        // If already a host or admin, skip straight to destination
+        if (user?.role === "host" || user?.role === "admin") {
             const dest =
                 sessionStorage.getItem("hostOnboardingRedirect") ||
                 "/host/service/new/categories";

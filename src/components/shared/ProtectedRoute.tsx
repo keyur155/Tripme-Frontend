@@ -17,12 +17,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requireHost = false,
   redirectTo = '/auth/login',
 }) => {
-  const { user, isLoading, isAuthenticated, refreshUser } = useAuth();
+  const { user, isLoading, isAuthenticated, refreshUser, isAdmin } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
-  // Check if user is a host
-  const isHost = user?.role === 'host';
+  // Check if user is a host or admin
+  const isHost = user?.role === 'host' || isAdmin();
 
   // Handle SSR - show loading until client-side hydration is complete
   if (typeof window === 'undefined') {

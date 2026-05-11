@@ -32,8 +32,8 @@ export default function Step5Page() {
     setError(null);
 
     try {
-      // If user is already a host, skip the becomeHost API call
-      if (user?.role === 'host') {
+      // If user is already a host or admin, skip the becomeHost API call
+      if (user?.role === 'host' || user?.role === 'admin') {
         setSuccess(true);
         resetData();
         sessionStorage.removeItem('hostOnboardingRedirect');

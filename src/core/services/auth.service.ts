@@ -190,7 +190,7 @@ export class AuthService {
   }
 
   public isHost(): boolean {
-    return this.currentUser?.role === 'host';
+    return this.currentUser?.role === 'host' || this.isAdmin();
   }
 
   public isGuest(): boolean {

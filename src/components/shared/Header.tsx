@@ -102,7 +102,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
   const router = useRouter();
   const pathname = usePathname();
   const [activeCategory, setActiveCategory] = useState<'homes' | 'services' | 'stories' | null>(null);
-  const { user, isAuthenticated, isLoading, logout, refreshUser } = useAuth();
+  const { user, isAuthenticated, isLoading, logout, refreshUser, isHost, isAdmin } = useAuth();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hostMenuOpen, setHostMenuOpen] = useState(false);
@@ -475,7 +475,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
               ) : (
                 <div className={`hidden lg:flex items-center gap-4 ${!shouldShowFullHeader ? 'pt-1' : ''}`}>
                   {/* Host Button */}
-                  {isAuthenticated && user?.role === 'host' ? (
+                  {isAuthenticated && isHost() ? (
                     <Link href="/host/dashboard">
                       <span className="text-gray-700 hover:text-gray-900 font-medium text-sm transition-colors duration-200">
                         Host Dashboard
@@ -626,7 +626,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                             <Calendar size={20} />
                             <span className="font-medium">My Bookings</span>
                           </Link>
-                          {user?.role === 'admin' && (
+                          {isAdmin() && (
                             <>
                               <div className="border-t border-gray-200 my-2"></div>
                               <Link
@@ -792,7 +792,7 @@ const Header = ({ searchExpanded: externalSearchExpanded,
                         <Calendar size={20} />
                         <span className="font-medium">My Bookings</span>
                       </Link>
-                      {user?.role === 'admin' && (
+                      {isAdmin() && (
                         <Link
                           href="/admin/dashboard"
                           className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:text-[#C45D3E] hover:bg-[#FDF8F3] transition-all duration-200"

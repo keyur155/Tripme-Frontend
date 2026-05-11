@@ -13,7 +13,7 @@ import { image } from 'framer-motion/client';
 export default function ReviewPage() {
   const router = useRouter();
   const { data, resetData } = useOnboarding();
-  const { user, updateUser ,refreshUser} = useAuth();
+  const { user, updateUser ,refreshUser, isAdmin} = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [kycStatus, setKycStatus] = useState<string | null>(null);
@@ -61,13 +61,14 @@ export default function ReviewPage() {
     setError(null);
 
     try {
-      // First, become a host if not already
-      if (user?.role !== 'host') {
+      // First, become a host if not already (skip for admins — they can create listings directly)
+      if (user?.role !== 'host' && !isAdmin()) {
         const hostResponse = await apiClient.becomeHost({});
         if (hostResponse.success && hostResponse.data?.user) {
           updateUser(hostResponse.data.user);
         }
       }
+
 
       // Create the listing with images
       // Map structure type to valid backend type
