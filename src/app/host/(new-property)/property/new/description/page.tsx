@@ -14,7 +14,7 @@ export default function DescriptionPage() {
   React.useEffect(() => {
     setDescription(data.description || '');
   }, [data.description]);
-  const maxLength = 500;
+  const maxLength = 5000;
 const minLength = 50;
    const params = useParams();
     const searchParams = useSearchParams();

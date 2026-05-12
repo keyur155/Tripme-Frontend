@@ -258,6 +258,22 @@ export default function HostBookingDetailPage() {
     }
   };
 
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadReceipt = async () => {
+    if (!booking?._id) return;
+    
+    try {
+      setDownloading(true);
+      await apiClient.downloadReceipt(booking._id);
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('Failed to download receipt. Please try again later.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'confirmed':
@@ -1046,9 +1062,13 @@ export default function HostBookingDetailPage() {
                   </button>
                 )}
                 
-                <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
-                  <Download className="w-4 h-4" />
-                  <span>Download Receipt</span>
+                <button 
+                  onClick={handleDownloadReceipt}
+                  disabled={downloading}
+                  className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  <Download className={`w-4 h-4 ${downloading ? 'animate-bounce' : ''}`} />
+                  <span>{downloading ? 'Downloading...' : 'Download Receipt'}</span>
                 </button>
                 
                 <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">

@@ -122,7 +122,7 @@ export default function ServiceDescriptionPage() {
   const [description, setDescription] = useState(data.description || "");
 
   const MIN_LENGTH = 40;
-  const MAX_LENGTH = 500;
+  const MAX_LENGTH = 5000;
 
   const trimmedDescription = description.trim();
   const isValid =

@@ -18,6 +18,9 @@ export default function ServicePricingPage() {
   const [perPersonPrice, setPerPersonPrice] = useState<number>(
     data.pricing?.perPersonPrice || 0
   );
+  const [includedGuests, setIncludedGuests] = useState<number>(
+    data.pricing?.includedGuests || 1
+  );
   const [currency, setCurrency] = useState<"INR" | "USD">(
     data.pricing?.currency as "INR" | "USD" || "INR"
   );
@@ -32,6 +35,7 @@ export default function ServicePricingPage() {
         basePrice,
         currency: "INR",
         perPersonPrice,
+        includedGuests,
         minPrice: MIN_PRICE,
         maxPrice: basePrice + perPersonPrice,
       },
@@ -114,6 +118,40 @@ export default function ServicePricingPage() {
 
           <p className="text-sm text-gray-400 mt-2">
             Charged for each additional guest
+          </p>
+        </div>
+
+        {/* Included guests */}
+        <div>
+          <label className="block text-lg font-medium mb-2">
+            Included guests in base price
+          </label>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIncludedGuests(Math.max(1, includedGuests - 1))}
+              className="w-12 h-12 rounded-xl border border-gray-300 flex items-center justify-center hover:border-black transition-colors"
+            >
+              <span className="text-2xl">-</span>
+            </button>
+            
+            <input
+              type="number"
+              value={includedGuests}
+              onChange={(e) => setIncludedGuests(Math.max(1, Number(e.target.value) || 1))}
+              className="w-20 text-2xl text-center border-none outline-none focus:ring-0"
+            />
+
+            <button
+              onClick={() => setIncludedGuests(includedGuests + 1)}
+              className="w-12 h-12 rounded-xl border border-gray-300 flex items-center justify-center hover:border-black transition-colors"
+            >
+              <span className="text-2xl">+</span>
+            </button>
+          </div>
+
+          <p className="text-sm text-gray-400 mt-2">
+            How many guests are covered by the base price?
           </p>
         </div>
 

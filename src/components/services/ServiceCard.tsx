@@ -22,7 +22,9 @@ interface ServiceCardProps {
       max: number;
     };
     duration: {
-      value: number;
+      value?: number;
+      minDuration?: number;
+      maxDuration?: number;
       unit: string;
     };
     serviceType: string;
@@ -120,7 +122,11 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               </div>
               <div className="flex items-center gap-1">
                 <Clock size={14} />
-                <span>{service.duration.value} {service.duration.unit}</span>
+                <span>
+                  {service.duration.minDuration && service.duration.maxDuration 
+                    ? `${service.duration.minDuration}-${service.duration.maxDuration} ${service.duration.unit}`
+                    : `${service.duration.value || ''} ${service.duration.unit}`}
+                </span>
               </div>
             </div>
 

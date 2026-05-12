@@ -99,16 +99,13 @@ export default function PricingBreakdown({
 
       {/* Extra Guest Charges */}
       {extraGuestCost > 0 && (
-        <div className="flex justify-between items-center py-2">
-          <span className="text-gray-600">
-            {/* {extraGuests > 0
-              ? `Extra guest${extraGuests > 1 ? 's' : ''} (${extraGuests} × ${formatPrice(extraGuestPrice)})`
-              : 'Extra guest charges'} */}
-        {extraGuests > 0
-        ? `Extra guest${extraGuests > 1 ? 's' : ''} (${formatPrice(extraGuestPrice)}/night × ${extraGuests} guest${extraGuests > 1 ? 's' : ''} × ${nights} night${nights > 1 ? 's' : ''})`
-        : 'Extra guest charges'}
+        <div className="flex justify-between items-start py-2 gap-4">
+          <span className="text-gray-600 flex-1">
+            {extraGuests > 0
+              ? `Extra guest${extraGuests > 1 ? 's' : ''} (${formatPrice(extraGuestPrice)}/night × ${extraGuests} guest${extraGuests > 1 ? 's' : ''} × ${nights} night${nights > 1 ? 's' : ''})`
+              : 'Extra guest charges'}
           </span>
-          <span className="text-gray-900">{formatPrice(extraGuestCost)}</span>
+          <span className="text-gray-900 whitespace-nowrap">{formatPrice(extraGuestCost)}</span>
         </div>
       )}
 

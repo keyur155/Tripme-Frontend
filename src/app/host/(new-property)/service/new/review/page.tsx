@@ -67,6 +67,7 @@ const handlePublish = async () => {
         basePrice: data.pricing?.basePrice,
         currency: data.pricing?.currency || "INR",
         perPersonPrice: data.pricing?.perPersonPrice || 0,
+        includedGuests: data.pricing?.includedGuests || 1,
         minPrice: data.pricing?.minPrice || 100,
         maxPrice: data.pricing?.maxPrice || 1000
       },
@@ -197,7 +198,7 @@ const handlePublish = async () => {
               {data.pricing.perPersonPrice && (
                 <p className="text-sm text-gray-600">
                   + {data.pricing.currency === "INR" ? "₹" : "$"}
-                  {data.pricing.perPersonPrice} / person
+                  {data.pricing.perPersonPrice} / person (after {data.pricing.includedGuests || 1} { (data.pricing.includedGuests || 1) > 1 ? 'guests' : 'guest' })
                 </p>
               )}
             </div>

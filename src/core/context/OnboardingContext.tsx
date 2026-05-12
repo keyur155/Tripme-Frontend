@@ -62,6 +62,7 @@ export interface OnboardingData {
   pricing?: {
     basePrice: number;
     currency: string;
+    includedGuests?: number;
     extraGuestPrice?: number;
     cleaningFee?: number;
     securityDeposit?: number;

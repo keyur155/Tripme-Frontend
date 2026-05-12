@@ -553,7 +553,8 @@ export default function ServiceBookingPage() {
   /* Derived price */
   const basePrice = service?.pricing?.basePrice || 0;
   const perPersonPrice = service?.pricing?.perPersonPrice || 0;
-  const extraGuests = Math.max(0, guests - 1);
+  const includedGuests = service?.pricing?.includedGuests || 1;
+  const extraGuests = Math.max(0, guests - includedGuests);
   const extraGuestCost = extraGuests * perPersonPrice;
   const platformFee = Math.round(basePrice * 0.12); // 12% platform fee
   const total = basePrice + extraGuestCost + platformFee;
@@ -954,7 +955,7 @@ export default function ServiceBookingPage() {
                 {showDetails && (
                   <div className="space-y-2 mb-3">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Base price</span>
+                      <span className="text-gray-600">Base price (for {includedGuests} {includedGuests > 1 ? 'guests' : 'guest'})</span>
                       <span>{fmt(basePrice)}</span>
                     </div>
                     {extraGuestCost > 0 && (

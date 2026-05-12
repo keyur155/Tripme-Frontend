@@ -9,7 +9,7 @@ export default function DescriptionPage() {
   const router = useRouter();
   const { data, updateData } = useOnboarding();
   const [description, setDescription] = useState(data.description || '');
-   const maxLength = 500;
+   const maxLength = 5000;
   const minLength = 50;
     const isTooShort = description.trim().length > 0 && description.trim().length < minLength;
   const isTooLong = description.length > maxLength;

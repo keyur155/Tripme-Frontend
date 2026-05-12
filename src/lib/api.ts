@@ -237,8 +237,19 @@ class ApiClient {
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
+    
+    // Try to get filename from header
+    const contentDisposition = response.headers.get('Content-Disposition');
+    let fileName = `receipt-${bookingId}.html`;
+    if (contentDisposition) {
+      const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+      if (fileNameMatch && fileNameMatch[1]) {
+        fileName = fileNameMatch[1];
+      }
+    }
+    
     a.href = url;
-    a.download = `receipt-${bookingId}.html`;
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url);

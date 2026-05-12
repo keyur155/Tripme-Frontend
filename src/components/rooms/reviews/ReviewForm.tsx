@@ -95,7 +95,8 @@ export default function ReviewForm({
     }
   };
 
-  const averageRating = Object.values(formData.rating).reduce((sum, val) => sum + val, 0) / 6;
+  const ratings = Object.values(formData.rating).filter(val => val > 0);
+  const averageRating = ratings.length > 0 ? ratings.reduce((sum, val) => sum + val, 0) / ratings.length : 0;
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-lg border-gray-900">

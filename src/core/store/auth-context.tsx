@@ -75,18 +75,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Don't refresh if we already have user data and it's not forced
-    if (user && !force) {
-      return;
-    }
-
     try {
       setIsRefreshing(true);
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
       const response = await fetch(`${apiUrl}/auth/me`, {
         headers: {
           'Authorization': `Bearer ${authService.getToken()}`
-        }
+        },
+        cache: 'no-store'
       });
       if (response.ok) {
         const data = await response.json();

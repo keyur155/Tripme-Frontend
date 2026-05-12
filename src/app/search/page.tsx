@@ -960,6 +960,8 @@ const convertPropertyToStay = (property: any): Stay => {
       ...(property.isFeatured ? ['featured'] : []),
       ...(property.isSponsored ? ['sponsored'] : [])
     ],
+    badges: property.badges,
+    adminBadges: property.adminBadges,
     isTopRated: property.isTopRated || false,
     isFeatured: property.isFeatured || false,
     maxGuests: property.maxGuests || 1,
@@ -1160,15 +1162,20 @@ function SearchPageContent() {
     full: '92vh'
   };
 
-  const handleListScroll = (e: React.UIEvent<HTMLDivElement>) => {
+  const handleListScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     const scrollTop = e.currentTarget.scrollTop;
 
-    if ((sheetState === 'half' || sheetState === 'peek') && scrollTop > 12) {
-      setSheetState(prev => (prev === 'full' ? prev : 'full'));
+    // Only expand to full if we are not already there and have scrolled significantly
+    if (scrollTop > 20 && sheetState !== 'full') {
+      setSheetState('full');
     }
 
-    setShowStickyMapButton(scrollTop > 100);
-  };
+    // Only update sticky map button state when it actually changes
+    const shouldShow = scrollTop > 100;
+    if (showStickyMapButton !== shouldShow) {
+      setShowStickyMapButton(shouldShow);
+    }
+  }, [sheetState, showStickyMapButton]);
 
   // ─── Drag helpers ────────────────────────────────────────────────────────────
   // All coordinate tracking lives in refs so we never trigger re-renders
@@ -1822,10 +1829,13 @@ const handleDragEnd = () => {
     };
 
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      // Don't update map highlights if sheet is full (map is hidden) on mobile
+      if (window.innerWidth < 1024 && sheetState === 'full') return;
+
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const propertyId = entry.target.getAttribute('data-property-id');
-          if (propertyId) {
+          if (propertyId && hoveredPropertyId !== propertyId) {
             setHoveredPropertyId(propertyId);
           }
         }
@@ -1841,7 +1851,7 @@ const handleDragEnd = () => {
     return () => {
       observer.disconnect();
     };
-  }, [stayListings]);
+  }, [stayListings, sheetState, hoveredPropertyId]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -2070,6 +2080,7 @@ const handleDragEnd = () => {
             height: SHEET_HEIGHTS[sheetState],
             transition: 'height 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
             touchAction: 'none',
+            willChange: 'transform, height'
           }}
         >
           {/* Drag Handle */}

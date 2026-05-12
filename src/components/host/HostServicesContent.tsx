@@ -627,7 +627,11 @@ const HostServicesContent: React.FC = () => {
           </div>
           <div className="flex items-center bg-gray-100 text-gray-700 px-2.5 py-1 rounded-lg text-[11px] font-medium">
             <Clock className="w-3 h-3 mr-1" />
-            {service.duration ? `${service.duration.value} ${service.duration.unit}` : 'Flex'}
+            {service.duration?.minDuration && service.duration?.maxDuration 
+              ? `${service.duration.minDuration}-${service.duration.maxDuration} ${service.duration.unit}`
+              : service.duration?.value 
+                ? `${service.duration.value} ${service.duration.unit}`
+                : 'Flex'}
           </div>
         </div>
 

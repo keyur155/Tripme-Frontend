@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { apiClient } from "@/infrastructure/api/clients/api-client";
 import { useAuth } from "@/core/store/auth-context";
@@ -112,6 +113,7 @@ import { useUI } from "@/core/store/uiContext";
 import { TimeStepper } from "@/components/booking/TimeStepper";
 import { TimeSpinner } from "@/components/rooms/timeSelection/TimeSpinner";
 import { is } from "date-fns/locale";
+import { getBadgeConfig, Badge, BadgeGroup } from "@/components/ui/Badge";
 
 
 export default function PropertyDetailsPage() {
@@ -158,7 +160,7 @@ const PricingBadge = ({ badge }) => {
       
       {/* Icon */}
       <div className="text-lg">
-        {badge.icon}
+        {getBadgeConfig(badge.type)?.icon}
       </div>
 
       {/* Label */}
@@ -235,7 +237,7 @@ const FloatingInsightBadge = ({ badge }) => {
     >
       <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white border border-gray-200 shadow-lg">
         
-        <div className="text-lg">{badge.icon}</div>
+        <div className="text-lg">{getBadgeConfig(badge.type)?.icon}</div>
 
         <p className="text-sm font-medium text-gray-800">
           {badge.label}
@@ -618,6 +620,7 @@ const FloatingInsightBadge = ({ badge }) => {
 
   // UI state
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
 
   // Calendar navigation state
@@ -2078,18 +2081,24 @@ const FloatingInsightBadge = ({ badge }) => {
 
                   {heroBadge && (
                     <>
-                      <div className="hidden sm:block w-px h-8 bg-gray-200 flex-shrink-0" />
-                      <div className="hidden sm:flex items-center gap-2 flex-1 min-w-0">
-                        <span className="text-lg flex-shrink-0">{heroBadge.icon}</span>
+                      <div className="w-px h-6 sm:h-8 bg-gray-200 flex-shrink-0" />
+                      <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                        <span className={`flex-shrink-0 [&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6 ${getBadgeConfig(heroBadge.type)?.color || 'text-gray-900'}`}>
+                          {getBadgeConfig(heroBadge.type)?.icon}
+                        </span>
                         <div className="min-w-0">
-                          <p className="text-sm font-bold text-[#1A1A1A] truncate">{heroBadge.label}</p>
-                          <p className="text-xs text-gray-500 truncate">{heroBadge.description}</p>
+                          <p className="text-sm sm:text-base font-bold text-[#1A1A1A] leading-tight">
+                            {heroBadge.label}
+                          </p>
+                          <p className="hidden sm:block text-xs text-gray-500 mt-0.5 truncate">
+                            {heroBadge.description || (heroBadge.type === 'top_5_percent' ? 'One of the most loved homes on TripMe' : 'One of the highlights of this property')}
+                          </p>
                         </div>
                       </div>
                     </>
                   )}
 
-                  {property.reviewCount === 0 && (
+                  {property.reviewCount === 0 && !heroBadge && (
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-gray-500">Be the first to review this property</p>
                     </div>
@@ -2097,6 +2106,28 @@ const FloatingInsightBadge = ({ badge }) => {
 
                   <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0 ml-auto" />
                 </div>
+
+                {/* Detail Badges Section */}
+                {detailBadges.length > 0 && (
+                  <div className="mt-6 border-t border-gray-100 pt-6 space-y-5">
+                    {detailBadges.map((badge, idx) => {
+                      const config = getBadgeConfig(badge.type);
+                      return (
+                        <div key={idx} className="flex items-start gap-4">
+                          <div className={`mt-1 flex-shrink-0 [&>svg]:w-6 [&>svg]:h-6 ${config?.color || 'text-gray-900'}`}>
+                            {config?.icon}
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-gray-900 leading-tight">{badge.label}</h4>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {badge.description || `Highly rated for its ${badge.label.toLowerCase()}`}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Property Highlights */}
@@ -2133,32 +2164,18 @@ const FloatingInsightBadge = ({ badge }) => {
                 </div>
 
                 <div className="text-gray-600 leading-relaxed text-sm sm:text-[15px] break-words">
-                  {showFullDescription ? (
-                    <>
-                      <p className="whitespace-pre-line break-words">{property.description}</p>
-                      <button
-                        onClick={() => setShowFullDescription(false)}
-                        className="flex items-center gap-1 text-[#C45D3E] font-semibold mt-4 hover:text-[#A84B32] transition-colors text-sm"
-                      >
-                        <ChevronUp className="w-4 h-4" /> Show less
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <p className="whitespace-pre-line break-words">
-                        {property.description?.length > 300
-                          ? `${property.description.substring(0, 300)}...`
-                          : property.description}
-                      </p>
-                      {property.description?.length > 300 && (
-                        <button
-                          onClick={() => setShowFullDescription(true)}
-                          className="flex items-center gap-1 text-[#C45D3E] font-semibold mt-4 hover:text-[#A84B32] transition-colors text-sm"
-                        >
-                          <ChevronDown className="w-4 h-4" /> Show more
-                        </button>
-                      )}
-                    </>
+                  <p className="whitespace-pre-wrap break-words">
+                    {property.description?.length > 400
+                      ? `${property.description.substring(0, 400)}...`
+                      : property.description}
+                  </p>
+                  {property.description?.length > 400 && (
+                    <button
+                      onClick={() => setShowDescriptionModal(true)}
+                      className="flex items-center gap-1 text-[#1A1A1A] font-semibold underline mt-4 hover:text-gray-600 transition-colors text-[15px]"
+                    >
+                      Show more
+                    </button>
                   )}
                 </div>
               </div>
@@ -3689,9 +3706,94 @@ const FloatingInsightBadge = ({ badge }) => {
         )}
 
 
+        <DescriptionModal
+          isOpen={showDescriptionModal}
+          onClose={() => setShowDescriptionModal(false)}
+          description={property.description}
+        />
+
       </main>
 
       <Footer />
     </div>
+  );
+}
+
+// Separate component for the description modal
+function DescriptionModal({ isOpen, onClose, description }: { isOpen: boolean; onClose: () => void; description: string }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  if (!mounted) return null;
+
+  return createPortal(
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-6">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-black/10 "
+          />
+          
+          {/* Modal Content */}
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="relative bg-white w-full max-w-3xl max-h-[90vh] rounded-t-[2rem] sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+          >
+            {/* Header */}
+            <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between">
+              <button
+                onClick={onClose}
+                className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <h2 className="text-lg font-bold text-[#1A1A1A]">About this place</h2>
+              <div className="w-9" /> {/* Spacer for centering */}
+            </div>
+            
+            {/* Scrollable Body */}
+            <div className="flex-1 overflow-y-auto p-6 sm:p-10">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#1A1A1A] mb-6">
+                About this place
+              </h1>
+              <div className="text-gray-600 leading-relaxed text-base sm:text-lg whitespace-pre-wrap break-words">
+                {description}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end md:hidden">
+              <Button onClick={onClose} className="w-full bg-[#1A1A1A] text-white py-3">
+                Close
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body
   );
 }

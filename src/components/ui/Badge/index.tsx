@@ -614,15 +614,16 @@ export const CardBadge = memo(function CardBadge({
       className={`
         absolute ${positionClasses[position]} z-10
         inline-flex items-center gap-1
-        text-xs font-semibold
+        text-[8px] md:text-xs font-semibold
         px-2.5 py-1 rounded-full
         bg-white/95 backdrop-blur-sm shadow-sm
+        max-w-[calc(100%-4rem)]
         ${config?.color || 'text-gray-700'}
         ${className}
       `}
     >
-      {config?.icon && <span className="[&>svg]:w-3 [&>svg]:h-3">{config.icon}</span>}
-      {displayLabel}
+      {config?.icon && <span className="hidden md:inline-flex flex-shrink-0 [&>svg]:w-3 [&>svg]:h-3">{config.icon}</span>}
+      <span className="truncate">{displayLabel}</span>
     </span>
   );
 });

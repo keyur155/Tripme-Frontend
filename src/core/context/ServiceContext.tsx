@@ -45,6 +45,7 @@ export interface ServiceOnboardingData {
     basePrice: number;
     currency: string;
     perPersonPrice:number;
+    includedGuests: number;
     minPrice: number;
     maxPrice: number;
   };

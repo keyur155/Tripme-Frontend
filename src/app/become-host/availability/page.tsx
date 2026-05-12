@@ -16,6 +16,7 @@ export default function PricingPage() {
   // Base pricing
   const [basePrice, setBasePrice] = useState(data.pricing?.basePrice || 2500);
   const [extraGuestPrice, setExtraGuestPrice] = useState(data.pricing?.extraGuestPrice || 500);
+  const [includedGuests, setIncludedGuests] = useState(data.pricing?.includedGuests || 1);
   const [cleaningFee, setCleaningFee] = useState(data.pricing?.cleaningFee || 0);
   const [securityDeposit, setSecurityDeposit] = useState(data.pricing?.securityDeposit || 0);
 
@@ -91,6 +92,7 @@ export default function PricingPage() {
       pricing: {
         basePrice,
         extraGuestPrice,
+        includedGuests,
         cleaningFee,
         securityDeposit,
         weeklyDiscount,
@@ -239,12 +241,36 @@ export default function PricingPage() {
             Additional fees
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Included Guests */}
+            <div className="bg-white rounded-xl border border-gray-200 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Users className="w-4 h-4 text-gray-600" />
+                <label className="text-sm font-medium text-gray-700">Included guests</label>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setIncludedGuests(Math.max(1, includedGuests - 1))}
+                  className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-gray-900"
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
+                <span className="text-lg font-semibold text-gray-900 w-8 text-center">{includedGuests}</span>
+                <button
+                  onClick={() => setIncludedGuests(includedGuests + 1)}
+                  className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-gray-900"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">Included in base price</p>
+            </div>
+
             {/* Extra Guest Price */}
             <div className="bg-white rounded-xl border border-gray-200 p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Users className="w-4 h-4 text-gray-600" />
-                <label className="text-sm font-medium text-gray-700">Extra guest</label>
+                <label className="text-sm font-medium text-gray-700">Extra guest price</label>
               </div>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>

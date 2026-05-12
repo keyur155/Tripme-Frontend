@@ -58,7 +58,12 @@ type ServiceSummary = {
   image: string;
   location?: string;
   price?: { amount: number; currency: string };
-  duration?: { value?: number; unit?: string };
+  duration?: { 
+    value?: number; 
+    minDuration?: number; 
+    maxDuration?: number; 
+    unit?: string 
+  };
   serviceType?: string;
 };
 
@@ -541,6 +546,8 @@ export default function Home() {
             ...(property.isSponsored ? ['sponsored'] : []),
             ...(property.isNew ? ['new'] : [])
           ],
+          badges: property.badges,
+          adminBadges: property.adminBadges,
           isTopRated: property.isTopRated || false,
           isFeatured: property.isFeatured || false,
           instantBookable: property.instantBookable || false,
@@ -724,6 +731,8 @@ export default function Home() {
             ...(stay.isTopRated ? ['favourite', 'top-rated'] : []),
             ...(stay.isFeatured || true ? ['featured'] : [])
           ],
+          badges: stay.badges,
+          adminBadges: stay.adminBadges,
           isTopRated: stay.isTopRated || false,
           isFeatured: stay.isFeatured || true, // It's from the featured endpoint
           amenities: stay.amenities || []
@@ -816,7 +825,12 @@ export default function Home() {
               }
             : undefined,
           duration: service.duration
-            ? { value: service.duration.value, unit: service.duration.unit }
+            ? { 
+                value: service.duration.value, 
+                minDuration: service.duration.minDuration,
+                maxDuration: service.duration.maxDuration,
+                unit: service.duration.unit 
+              }
             : undefined,
           serviceType: service.serviceType
         };
@@ -1065,17 +1079,21 @@ export default function Home() {
 
 
   const ContinueBookingCard = ({ propertyName, imageSrc }: { propertyName: string, imageSrc: string }) => (
-  <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex items-center gap-4 max-w-sm">
-    <img src={imageSrc} className="w-16 h-16 rounded-xl object-cover" alt="Property" />
-    <div className="flex-1">
-      <p className="text-xs text-gray-500 uppercase font-bold tracking-tighter">Continue Booking</p>
-      <h4 className="font-semibold text-gray-900 line-clamp-1">{propertyName}</h4>
+    <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex items-center gap-4 w-full max-w-sm mx-auto">
+      <div className="relative w-16 h-16 flex-shrink-0">
+        <img src={imageSrc} className="w-full h-full rounded-xl object-cover shadow-sm" alt="Property" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] text-[#C45D3E] uppercase font-bold tracking-wider mb-0.5">Continue Booking</p>
+        <h4 className="font-bold text-gray-900 text-sm truncate">{propertyName}</h4>
+      </div>
+      <div className="flex-shrink-0">
+        <div className="bg-gray-50 p-2 rounded-full border border-gray-100 group-hover:bg-[#C45D3E]/10 transition-colors">
+          <ChevronRight size={18} className="text-gray-400 group-hover:text-[#C45D3E]" />
+        </div>
+      </div>
     </div>
-    <button className="bg-[#C45D3E] text-white p-2 rounded-full">
-      <ChevronRight size={20} />
-    </button>
-  </div>
-);
+  );
 
   const aboutHighlights: { icon: LucideIcon; title: string; description: string }[] = [
     {
@@ -1166,7 +1184,7 @@ export default function Home() {
 
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />
 
       {/* Copy Notification */}
@@ -1522,7 +1540,8 @@ export default function Home() {
                         beds: property.beds || 0,
                         bathrooms: property.bathrooms || 0,
                         tags: ['weekend-deal'],
-                        
+                        badges: property.badges,
+                        adminBadges: property.adminBadges,
                       }}
                       varient="featured"
                       isFavorite={isFav}
@@ -1569,7 +1588,8 @@ export default function Home() {
                         beds: 0,
                         bathrooms: 0,
                         tags: ['featured'],
-                        
+                        badges: stay.badges,
+                        adminBadges: stay.adminBadges,
                       }}
                       varient="featured"
                       isFavorite={isFav}
@@ -2250,6 +2270,8 @@ export default function Home() {
                         beds: property.beds || 0,
                         bathrooms: property.bathrooms || 0,
                         tags: ['weekend-deal'],
+                        badges: property.badges,
+                        adminBadges: property.adminBadges,
                       }}
                       isFavorite={favorites.has(property._id)}
                       onFavorite={handleFavorite}
@@ -2301,6 +2323,8 @@ export default function Home() {
                         beds: 0,
                         bathrooms: 0,
                         tags: ['featured'],
+                        badges: stay.badges,
+                        adminBadges: stay.adminBadges,
                       }}
                       isFavorite={favorites.has(stay._id)}
                       onFavorite={handleFavorite}

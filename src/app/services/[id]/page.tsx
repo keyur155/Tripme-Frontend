@@ -24,7 +24,10 @@ import {
   Image as ImageIcon,
   ChevronLeft,
   ChevronRight,
+  X,
 } from 'lucide-react';
+import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 import PropertyMap from "@/components/rooms/PropertyMap";
 import Image from 'next/image';
 
@@ -41,7 +44,12 @@ interface ServiceDetails {
     reviewCount?: number;
   };
   serviceType: string;
-  duration: { value: number; unit: string };
+  duration: { 
+    value?: number; 
+    minDuration?: number; 
+    maxDuration?: number; 
+    unit: 'minutes' | 'hours' | 'days' 
+  };
   location: {
     city: string;
     state?: string;
@@ -114,6 +122,8 @@ export default function ServiceDetailsPage() {
   const [isProvider, setIsProvider] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
 
   // Slot-based booking state
   const [calendarWeekStart, setCalendarWeekStart] = useState<Date>(() => startOfDay(new Date()));
@@ -189,11 +199,20 @@ export default function ServiceDetailsPage() {
     return type.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   };
 
-  const formatDuration = (value: number, unit: string) => {
-    if (unit === 'hours') return value === 1 ? '1 hr' : `${value} hrs`;
-    if (unit === 'minutes') return `${value} min`;
-    if (unit === 'days') return value === 1 ? '1 day' : `${value} days`;
-    return `${value} ${unit}`;
+  const formatDuration = (duration: { value?: number; minDuration?: number; maxDuration?: number; unit: string }) => {
+    const { value, minDuration, maxDuration, unit } = duration;
+    const label = unit === 'hours' ? (value === 1 ? 'hr' : 'hrs') : unit === 'days' ? (value === 1 ? 'day' : 'days') : 'min';
+    
+    if (minDuration && maxDuration) {
+      return `${minDuration}–${maxDuration} ${unit}`;
+    }
+    if (value) {
+      if (unit === 'hours') return value === 1 ? '1 hr' : `${value} hrs`;
+      if (unit === 'minutes') return `${value} min`;
+      if (unit === 'days') return value === 1 ? '1 day' : `${value} days`;
+      return `${value} ${unit}`;
+    }
+    return 'Flexible';
   };
 
   if (loading) {
@@ -231,7 +250,9 @@ export default function ServiceDetailsPage() {
     );
   }
 
-  const durationLabel = `${service.duration.value} ${service.duration.unit}`;
+  const durationLabel = service.duration.minDuration && service.duration.maxDuration 
+    ? `${service.duration.minDuration}–${service.duration.maxDuration} ${service.duration.unit}`
+    : `${service.duration.value || ''} ${service.duration.unit}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white overflow-x-hidden">
@@ -344,7 +365,7 @@ export default function ServiceDetailsPage() {
                 <div className="text-center p-4 bg-white rounded-xl shadow-sm border border-gray-100">
                   <Clock size={24} className="text-[#C45D3E] mx-auto mb-2" />
                   <div className="text-sm text-gray-600">Duration</div>
-                  <div className="font-semibold text-gray-900">{formatDuration(service.duration.value, service.duration.unit)}</div>
+                  <div className="font-semibold text-gray-900">{formatDuration(service.duration)}</div>
                 </div>
                 <div className="text-center p-4 bg-white rounded-xl shadow-sm border border-gray-100">
                   <Shield size={24} className="text-green-600 mx-auto mb-2" />
@@ -361,7 +382,19 @@ export default function ServiceDetailsPage() {
               {/* Description */}
               <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">About this service</h3>
-                <p className="text-gray-700 leading-relaxed">{service.description}</p>
+                <div className="relative">
+                  <p className={`text-gray-700 leading-relaxed ${!showFullDescription ? 'line-clamp-[6]' : ''}`}>
+                    {service.description}
+                  </p>
+                  {service.description.length > 400 && (
+                    <button 
+                      onClick={() => setIsDescriptionModalOpen(true)}
+                      className="mt-3 font-semibold text-gray-900 underline flex items-center gap-1 hover:text-[#C45D3E] transition-colors"
+                    >
+                      Show more <ChevronRight size={16} />
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Requirements */}
@@ -499,7 +532,7 @@ export default function ServiceDetailsPage() {
                 <div>
                   <h4 style={{ fontWeight: 600, fontSize: 14, marginBottom: 10 }}>Service details</h4>
                   <p style={{ fontSize: 13, color: "#717171", lineHeight: 1.6 }}>
-                    Duration: {formatDuration(service.duration.value, service.duration.unit)}. Type: {service.serviceType}.
+                    Duration: {formatDuration(service.duration)}. Type: {service.serviceType}.
                   </p>
                 </div>
                 <div>
@@ -809,8 +842,109 @@ export default function ServiceDetailsPage() {
 
       
 
+      <DescriptionModal
+        isOpen={isDescriptionModalOpen}
+        onClose={() => setIsDescriptionModalOpen(false)}
+        description={service.description}
+        title={service.title}
+      />
       <Footer />
     </div>
   );
 }
+
+// Modal Component for Description
+const DescriptionModal = ({ 
+  isOpen, 
+  onClose, 
+  description, 
+  title 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  description: string;
+  title: string;
+}) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  if (!mounted) return null;
+
+  return createPortal(
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center sm:p-6">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          />
+          
+          {/* Modal Content */}
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="relative w-full max-w-3xl bg-white rounded-t-[2rem] sm:rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+          >
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white px-6 py-4 border-b border-gray-100 flex items-center justify-between z-10">
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="Close modal"
+              >
+                <X size={24} className="text-gray-600" />
+              </button>
+              <h2 className="text-xl font-bold text-gray-900 flex-1 text-center pr-10">
+                About this service
+              </h2>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 overflow-y-auto p-6 sm:p-8">
+              <div className="max-w-2xl mx-auto">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">{title}</h3>
+                <div className="prose prose-lg max-w-none">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-lg">
+                    {description}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end">
+              <Button 
+                onClick={onClose}
+                className="bg-gray-900 text-white px-8 rounded-xl"
+              >
+                Close
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body
+  );
+};
 

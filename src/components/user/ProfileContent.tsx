@@ -48,6 +48,19 @@ const ProfileContent: React.FC = () => {
       });
     }
   }, [user]);
+
+  // Polling for email verification status
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (user && !user.isVerified) {
+      interval = setInterval(() => {
+        refreshUser();
+      }, 5000); // Check every 5 seconds
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [user?.isVerified, refreshUser]);
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
   const [isLoading, setIsLoading] = useState(false);
@@ -694,6 +707,13 @@ const ProfileContent: React.FC = () => {
                       {resendLoading ? 'Sending...' : 'Resend verification email'}
                     </button>
                   )}
+                  <button
+                    onClick={() => refreshUser()}
+                    className="inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-amber-700 text-xs font-semibold px-4 py-2 rounded-full border border-amber-200 transition-all duration-200 shadow-sm"
+                  >
+                    <RefreshCw size={13} />
+                    Check Status
+                  </button>
                   {resendError && (
                     <span className="text-red-600 text-xs font-medium">{resendError}</span>
                   )}
@@ -740,8 +760,8 @@ const ProfileContent: React.FC = () => {
                 {user.role === 'host' && (
                   <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Host</span>
                 )}
-                <span className={`px-3 py-1 rounded-full text-xs font-bold ${user.kyc?.status === 'verified' ? 'bg-[#F5E6D3] text-[#C45D3E]' : 'bg-gray-100 text-gray-500'}`}>
-                  {user.kyc?.status === 'verified' ? 'Verified' : 'Unverified'}
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${user.kyc?.status === 'verified' ? 'bg-green-100 text-green-700' : user.isVerified ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
+                  {user.kyc?.status === 'verified' ? 'Identity Verified' : user.isVerified ? 'Email Verified' : 'Unverified'}
                 </span>
               </div>
             </div>
@@ -883,6 +903,11 @@ const ProfileContent: React.FC = () => {
                     <span className="inline-flex items-center gap-2 bg-gradient-to-r from-red-100 to-rose-100 text-red-800 text-sm font-semibold px-4 py-2 rounded-full border border-red-200 shadow-sm">
                       <Shield size={14} />
                       Verification Rejected
+                    </span>
+                  ) : user.isVerified ? (
+                    <span className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-800 text-sm font-semibold px-4 py-2 rounded-full border border-blue-100 shadow-sm">
+                      <Mail size={14} />
+                      Email Verified
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-2 bg-gradient-to-r from-gray-100 to-slate-100 text-gray-800 text-sm font-semibold px-4 py-2 rounded-full border border-gray-200 shadow-sm">

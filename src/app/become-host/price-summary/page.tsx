@@ -141,7 +141,7 @@ export default function PriceSummaryPage() {
                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                   <span className="flex items-center gap-2 text-gray-700">
                     <Users className="w-4 h-4" />
-                    Extra guest price
+                    Extra guest price (after {data.pricing?.includedGuests || 1} { (data.pricing?.includedGuests || 1) > 1 ? 'guests' : 'guest' })
                   </span>
                   <span className="font-semibold text-gray-900">₹{extraGuestPrice.toLocaleString()}/night</span>
                 </div>

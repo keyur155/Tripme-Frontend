@@ -140,6 +140,7 @@ export default function ReviewPage() {
         pricing: {
           basePrice: data.pricing?.basePrice || 2500,
           currency: 'INR',
+          includedGuests: data.pricing?.includedGuests || 1,
           extraGuestPrice: data.pricing?.extraGuestPrice || 0,
           cleaningFee: data.pricing?.cleaningFee || 0,
           securityDeposit: data.pricing?.securityDeposit || 0,
@@ -365,11 +366,16 @@ export default function ReviewPage() {
           <div className="p-4 bg-gray-50 rounded-xl">
             <div className="flex items-center justify-between mb-1">
               <div className="text-sm text-gray-500">Price per night</div>
-              <EditButton step="pricing" />
+              <EditButton step="availability" />
             </div>
-            <p className="text-2xl font-semibold text-gray-900">
-              ₹{(data.pricing?.basePrice || 2500).toLocaleString()}
-            </p>
+            <div className="flex items-end justify-between">
+              <p className="text-2xl font-semibold text-gray-900">
+                ₹{(data.pricing?.basePrice || 2500).toLocaleString()}
+              </p>
+              <p className="text-sm text-gray-500 mb-1">
+                {data.pricing?.includedGuests || 1} { (data.pricing?.includedGuests || 1) > 1 ? 'guests' : 'guest' } included
+              </p>
+            </div>
           </div>
 
           {/* Amenities */}

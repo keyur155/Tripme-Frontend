@@ -384,6 +384,24 @@ export default function BookingDetailsPage() {
     }
   };
 
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadReceipt = async () => {
+    if (!booking?._id) return;
+    
+    try {
+      setDownloading(true);
+      await apiClient.downloadReceipt(booking._id);
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('Failed to download receipt. Please try again later.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'confirmed':
@@ -728,14 +746,12 @@ export default function BookingDetailsPage() {
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3">
                 <button
-                  onClick={() => {
-                    // TODO: Implement download receipt functionality
-                    console.log('Download receipt');
-                  }}
-                  className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all shadow-sm"
+                  onClick={handleDownloadReceipt}
+                  disabled={downloading}
+                  className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all shadow-sm disabled:opacity-50"
                 >
-                  <Download className="w-5 h-5" />
-                  Download Receipt
+                  <Download className={`w-5 h-5 ${downloading ? 'animate-bounce' : ''}`} />
+                  {downloading ? 'Downloading...' : 'Download Receipt'}
                 </button>
                 <button
                   onClick={() => {
@@ -794,10 +810,20 @@ export default function BookingDetailsPage() {
 
                 <div className="border-t pt-4">
                   <h3 className="text-sm font-medium text-gray-900 mb-2">Description</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {booking.listing?.description || 'No description available.'}
-                          </p>
-                      </div>
+                  <div className="text-gray-600 text-sm leading-relaxed relative">
+                    <p className={`${!showFullDescription && (booking.listing?.description || booking.service?.description)?.length > 300 ? 'line-clamp-4' : ''}`}>
+                      {booking.listing?.description || booking.service?.description || 'No description available.'}
+                    </p>
+                    {(booking.listing?.description || booking.service?.description || '').length > 300 && (
+                      <button 
+                        onClick={() => setShowFullDescription(!showFullDescription)}
+                        className="mt-2 text-[#C45D3E] font-semibold hover:underline flex items-center gap-1"
+                      >
+                        {showFullDescription ? 'Show less' : 'Show more'}
+                      </button>
+                    )}
+                  </div>
+                </div>
                     </div>
                             </div>
 
@@ -1177,9 +1203,13 @@ export default function BookingDetailsPage() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Actions</h3>
               
               <div className="space-y-3">
-                <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
-                  <Download className="w-4 h-4" />
-                  <span>Download Receipt</span>
+                <button 
+                  onClick={handleDownloadReceipt}
+                  disabled={downloading}
+                  className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  <Download className={`w-4 h-4 ${downloading ? 'animate-bounce' : ''}`} />
+                  <span>{downloading ? 'Downloading...' : 'Download Receipt'}</span>
                 </button>
                 
                 <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
@@ -1187,7 +1217,7 @@ export default function BookingDetailsPage() {
                   <span>Copy Booking ID</span>
                 </button>
                 
-                {(booking.refundAmount && booking.refundAmount > 0) && (
+                {(!!booking.refundAmount && booking.refundAmount > 0) && (
                   <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
                     <CheckCircle className="w-4 h-4" />
                     <span>View Refund Status</span>
@@ -1239,8 +1269,8 @@ export default function BookingDetailsPage() {
 
         </div>
 
-        {/* booking.status === 'completed' && new Date(booking.checkOut) < new Date() */}
-                  {true && (
+        { booking.status === 'completed' && new Date(booking.checkOut) < new Date() 
+                 && (
   <div className="bg-white rounded-xl shadow-sm mt-5 border-gray-200 p-6">
     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
       <Star className="w-5 h-5 mr-2 text-yellow-500" />

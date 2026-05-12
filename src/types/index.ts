@@ -267,7 +267,12 @@ export interface Service {
   description: string;
   provider: string | User;
   serviceType: 'tour-guide' | 'car-rental' | 'wellness' | 'chef' | 'photographer' | 'hairdresser' | 'yoga-teacher' | 'transportation' | 'other';
-  duration: { value: number; unit: 'minutes' | 'hours' | 'days' };
+  duration: { 
+    value?: number; 
+    minDuration?: number; 
+    maxDuration?: number; 
+    unit: 'minutes' | 'hours' | 'days' 
+  };
   location: Location;
   groupSize: {
     min: number;
