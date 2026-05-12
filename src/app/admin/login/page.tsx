@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/core/store/auth-context';
 
 import { authService } from '@/core/services/auth.service';
-import { Shield, Eye, EyeOff, Lock, User, ArrowRight } from 'lucide-react';
+import { Shield, Eye, EyeOff, Lock, User, ArrowRight, Mail } from 'lucide-react';
 
 interface AdminLoginForm {
   email: string;
@@ -25,6 +25,9 @@ export default function AdminLoginPage() {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [testEmail, setTestEmail] = useState('');
+  const [testLoading, setTestLoading] = useState(false);
+  const [testResult, setTestResult] = useState<string | null>(null);
 
   // Check if admin is already logged in and redirect to dashboard
   useEffect(() => {
@@ -110,6 +113,26 @@ export default function AdminLoginPage() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleTestEmail = async () => {
+    if (!testEmail.trim()) return;
+    setTestLoading(true);
+    setTestResult(null);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const res = await fetch(`${apiUrl}/test-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to: testEmail.trim() }),
+      });
+      const data = await res.json();
+      setTestResult(JSON.stringify(data, null, 2));
+    } catch (err: any) {
+      setTestResult(`Network error: ${err.message}`);
+    } finally {
+      setTestLoading(false);
     }
   };
 
@@ -293,6 +316,35 @@ export default function AdminLoginPage() {
             <Shield className="h-4 w-4" />
             <span>🔒 Enterprise-grade security</span>
           </div>
+        </div>
+
+        {/* Test Email Section */}
+        <div className="bg-slate-800/50 backdrop-blur-xl border border-amber-500/30 rounded-2xl p-6 mt-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Mail className="h-5 w-5 text-amber-400" />
+            <h3 className="text-amber-400 font-semibold text-sm uppercase tracking-wide">Email Debug Tool</h3>
+          </div>
+          <div className="flex gap-2 mb-3">
+            <input
+              type="email"
+              value={testEmail}
+              onChange={(e) => setTestEmail(e.target.value)}
+              placeholder="Enter email to test"
+              className="flex-1 px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+            />
+            <button
+              onClick={handleTestEmail}
+              disabled={testLoading || !testEmail.trim()}
+              className="px-5 py-3 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+            >
+              {testLoading ? 'Sending...' : 'Send Test'}
+            </button>
+          </div>
+          {testResult && (
+            <pre className="mt-3 p-3 bg-slate-900/80 border border-slate-700 rounded-lg text-xs text-slate-300 overflow-auto max-h-48 whitespace-pre-wrap">
+              {testResult}
+            </pre>
+          )}
         </div>
       </div>
     </div>
