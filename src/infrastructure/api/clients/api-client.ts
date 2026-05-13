@@ -602,7 +602,76 @@ class ApiClient {
     });
   }
 
+  // Service recommendation endpoints
+  async getRecommendedServices(params: {
+    propertyId: string;
+    checkIn?: string;
+    checkOut?: string;
+    adults?: number;
+    children?: number;
+    limit?: number;
+  }): Promise<ApiResponse<any>> {
+    const queryParams = new URLSearchParams(
+      Object.entries(params)
+        .filter(([, v]) => v !== undefined && v !== null)
+        .map(([k, v]) => [k, String(v)])
+    );
+    return this.request(`/services/recommended?${queryParams.toString()}`);
+  }
+
+  async calculateAddonTotal(data: {
+    selectedServices: Array<{ serviceId: string; quantity?: number }>;
+    checkIn?: string;
+    checkOut?: string;
+    adults?: number;
+    children?: number;
+  }): Promise<ApiResponse<any>> {
+    return this.request('/services/calculate-addon-total', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async validateAddons(data: {
+    selectedServices: Array<{ serviceId: string }>;
+    checkIn?: string;
+    checkOut?: string;
+  }): Promise<ApiResponse<any>> {
+    return this.request('/services/validate-addons', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Service slot endpoints
+  async getServiceSlots(serviceId: string, date: string): Promise<ApiResponse<any>> {
+    return this.request(`/services/${serviceId}/slots?date=${date}`);
+  }
+
+  async checkSlotAvailability(serviceId: string, slots: Array<{ slotId: string; quantity?: number }>): Promise<ApiResponse<any>> {
+    return this.request(`/services/${serviceId}/slots/check`, {
+      method: 'POST',
+      body: JSON.stringify({ slots }),
+    });
+  }
+
   // Pricing endpoints
+  async calculateFullPrice(data: {
+    propertyId: string;
+    checkIn: string;
+    checkOut: string;
+    guests: { adults: number; children?: number };
+    couponCode?: string;
+    hourlyExtension?: number | { hours: number };
+    addonServices?: Array<{ serviceId: string; quantity?: number; selectedSlot?: any }>;
+    isLateCheckIn?: boolean;
+  }): Promise<ApiResponse<any>> {
+    return this.request('/pricing/calculate-full', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   async getPlatformFeeRate(): Promise<ApiResponse<{ rate: number, ratePercentage: string, gstRate: number }>> {
     return this.request('/pricing/platform-fee-rate');
   }
@@ -687,7 +756,8 @@ class ApiClient {
       totalAmount: number;
       currency?: string;
     },
-    isService: boolean = false
+    isService: boolean = false,
+    addonServicesTotal: number = 0
   ): Promise<ApiResponse<any>> {
     return this.request('/payments/create-order', {
       method: 'POST',
@@ -700,6 +770,7 @@ class ApiClient {
         ),
         amount,
         currency,
+        addonServicesTotal,
         ...(securePricingContext?.pricingToken && {
           pricingToken: securePricingContext.pricingToken,
           pricingContext: {
@@ -918,11 +989,6 @@ class ApiClient {
     return this.request('/bookings/stats');
   }
 
-  async getHostBookings(params?: any): Promise<ApiResponse<any>> {
-    const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
-    return this.request(`/bookings/host${queryString}`);
-  }
-
   async getAdminDashboardStats(): Promise<ApiResponse<any>> {
     return this.request('/admin/dashboard/stats');
   }
@@ -972,13 +1038,13 @@ class ApiClient {
     return this.request(`/admin/properties${queryParams}`);
   }
 
-  async approveListing(listingId: string): Promise<ApiResponse<any>> {
+  async adminApproveListing(listingId: string): Promise<ApiResponse<any>> {
     return this.request(`/admin/listings/${listingId}/approve`, {
       method: 'PUT',
     });
   }
 
-  async rejectListing(listingId: string, reason: string): Promise<ApiResponse<any>> {
+  async adminRejectListing(listingId: string, reason: string): Promise<ApiResponse<any>> {
     return this.request(`/admin/listings/${listingId}/reject`, {
       method: 'PUT',
       body: JSON.stringify({ reason }),

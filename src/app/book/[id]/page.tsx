@@ -9,6 +9,7 @@ import { User as UserType } from "@/shared/types";
 import { securePricingAPI } from "@/infrastructure/api/securePricing-api";
 import { formatCurrency } from "@/shared/constants/pricing.constants";
 import PricingBreakdown from "@/components/booking/PricingBreakdown";
+import RecommendedServices, { SelectedAddon } from "@/components/booking/RecommendedServices";
 import LoginModal from "@/components/booking/LoginModal";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
@@ -95,7 +96,9 @@ const PaymentModal: React.FC<{
     totalAmount: number;
     currency?: string;
   };
-}> = ({ isOpen, onClose, onSuccess, amount, loading, bookingId, propertyId, user, securePricingContext, setPaymentModalStep, externalError }) => {
+  /** Addon services total for token validation adjustment */
+  addonServicesTotal?: number;
+}> = ({ isOpen, onClose, onSuccess, amount, loading, bookingId, propertyId, user, securePricingContext, setPaymentModalStep, externalError, addonServicesTotal = 0 }) => {
   const [paymentStep, setPaymentStep] = useState<'init' | 'processing' | 'success' | 'error'>('init');
   const [error, setError] = useState('');
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
@@ -175,7 +178,9 @@ const PaymentModal: React.FC<{
           nights: securePricingContext.nights,
           totalAmount: securePricingContext.totalAmount,
           currency: securePricingContext.currency || 'INR'
-        } : undefined
+        } : undefined,
+        false, // isService
+        addonServicesTotal // Pass addon total for token validation adjustment
       );
 
       console.log('📦 Order response:', orderResponse);
@@ -489,6 +494,10 @@ export default function BookingPage() {
   const [blockingTimer, setBlockingTimer] = useState<NodeJS.Timeout | null>(null);
   const [blockingExpiry, setBlockingExpiry] = useState<Date | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false); // Flag to prevent conflicting redirects
+
+  // Addon services state
+  const [selectedAddons, setSelectedAddons] = useState<SelectedAddon[]>([]);
+  const [addonServicesTotal, setAddonServicesTotal] = useState(0);
 
   const { hideHeader, setHideBottomNav, setHideHeader } = useUI();
   // Platform fee rate is now handled by backend API
@@ -2392,6 +2401,16 @@ export default function BookingPage() {
         }),
         // Include pricing token for backend validation (prevents price manipulation)
         ...(priceBreakdown?.pricingToken && { pricingToken: priceBreakdown.pricingToken }),
+        // Include selected addon services with slot info
+        ...(selectedAddons.length > 0 && {
+          addonServices: selectedAddons.map(addon => ({
+            serviceId: addon.serviceId,
+            quantity: addon.quantity,
+            ...(addon.selectedSlot && { selectedSlot: addon.selectedSlot })
+          }))
+        }),
+        // Include addon services total for Razorpay amount verification
+        addonServicesTotal: addonServicesTotal,
       };
 
       console.log('🚀 isLateCheckIn flags:', { _lateCheckIn, _is24Computed, selectedTime: _selectedTime });
@@ -3757,6 +3776,32 @@ export default function BookingPage() {
                 </div>
 
 
+                {/* Recommended Area Services */}
+                {property?._id && bookingData.checkIn && bookingData.checkOut && (
+                  <div className="mb-6">
+                    <RecommendedServices
+                      propertyId={property._id}
+                      checkIn={
+                        bookingData.checkIn instanceof Date
+                          ? bookingData.checkIn.toLocaleDateString('en-CA')
+                          : String(bookingData.checkIn)
+                      }
+                      checkOut={
+                        bookingData.checkOut instanceof Date
+                          ? bookingData.checkOut.toLocaleDateString('en-CA')
+                          : String(bookingData.checkOut)
+                      }
+                      adults={bookingData.guests?.adults || 1}
+                      children={bookingData.guests?.children || 0}
+                      nights={priceBreakdown?.nights || 1}
+                      onSelectionChange={(selected, total) => {
+                        setSelectedAddons(selected);
+                        setAddonServicesTotal(total);
+                      }}
+                    />
+                  </div>
+                )}
+
                 {/* Price Breakdown */}
                 <div className="mb-8">
                   {!priceBreakdown.total ? (
@@ -3765,11 +3810,36 @@ export default function BookingPage() {
                       <span className="ml-3 text-gray-600">Loading pricing...</span>
                     </div>
                   ) : priceBreakdown ? (
-                    <PricingBreakdown
-                      pricing={priceBreakdown}
-                      showPlatformFees={true}
-                      variant="customer"
-                    />
+                    <>
+                      <PricingBreakdown
+                        pricing={priceBreakdown}
+                        showPlatformFees={true}
+                        variant="customer"
+                      />
+                      {/* Addon Services in Price Summary */}
+                      {addonServicesTotal > 0 && (
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <div className="space-y-1.5">
+                            {selectedAddons.map((addon) => (
+                              <div key={addon.serviceId} className="flex items-center justify-between text-sm">
+                                <span className="text-gray-600 truncate flex-1">
+                                  {addon.title}{addon.quantity > 1 ? ` × ${addon.quantity}` : ''}
+                                </span>
+                                <span className="text-gray-900 font-medium ml-2">
+                                  {formatPrice(addon.lineTotal)}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex items-center justify-between mt-3 pt-3 border-t border-dashed border-gray-200">
+                            <span className="text-base font-bold text-gray-900">Grand Total</span>
+                            <span className="text-base font-bold text-[#C45D3E]">
+                              {formatPrice((priceBreakdown?.total || 0) + addonServicesTotal)}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   ) : (
                     <div className="text-gray-500 text-center py-4">
                       Please select dates to see pricing
@@ -3953,7 +4023,7 @@ export default function BookingPage() {
           setShowPaymentModal(false);
         }}
         onSuccess={handlePaymentSuccess}
-        amount={priceBreakdown?.total || 0}
+        amount={(priceBreakdown?.total || 0) + addonServicesTotal}
         loading={bookingLoading}
         bookingId={null}
         propertyId={id as string}
@@ -3965,9 +4035,10 @@ export default function BookingPage() {
           checkOut: bookingData.checkOut instanceof Date ? bookingData.checkOut.toLocaleDateString('en-CA') : String(bookingData.checkOut || ''),
           guests: bookingData.guests,
           nights: priceBreakdown?.nights || 0,
-          totalAmount: priceBreakdown?.total || 0,
+          totalAmount: (priceBreakdown?.total || 0) + addonServicesTotal,
           currency: 'INR'
         }}
+        addonServicesTotal={addonServicesTotal}
       />
 
       {/* Coupon Picker Modal */}

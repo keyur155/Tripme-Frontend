@@ -103,7 +103,7 @@ export default function AdminListings() {
 
   const handleApprove = async (listingId: string) => {
     try {
-      const response = await apiClient.approveListing(listingId);
+      const response = await apiClient.adminApproveListing(listingId);
       if (response.success) {
         // Update the listing in the local state
         setListings(listings.map(listing => 
@@ -121,7 +121,7 @@ export default function AdminListings() {
     const reason = prompt('Please provide a reason for rejection:');
     if (reason) {
       try {
-        const response = await apiClient.rejectListing(listingId, reason);
+        const response = await apiClient.adminRejectListing(listingId, reason);
         if (response.success) {
           // Update the listing in the local state
           setListings(listings.map(listing => 

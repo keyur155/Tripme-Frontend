@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { apiClient } from '@/infrastructure/api/clients/api-client';
 import { useAuth } from '@/core/store/auth-context';
-import { 
+import {
   ArrowLeft,
   Calendar,
   Clock,
@@ -43,7 +43,8 @@ import {
   Copy,
   ExternalLink,
   CheckSquare,
-  CreditCard
+  CreditCard,
+  Sparkles
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
@@ -158,6 +159,27 @@ interface BookingDetails {
   bookingType?: 'daily' | '24hour' | 'hourly';
   is24Hour?: boolean;
   checkOutTime?: string;
+  addonServices?: Array<{
+    service: string;
+    title: string;
+    serviceType: string;
+    quantity: number;
+    unitPrice: number;
+    lineTotal: number;
+    pricingType: string;
+    pricingLabel: string;
+    gstRate: number;
+    gstAmount: number;
+    totalWithGST: number;
+    selectedSlot?: {
+      slotId: string;
+      date: string;
+      startTime: string;
+      endTime: string;
+    } | null;
+    status: string;
+  }>;
+  addonServicesTotal?: number;
   pricingBreakdown?: {
     customerBreakdown: {
     baseAmount: number;
@@ -171,6 +193,10 @@ interface BookingDetails {
       processingFee: number;
       gst: number;
       totalAmount: number;
+      addonSubtotal?: number;
+      addonGST?: number;
+      addonTotal?: number;
+      addonServicesTotal?: number;
     };
     hostBreakdown: {
       baseAmount: number;
@@ -1151,7 +1177,51 @@ export default function BookingDetailsPage() {
                     </span>
               </div>
             )}
-                
+
+                {/* Addon Services */}
+                {booking.addonServices && booking.addonServices.length > 0 && (
+                  <div className="border-t border-gray-100 pt-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Sparkles className="w-4 h-4 text-[#C45D3E]" />
+                      <span className="text-sm font-semibold text-gray-700">Additional Services</span>
+                    </div>
+                    <div className="space-y-2">
+                      {booking.addonServices.map((addon, idx) => (
+                        <div key={idx} className="flex justify-between items-start py-2 text-sm">
+                          <div className="flex-1">
+                            <div className="font-medium text-gray-900">{addon.title}</div>
+                            <div className="text-xs text-gray-500">
+                              {addon.quantity > 1 && `× ${addon.quantity} • `}
+                              {addon.pricingLabel}
+                              {addon.selectedSlot && (
+                                <span className="ml-1 text-[#C45D3E]">
+                                  ({addon.selectedSlot.startTime} - {addon.selectedSlot.endTime})
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-medium text-gray-900">
+                              {formatCurrency(addon.totalWithGST)}
+                            </div>
+                            {addon.gstAmount > 0 && (
+                              <div className="text-xs text-gray-400">
+                                incl. {formatCurrency(addon.gstAmount)} GST
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      <div className="flex justify-between items-center py-2 border-t border-gray-100 mt-2">
+                        <span className="text-sm font-medium text-gray-700">Addon Services Total</span>
+                        <span className="text-sm font-semibold text-[#C45D3E]">
+                          {formatCurrency(booking.addonServicesTotal || booking.pricingBreakdown?.customerBreakdown?.addonTotal || 0)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Subtotal */}
                 <div className="border-t border-gray-200 pt-3">
                   <div className="flex justify-between items-center py-2">
