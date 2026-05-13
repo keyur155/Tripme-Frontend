@@ -614,6 +614,7 @@ const FloatingInsightBadge = ({ badge }) => {
 
   // Booked dates state - for showing red marks on calendar
   const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
+  const [availabilityStatusMap, setAvailabilityStatusMap] = useState<Map<string, string>>(new Map());
 
   // Maintenance info by date - for validating check-in times
   const [maintenanceByDate, setMaintenanceByDate] = useState<Map<string, { availableAfter: Date; availableHours?: Array<{ startTime: string; endTime: string }> }>>(new Map());
@@ -963,12 +964,14 @@ const FloatingInsightBadge = ({ badge }) => {
 
         if (response.success && response.data?.availability) {
           const bookedSet = new Set<string>();
+          const statusMap = new Map<string, string>();
           const maintenanceMap = new Map<string, { availableAfter: Date }>();
 
           response.data.availability.forEach((slot: any) => {
-            // FIXED: Use local date format to avoid timezone shift issues
             const slotDate = new Date(slot.date);
-            const dateStr = `${slotDate.getFullYear()}-${String(slotDate.getMonth() + 1).padStart(2, '0')}-${String(slotDate.getDate()).padStart(2, '0')}`;
+            const dateStr = format(slotDate, 'yyyy-MM-dd');
+
+            statusMap.set(dateStr, slot.status);
 
             // Store maintenance info if available
             if (slot.maintenance?.availableAfter) {
@@ -979,7 +982,6 @@ const FloatingInsightBadge = ({ badge }) => {
                 availableAfter,
                 availableHours: slot.availableHours || existing.availableHours
               });
-              console.log(`🔧 Maintenance info for ${dateStr}: available after ${availableAfter.toISOString()}`);
             }
 
             // Store hour restrictions for available dates
@@ -989,22 +991,19 @@ const FloatingInsightBadge = ({ badge }) => {
                 ...existing,
                 availableHours: slot.availableHours
               });
-              console.log(`⏰ Hour restrictions for ${dateStr}:`, slot.availableHours);
             }
 
-            // Mark dates that are booked, blocked, maintenance, unavailable, or partially-available
-            // 'partially-available' = checkout day with time restriction — must appear blocked in calendar
-            // so users know they cannot freely check in at any time.
-            if (['booked', 'blocked', 'maintenance', 'unavailable', 'partially-available'].includes(slot.status)) {
+            // Mark dates that are fully booked or blocked (NOT partially-available - those are selectable)
+            if (['booked', 'blocked', 'maintenance', 'unavailable'].includes(slot.status)) {
               bookedSet.add(dateStr);
-              console.log(`📅 Marking ${dateStr} as blocked in calendar (status: ${slot.status})`);
             }
+            // NOTE: partially-available is NOT added to bookedSet - it should be selectable
           });
 
           setMaintenanceByDate(maintenanceMap);
-
+          setAvailabilityStatusMap(statusMap);
           setBookedDates(bookedSet);
-          console.log('📅 Loaded booked dates:', bookedSet.size, 'dates');
+          console.log('📅 Loaded availability data:', statusMap.size, 'dates');
         }
       } catch (error) {
         console.error('Error fetching booked dates:', error);
@@ -1099,6 +1098,39 @@ const FloatingInsightBadge = ({ badge }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const isRangeAvailable = (start: Date, end: Date) => {
+    if (!start || !end) return true;
+    const temp = new Date(start);
+    temp.setHours(0, 0, 0, 0);
+    const targetEnd = new Date(end);
+    targetEnd.setHours(0, 0, 0, 0);
+
+    while (temp < targetEnd) {
+      const dateStr = format(temp, 'yyyy-MM-dd');
+      const status = availabilityStatusMap.get(dateStr);
+      
+      // Only block if status is explicitly booked, blocked, maintenance, or unavailable
+      // partially-available is ALLOWED for selection
+      if (status === 'booked' || status === 'blocked' || status === 'maintenance' || status === 'unavailable') {
+        return false;
+      }
+      temp.setDate(temp.getDate() + 1);
+    }
+    return true;
+  };
+
+  // Auto-validate date range when availability loads or range changes
+  // Only reset if range contains truly blocked dates (not partially-available)
+  useEffect(() => {
+    if (dateRange.startDate && dateRange.endDate && availabilityStatusMap.size > 0) {
+      if (!isRangeAvailable(dateRange.startDate, dateRange.endDate)) {
+        console.log('⚠️ Current date range contains blocked dates, resetting...');
+        setDateRange({ startDate: null, endDate: null, key: 'selection' });
+        setSelectionStep('checkin');
+      }
+    }
+  }, [availabilityStatusMap, dateRange.startDate, dateRange.endDate]);
 
 
   const createWishlistAndSave = async () => {
@@ -2298,14 +2330,10 @@ const FloatingInsightBadge = ({ badge }) => {
                   //     });
                   //     setSelectionStep('checkin');
                   //   }
-                  // }}
-                  onDateSelect={(date) => {
-                    const clicked = new Date(
-                      date.getFullYear(),
-                      date.getMonth(),
-                      date.getDate()
-                    );
-
+                  onDateSelect={(clicked: Date) => {
+                    console.log('📅 Inline Calendar Clicked:', format(clicked, 'yyyy-MM-dd'));
+                    console.log('📅 Current Selection Step:', selectionStep);
+                    
                     setDateRange(prev => {
                       const start = prev.startDate
                         ? new Date(
@@ -2317,6 +2345,7 @@ const FloatingInsightBadge = ({ badge }) => {
 
                       // CHECK-IN
                       if (selectionStep === "checkin" || !start) {
+                        console.log('📅 Setting Check-in:', format(clicked, 'yyyy-MM-dd'));
                         setSelectionStep("checkout");
 
                         return {
@@ -2330,6 +2359,20 @@ const FloatingInsightBadge = ({ badge }) => {
                       // CHECK-OUT
                       if (selectionStep === "checkout") {
                         if (clicked > start) {
+                          console.log('📅 Attempting Check-out:', format(clicked, 'yyyy-MM-dd'));
+                          // Check if any date in between is booked
+                          if (!isRangeAvailable(start, clicked)) {
+                            console.log("❌ Range contains booked dates, resetting check-in to clicked date:", format(clicked, 'yyyy-MM-dd'));
+                            setSelectionStep("checkout");
+                            return {
+                              ...prev,
+                              startDate: clicked,
+                              endDate: null,
+                              key: "selection",
+                            };
+                          }
+
+                          console.log('✅ Selection Complete:', format(start, 'yyyy-MM-dd'), 'to', format(clicked, 'yyyy-MM-dd'));
                           setSelectionStep("complete");
 
                           return {
@@ -2340,6 +2383,7 @@ const FloatingInsightBadge = ({ badge }) => {
                         }
 
                         // clicked before start → restart
+                        console.log('📅 Clicked before start, resetting check-in:', format(clicked, 'yyyy-MM-dd'));
                         setSelectionStep("checkout");
 
                         return {
@@ -2350,6 +2394,7 @@ const FloatingInsightBadge = ({ badge }) => {
                       }
 
                       // COMPLETE → restart
+                      console.log('📅 Already complete, starting new selection with check-in:', format(clicked, 'yyyy-MM-dd'));
                       setSelectionStep("checkout");
 
                       return {
@@ -2690,9 +2735,8 @@ const FloatingInsightBadge = ({ badge }) => {
                                               const isPast = date < today;
 
 
-                                              // Check if this date is booked/unavailable
-                                              // FIXED: Use local date format to match bookedDates format
-                                              const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                                              // FIXED: Use format to match bookedDates format
+                                              const dateStr = format(date, 'yyyy-MM-dd');
                                               const isBooked = bookedDates.has(dateStr);
 
                                               const isStartDate = dateRange.startDate &&
@@ -2703,38 +2747,51 @@ const FloatingInsightBadge = ({ badge }) => {
                                                 date > dateRange.startDate && date < dateRange.endDate;
 
                                               // Booked dates are not selectable
-                                              const isSelectable = isCurrentMonth && !isPast && !isBooked;
+                                              const status = availabilityStatusMap.get(dateStr);
+                                              // STRICT: only allow if status is explicitly available or partially-available
+                                              // If availability hasn't loaded yet (status is undefined), we return false to be safe.
+                                              const isSelectable = isCurrentMonth && !isPast && (status === 'available' || status === 'partially-available');
 
 
-                                              // Add 'text-gray-700' (for light mode) or 'text-white' (for dark mode)
-                                              // 1. Initialize with a base text color to ensure nothing is ever 'invisible'
+                                              // Styling based on status - matching main calendar
                                               let className = 'text-center py-2 text-sm rounded-lg transition-colors relative ';
                                               if (!isCurrentMonth) {
                                                 className += 'text-gray-300';
-                                              } else if (isBooked) {
-                                                className += 'bg-red-50 text-red-600 cursor-not-allowed line-through';
                                               } else if (isStartDate || isEndDate) {
-                                                className += 'bg-[#C45D3E] text-white font-semibold';
+                                                className += 'bg-[#C45D3E] text-white font-bold cursor-pointer';
                                               } else if (isInRange) {
-                                                className += 'bg-[#F5E6D3] text-[#1A1A1A]';
+                                                className += 'bg-[#FDF8F3] text-[#C45D3E]';
+                                              } else if (status === 'booked') {
+                                                // Purple for booked - NOT selectable
+                                                className += 'bg-purple-100 text-purple-700 cursor-not-allowed';
+                                              } else if (status === 'unavailable' || status === 'blocked') {
+                                                // Red for unavailable/blocked - NOT selectable
+                                                className += 'bg-red-100 text-red-700 cursor-not-allowed';
+                                              } else if (status === 'maintenance') {
+                                                // Orange for maintenance - NOT selectable
+                                                className += 'bg-orange-100 text-orange-700 cursor-not-allowed';
+                                              } else if (status === 'partially-available') {
+                                                // Green for partially-available - SELECTABLE (same as main calendar)
+                                                className += 'text-gray-700 hover:bg-green-50 cursor-pointer';
                                               } else if (!isSelectable) {
-                                                className += 'text-gray-400 cursor-default';
+                                                className += 'text-gray-300 cursor-not-allowed';
                                               } else if (isToday) {
-                                                className += 'bg-[#FDF8F3] text-[#C45D3E] font-bold underline';
+                                                className += 'bg-[#FDF8F3] text-[#C45D3E] font-bold underline cursor-pointer';
                                               } else {
-                                                className += 'text-black hover:bg-gray-100 cursor-pointer';
+                                                // Available - green styling
+                                                className += 'text-gray-700 hover:bg-green-50 cursor-pointer';
                                               }
 
                                               days.push(
                                                 <div
                                                   key={date.getTime()}
                                                   className={className}
-                                                  title={isBooked ? 'This date is already booked' : undefined}
+                                                  title={status === 'booked' ? 'This date is already booked' : undefined}
                                                   onClick={() => {
                                                     if (!isSelectable) return;
-
-                                                    console.log('Date clicked:', date.toDateString());
-                                                    console.log('Current selectionStep:', selectionStep);
+                                                    
+                                                    console.log('📅 Portal Calendar Clicked:', format(date, 'yyyy-MM-dd'));
+                                                    console.log('📅 Current selectionStep:', selectionStep);
 
                                                     if (selectionStep === 'checkin') {
                                                       // Select check-in date
@@ -2745,28 +2802,30 @@ const FloatingInsightBadge = ({ badge }) => {
                                                         endDate: null,
                                                         key: 'selection'
                                                       };
-                                                      console.log('📅 New date range:', newDateRange);
-                                                      console.log('📅 Setting dateRange state...');
                                                       setDateRange(newDateRange);
-                                                      console.log('📅 DateRange state updated');
                                                       setSelectionStep('checkout');
                                                     } else if (selectionStep === 'checkout') {
                                                       // Select check-out date
                                                       if (date > dateRange.startDate) {
+                                                        // Range availability check
+                                                        if (!isRangeAvailable(dateRange.startDate, date)) {
+                                                          console.log('❌ Range contains booked dates, resetting check-in');
+                                                          setDateRange({
+                                                            startDate: new Date(date),
+                                                            endDate: null,
+                                                            key: 'selection'
+                                                          });
+                                                          setSelectionStep('checkout');
+                                                          return;
+                                                        }
+
                                                         console.log('Setting check-out date:', date.toDateString());
-                                                        console.log('🔍 Original date:', date);
-                                                        console.log('🔍 New Date(date):', new Date(date));
-                                                        console.log('🔍 Start date:', dateRange.startDate);
                                                         const newDateRange = {
                                                           ...dateRange,
                                                           endDate: new Date(date),
                                                           key: 'selection'
                                                         };
-                                                        console.log('📅 Complete date range:', newDateRange);
-                                                        console.log('🔍 Final endDate:', newDateRange.endDate);
-                                                        console.log('📅 Setting complete dateRange state...');
                                                         setDateRange(newDateRange);
-                                                        console.log('📅 Complete dateRange state updated');
                                                         setSelectionStep('complete');
                                                         setTimeout(() => setShowDatePicker(false), 300);
                                                       } else if (date < dateRange.startDate) {
@@ -2780,22 +2839,27 @@ const FloatingInsightBadge = ({ badge }) => {
                                                         setSelectionStep('checkin');
                                                       }
                                                     } else {
-                                                      // Both dates selected, start over
-                                                      console.log('Starting over with new check-in date');
                                                       setDateRange({
                                                         startDate: new Date(date),
                                                         endDate: null,
                                                         key: 'selection'
                                                       });
-                                                      setSelectionStep('checkin');
+                                                      setSelectionStep('checkout');
                                                     }
                                                   }}
                                                 >
-                                                  <span>{date.getDate()}</span>
-                                                  {/* Red dot indicator for booked dates */}
-                                                  {isBooked && isCurrentMonth && (
-                                                    <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                                                  )}
+                                                  {date.getDate()}
+                                                  {/* Dot indicator for status - HIDDEN ON MOBILE */}
+                                                   {isCurrentMonth && !isPast && (
+                                                     <span className={`hidden md:block absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full
+                                                       ${isStartDate || isEndDate ? 'bg-white' : ''}
+                                                       ${!isStartDate && !isEndDate && status === 'booked' ? 'bg-purple-500' : ''}
+                                                       ${!isStartDate && !isEndDate && (status === 'unavailable' || status === 'blocked') ? 'bg-red-500' : ''}
+                                                       ${!isStartDate && !isEndDate && status === 'maintenance' ? 'bg-orange-500' : ''}
+                                                       ${!isStartDate && !isEndDate && status === 'available' ? 'bg-green-500' : ''}
+                                                       ${!isStartDate && !isEndDate && status === 'partially-available' ? 'bg-[#C45D3E]' : ''}
+                                                     `}></span>
+                                                   )}
                                                 </div>
                                               );
                                             }
@@ -2804,15 +2868,23 @@ const FloatingInsightBadge = ({ badge }) => {
                                           })()}
                                         </div>
 
-                                        {/* Legend for booked dates */}
-                                        <div className="mt-3 flex items-center justify-center gap-4 text-xs text-gray-500">
+                                        {/* Legend for date statuses */}
+                                        <div className="mt-3 flex flex-wrap items-center justify-center gap-3 text-xs text-gray-500">
                                           <div className="flex items-center gap-1">
-                                            <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                                            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                            <span>Available</span>
+                                          </div>
+                                          {/* <div className="flex items-center gap-1">
+                                            <span className="w-2 h-2 bg-green-300 rounded-full"></span>
+                                            <span>Limited</span>
+                                          </div> */}
+                                          <div className="flex items-center gap-1">
+                                            <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
                                             <span>Booked</span>
                                           </div>
                                           <div className="flex items-center gap-1">
-                                            <span className="w-2 h-2 bg-[#C45D3E] rounded-full"></span>
-                                            <span>Selected</span>
+                                            <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                                            <span>Unavailable</span>
                                           </div>
                                         </div>
 
@@ -2956,9 +3028,8 @@ const FloatingInsightBadge = ({ badge }) => {
 
                                       const isPast = date < today;
 
-                                      // Check if this date is booked/unavailable
-                                      // FIXED: Use local date format to match bookedDates format
-                                      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                                      // FIXED: Use format to match bookedDates format
+                                      const dateStr = format(date, 'yyyy-MM-dd');
                                       const isBooked = bookedDates.has(dateStr);
 
                                       const isStartDate = dateRange.startDate &&
@@ -2969,74 +3040,85 @@ const FloatingInsightBadge = ({ badge }) => {
                                         date > dateRange.startDate && date < dateRange.endDate;
 
                                       // Booked dates are not selectable
-                                      const isSelectable = isCurrentMonth && !isPast && !isBooked;
+                                      const status = availabilityStatusMap.get(dateStr);
+                                      // STRICT: only allow if status is explicitly available or partially-available
+                                      const isSelectable = isCurrentMonth && !isPast && (status === 'available' || status === 'partially-available');
 
+                                      // Styling based on status - matching main calendar
                                       let className = 'text-center py-2 text-sm rounded-lg transition-colors relative ';
 
                                       if (!isCurrentMonth) {
                                         className += 'text-gray-300';
-                                      } else if (isBooked) {
-                                        // Red styling for booked dates
-                                        className += 'bg-red-100 text-red-400 cursor-not-allowed line-through';
-                                      } else if (!isSelectable) {
-                                        className += 'text-gray-400 bg-gray-100';
                                       } else if (isStartDate || isEndDate) {
-                                        className += 'bg-[#C45D3E] text-white font-semibold';
+                                        className += 'bg-[#C45D3E] text-white font-bold cursor-pointer';
                                       } else if (isInRange) {
-                                        className += 'bg-[#F5E6D3] text-[#1A1A1A]';
+                                        className += 'bg-[#FDF8F3] text-[#C45D3E]';
+                                      } else if (status === 'booked') {
+                                        // Purple for booked - NOT selectable
+                                        className += 'bg-purple-100 text-purple-700 cursor-not-allowed';
+                                      } else if (status === 'unavailable' || status === 'blocked') {
+                                        // Red for unavailable/blocked - NOT selectable
+                                        className += 'bg-red-100 text-red-700 cursor-not-allowed';
+                                      } else if (status === 'maintenance') {
+                                        // Orange for maintenance - NOT selectable
+                                        className += 'bg-orange-100 text-orange-700 cursor-not-allowed';
+                                      } else if (status === 'partially-available') {
+                                        // Green for partially-available - SELECTABLE (same as main calendar)
+                                        className += 'text-gray-700 hover:bg-green-50 cursor-pointer';
+                                      } else if (!isSelectable) {
+                                        className += 'text-gray-300 cursor-not-allowed';
                                       } else if (isToday) {
-                                        className += 'bg-[#F5E6D3] text-[#1A1A1A] font-medium';
+                                        className += 'bg-[#FDF8F3] text-[#C45D3E] font-bold underline cursor-pointer';
                                       } else {
-                                        className += 'hover:bg-gray-100 cursor-pointer';
+                                        // Available - green styling
+                                        className += 'text-gray-700 hover:bg-green-50 cursor-pointer';
                                       }
 
                                       days.push(
                                         <div
                                           key={date.getTime()}
                                           className={className}
-                                          title={isBooked ? 'This date is already booked' : undefined}
+                                          title={status === 'booked' ? 'This date is already booked' : undefined}
                                           onClick={() => {
                                             if (!isSelectable) return;
 
-                                            console.log('Date clicked:', date.toDateString());
-                                            console.log('Current selectionStep:', selectionStep);
+                                            console.log('📅 Portal Calendar Clicked (Desktop):', format(date, 'yyyy-MM-dd'));
+                                            console.log('📅 Current selectionStep:', selectionStep);
 
                                             if (selectionStep === 'checkin') {
                                               // Select check-in date
-                                              console.log('Setting check-in date:', date.toDateString());
                                               const newDateRange = {
                                                 ...dateRange,
                                                 startDate: new Date(date),
                                                 endDate: null,
                                                 key: 'selection'
                                               };
-                                              console.log('📅 New date range:', newDateRange);
-                                              console.log('📅 Setting dateRange state...');
                                               setDateRange(newDateRange);
-                                              console.log('📅 DateRange state updated');
                                               setSelectionStep('checkout');
                                             } else if (selectionStep === 'checkout') {
                                               // Select check-out date
                                               if (date > dateRange.startDate) {
-                                                console.log('Setting check-out date:', date.toDateString());
-                                                console.log('🔍 Original date:', date);
-                                                console.log('🔍 New Date(date):', new Date(date));
-                                                console.log('🔍 Start date:', dateRange.startDate);
+                                                // Range availability check
+                                                if (!isRangeAvailable(dateRange.startDate, date)) {
+                                                  setDateRange({
+                                                    startDate: new Date(date),
+                                                    endDate: null,
+                                                    key: 'selection'
+                                                  });
+                                                  setSelectionStep('checkout');
+                                                  return;
+                                                }
+
                                                 const newDateRange = {
                                                   ...dateRange,
                                                   endDate: new Date(date),
                                                   key: 'selection'
                                                 };
-                                                console.log('📅 Complete date range:', newDateRange);
-                                                console.log('🔍 Final endDate:', newDateRange.endDate);
-                                                console.log('📅 Setting complete dateRange state...');
                                                 setDateRange(newDateRange);
-                                                console.log('📅 Complete dateRange state updated');
                                                 setSelectionStep('complete');
                                                 setTimeout(() => setShowDatePicker(false), 300);
                                               } else if (date < dateRange.startDate) {
                                                 // New date is before start date, make it new start date
-                                                console.log('New date before start, making it new start date');
                                                 setDateRange({
                                                   startDate: new Date(date),
                                                   endDate: null,
@@ -3046,7 +3128,6 @@ const FloatingInsightBadge = ({ badge }) => {
                                               }
                                             } else {
                                               // Both dates selected, start over
-                                              console.log('Starting over with new check-in date');
                                               setDateRange({
                                                 startDate: new Date(date),
                                                 endDate: null,
@@ -3057,9 +3138,16 @@ const FloatingInsightBadge = ({ badge }) => {
                                           }}
                                         >
                                           <span>{date.getDate()}</span>
-                                          {/* Red dot indicator for booked dates */}
-                                          {isBooked && isCurrentMonth && (
-                                            <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                                          {/* Dot indicator for status */}
+                                          {isCurrentMonth && !isPast && (
+                                            <span className={`absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full
+                                              ${isStartDate || isEndDate ? 'bg-white' : ''}
+                                              ${!isStartDate && !isEndDate && status === 'booked' ? 'bg-purple-500' : ''}
+                                              ${!isStartDate && !isEndDate && (status === 'unavailable' || status === 'blocked') ? 'bg-red-500' : ''}
+                                              ${!isStartDate && !isEndDate && status === 'maintenance' ? 'bg-orange-500' : ''}
+                                              ${!isStartDate && !isEndDate && status === 'available' ? 'bg-green-500' : ''}
+                                              ${!isStartDate && !isEndDate && status === 'partially-available' ? 'bg-[#C45D3E]' : ''}
+                                            `}></span>
                                           )}
                                         </div>
                                       );
@@ -3069,15 +3157,23 @@ const FloatingInsightBadge = ({ badge }) => {
                                   })()}
                                 </div>
 
-                                {/* Legend for booked dates */}
-                                <div className="mt-3 flex items-center justify-center gap-4 text-xs text-gray-500">
+                                {/* Legend for date statuses */}
+                                <div className="mt-3 flex flex-wrap items-center justify-center gap-3 text-xs text-gray-500">
                                   <div className="flex items-center gap-1">
-                                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                    <span>Available</span>
+                                  </div>
+                                  {/* <div className="flex items-center gap-1">
+                                    <span className="w-2 h-2 bg-green-300 rounded-full"></span>
+                                    <span>Limited</span>
+                                  </div> */}
+                                  <div className="flex items-center gap-1">
+                                    <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
                                     <span>Booked</span>
                                   </div>
                                   <div className="flex items-center gap-1">
-                                    <span className="w-2 h-2 bg-[#C45D3E] rounded-full"></span>
-                                    <span>Selected</span>
+                                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                                    <span>Unavailable</span>
                                   </div>
                                 </div>
 

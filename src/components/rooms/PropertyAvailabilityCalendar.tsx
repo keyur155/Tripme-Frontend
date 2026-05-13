@@ -464,24 +464,7 @@ ${isCurrentMonth && !isPastDate && !isCheckIn && !isCheckOut && !isInRange
                   {style.icon}
                 </div>
               )} */}
-              {/* Mobile status dot */}
-{isCurrentMonth && !isPastDate && (
-  <span
-    className={`
-      
-      absolute bottom-1
-      w-1.5 h-1.5 rounded-full
-
-      ${isCheckIn ? 'bg-[#C45D3E]' : ''}
-      ${isCheckOut ? 'bg-[#C45D3E]' : ''}
-      ${!isCheckIn && !isCheckOut && status === 'available' ? 'bg-green-500' : ''}
-      ${status === 'unavailable' ? '' : ''}
-      ${status === 'booked' ? 'bg-purple-500' : ''}
-      ${status === 'maintenance' ? 'bg-orange-500' : ''}
-      ${status === 'partially-available' ? 'bg-[#C45D3E]' : ''}
-    `}
-  />
-)}
+              {/* Status dot removed for mobile as requested */}
 
 
             

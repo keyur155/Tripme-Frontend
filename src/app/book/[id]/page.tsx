@@ -746,7 +746,7 @@ export default function BookingPage() {
     availability.forEach((item: any) => {
       if (!item?.date) return;
       const dateObj = item.date instanceof Date ? item.date : new Date(item.date);
-      const key = startOfDay(dateObj).toLocaleDateString('en-CA');
+      const key = format(dateObj, 'yyyy-MM-dd');
       map.set(key, item.status);
     });
     return map;
@@ -756,7 +756,7 @@ export default function BookingPage() {
   const blockedDateSet = useMemo(() => new Set(blockedDates), [blockedDates]);
 
   const getStatusForDate = (date: Date) => {
-    const key = startOfDay(date).toLocaleDateString('en-CA');
+    const key = format(date, 'yyyy-MM-dd');
     if (blockedDateSet.has(key)) return 'blocked-self';
     return availabilityStatusMap.get(key) || null;
   };
@@ -1815,18 +1815,33 @@ export default function BookingPage() {
               cellClass += 'bg-[#F5E6D3] text-[#C45D3E]';
             } else if (!isInCurrentMonth) {
               cellClass += 'text-gray-300';
-            } else if (isHardBlocked) {
-              cellClass += 'bg-red-100 text-red-400 line-through cursor-not-allowed';
+            } else if (status === 'booked') {
+              // Purple for booked - NOT selectable
+              cellClass += 'bg-purple-100 text-purple-700 cursor-not-allowed';
+            } else if (status === 'unavailable' || status === 'blocked') {
+              // Red for unavailable/blocked - NOT selectable
+              cellClass += 'bg-red-100 text-red-700 cursor-not-allowed';
+            } else if (status === 'maintenance') {
+              // Orange for maintenance - NOT selectable
+              cellClass += 'bg-orange-100 text-orange-700 cursor-not-allowed';
+            } else if (status === 'partially-available') {
+              // Green for partially-available - SELECTABLE
+              cellClass += 'text-gray-700 hover:bg-green-50 cursor-pointer';
             } else if (!isSelectableDay) {
               cellClass += 'text-gray-300 cursor-not-allowed';
             } else if (isBlockedSelf) {
               cellClass += 'border border-dashed border-[#C45D3E] text-[#C45D3E] bg-[#FDF8F3]';
             } else {
-              cellClass += 'text-gray-700 hover:bg-[#FDF8F3]';
+              // Available - green styling
+              cellClass += 'text-gray-700 hover:bg-green-50 cursor-pointer';
             }
 
             const actionable = isSelectableDay || isSelectedBoundary || isBetween;
-            const showBookedDot = isHardBlocked && isInCurrentMonth;
+            // Show dot based on status
+            const showBookedDot = status === 'booked' && isInCurrentMonth;
+            const showUnavailableDot = (status === 'unavailable' || status === 'blocked' || status === 'maintenance') && isInCurrentMonth;
+            const showAvailableDot = status === 'available' && isInCurrentMonth && !isSelectedBoundary && !isBetween;
+            const showPartialDot = status === 'partially-available' && isInCurrentMonth && !isSelectedBoundary && !isBetween;
 
             return (
               <button
@@ -1838,8 +1853,18 @@ export default function BookingPage() {
                 aria-label={format(normalized, 'PPP')}
               >
                 <span>{normalized.getDate()}</span>
+                {/* Dot indicator based on status */}
                 {showBookedDot && (
-                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-red-500 rounded-full" />
+                  <span className="hidden md:block absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-purple-500 rounded-full" />
+                )}
+                {showUnavailableDot && (
+                  <span className="hidden md:block absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-red-500 rounded-full" />
+                )}
+                {showAvailableDot && (
+                  <span className="hidden md:block absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-green-500 rounded-full" />
+                )}
+                {showPartialDot && (
+                  <span className="hidden md:block absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#C45D3E] rounded-full" />
                 )}
               </button>
             );
@@ -1865,32 +1890,6 @@ export default function BookingPage() {
 //     // if (!status) return true;
 
 //     if (!status) return false;
-
-//     if (
-//         status === 'booked' ||
-//         status === 'maintenance' ||
-//         status === 'unavailable' ||
-//         status === 'blocked'
-//       ) {
-//             return false;
-//           }
-
-
-//     // if (status === 'available') return true;
-//     // if (status === 'blocked-self') return true;
-
-
-// if (
-//   status === 'available' ||
-//   status === 'partially-available' ||
-//   status === 'blocked-self'
-// ) {
-//   return true;
-// }
-//     return false;
-//   };
-
-
   const isDateSelectable = (date: Date) => {
   const normalized = startOfDay(date);
   const today = startOfDay(new Date());
@@ -1899,11 +1898,11 @@ export default function BookingPage() {
 
   const status = getStatusForDate(normalized);
 
-  // Allow selection while availability loading
-  if (availabilityLoading) return true;
+  // If availability is loading, be conservative
+  if (availabilityLoading) return false;
 
-  // If backend has no status for date, assume available
-  if (!status) return true;
+  // If no status yet, don't allow selection
+  if (!status) return false;
 
   if (
     status === 'booked' ||
@@ -1938,6 +1937,16 @@ export default function BookingPage() {
     return true;
   };
 
+  // Auto-validate range when availability loads or range changes
+  useEffect(() => {
+    if (pendingRange.checkIn && pendingRange.checkOut && !availabilityLoading) {
+      if (!isRangeSelectable(pendingRange.checkIn, pendingRange.checkOut)) {
+        console.log('⚠️ Pending range is no longer available, resetting check-out...');
+        setPendingRange(prev => ({ ...prev, checkOut: null }));
+      }
+    }
+  }, [availabilityStatusMap, pendingRange.checkIn, pendingRange.checkOut, availabilityLoading]);
+
   const getSelectionState = (date: Date) => {
     const normalized = startOfDay(date);
     if (pendingRange.checkIn && isSameDay(normalized, pendingRange.checkIn)) return 'start';
@@ -1953,19 +1962,24 @@ export default function BookingPage() {
     const normalized = startOfDay(date);
     const status = getStatusForDate(normalized);
 
+    // Only allow selection if the status is explicitly available or blocked-self
     if (
-  status === 'booked' ||
-  status === 'maintenance' ||
-  status === 'unavailable' ||
-  status === 'blocked'
-) {
-  return;
-}
+      status !== 'available' && 
+      status !== 'partially-available' && 
+      status !== 'blocked-self' &&
+      status !== null // if status is null, we rely on isDateSelectable which will now return false
+    ) {
+      console.log(`🚫 Date ${normalized.toLocaleDateString()} is not selectable (status: ${status})`);
+      return;
+    }
 
-    const isBaseSelectable = isDateSelectable(normalized) || status === 'available' || status === 'blocked-self';
-    const isCheckoutCandidate = pendingRange.checkIn && !pendingRange.checkOut && isAfter(normalized, pendingRange.checkIn) && (status === 'available' || status === 'blocked-self');
+    const isBaseSelectable = isDateSelectable(normalized);
+    const isCheckoutCandidate = pendingRange.checkIn && !pendingRange.checkOut && isAfter(normalized, pendingRange.checkIn) && (status === 'available' || status === 'partially-available' || status === 'blocked-self');
 
-    if (!isBaseSelectable && !isCheckoutCandidate) return;
+    if (!isBaseSelectable && !isCheckoutCandidate) {
+      console.log(`🚫 Date ${normalized.toLocaleDateString()} failed selectability check`);
+      return;
+    }
 
     setPendingRange(prev => {
       if (!prev.checkIn || (prev.checkIn && prev.checkOut)) {
